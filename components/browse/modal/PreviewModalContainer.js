@@ -201,26 +201,23 @@ const PreviewModalContainer = forwardRef((props, layoutWrapperRef) => {
    * Render mini preview modal
    */
   const renderMiniModal = () => {
-    const openPreviewModalById = Object.values(previewModalStateById).filter(
-      (modal) => {
-        const { closeWithoutAnimation, isOpen, modalState } = modal;
+    return Object.values(previewModalStateById)
+      .filter(({ closeWithoutAnimation, isOpen, modalState }) => {
         return (
           !closeWithoutAnimation &&
           isOpen &&
           modalState === modalStateActions.MINI_MODAL
         );
-      }
-    );
-    return openPreviewModalById.map(renderPreviewModal);
+      })
+      .map(renderPreviewModal);
   };
 
   /**
    * Render detail preview modal
    */
   const renderDetailModal = () => {
-    const queuedDetailModals = Object.values(previewModalStateById).find(
-      (modal) => {
-        const { closeWithoutAnimation, isOpen, modalState } = modal;
+    const modal = Object.values(previewModalStateById).find(
+      ({ closeWithoutAnimation, isOpen, modalState }) => {
         return (
           !closeWithoutAnimation &&
           isOpen &&
@@ -229,8 +226,8 @@ const PreviewModalContainer = forwardRef((props, layoutWrapperRef) => {
       }
     );
     return (
-      queuedDetailModals?.modalState === modalStateActions.DETAIL_MODAL &&
-      renderPreviewModal(queuedDetailModals)
+      modal?.modalState === modalStateActions.DETAIL_MODAL &&
+      renderPreviewModal(modal)
     );
   };
 
@@ -246,24 +243,24 @@ const PreviewModalContainer = forwardRef((props, layoutWrapperRef) => {
    * Render detail preview modal overlay
    */
   const renderDetailModalOverlay = () => {
-    const queuedDetailModals = Object.values(previewModalStateById).find(
-      (modal) => {
+    const modal = Object.values(previewModalStateById).find(
+      ({ closeWithoutAnimation, isOpen, modalState }) => {
         return (
-          !modal.closeWithoutAnimation &&
-          modal.isOpen &&
-          modal.modalState === modalStateActions.DETAIL_MODAL
+          !closeWithoutAnimation &&
+          isOpen &&
+          modalState === modalStateActions.DETAIL_MODAL
         );
       }
     );
     const galleryModal = !isJBVRoute() && children;
     return (
-      (queuedDetailModals?.modalState === modalStateActions.DETAIL_MODAL ||
+      (modal?.modalState === modalStateActions.DETAIL_MODAL ||
         galleryModal) && (
         <ModalOverlay
           ref={layoutWrapperRef?.current?.parentNode}
           key={
-            queuedDetailModals?.modalState === modalStateActions.DETAIL_MODAL &&
-            queuedDetailModals?.isOpen
+            modal?.modalState === modalStateActions.DETAIL_MODAL &&
+            modal?.isOpen
           }
           className={`preview-modal-backdrop`}
           element={MotionDivWrapper}
@@ -296,13 +293,19 @@ const PreviewModalContainer = forwardRef((props, layoutWrapperRef) => {
    * @returns {JSX.Element}
    */
   const renderPreviewModal = (modal) => {
-    const { isOpen, modalState, model, videoId, videoModel } = modal;
+    const {
+      isOpen,
+      modalState,
+      model: { uid },
+      videoId,
+      videoModel,
+    } = modal;
     // A preview modal should only render if `isOpen` is true
-    if (!isOpen || !modal || !model || !videoId || !videoModel) return null;
+    if (!isOpen || !modal || !videoId || !uid || !videoModel) return null;
     // Render the preview modal
     return (
       <PreviewModal
-        key={`${model.uid}-${isOpen}`}
+        key={`${uid}-${isOpen}`}
         ref={layoutWrapperRef}
         modalState={modalState}
         previewModalState={{

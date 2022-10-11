@@ -23,7 +23,21 @@ import usePreviewModal from "@/middleware/usePreviewModal";
 
 const PreviewModal = forwardRef((props, layoutWrapperRef) => {
   /** Props */
-  const { previewModalState } = props;
+  const {
+    custom,
+    previewModalState,
+    previewModalState: {
+      closeWithoutAnimation,
+      isOpen,
+      modalState,
+      model,
+      mutateSliderData,
+      scrollPosition,
+      titleCardRect,
+      videoId,
+      wasOpen,
+    },
+  } = props;
   /** Context */
   const {
     router,
@@ -43,25 +57,9 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
     setPreviewModalClose,
     setPreviewModalWasOpen,
   } = useContext(InteractionContext);
-  /** Preview modal state */
-  const {
-    isOpen,
-    modalState,
-    model,
-    mutateSliderData,
-    scrollPosition,
-    titleCardRect,
-    videoId,
-    wasOpen,
-  } = previewModalState;
 
   /** Framer motion utility */
   const isPresent = useIsPresent();
-
-  // console.log("model: ", model);
-  // console.log("previewModalState: ", previewModalState);
-  // console.log("modalData: ", modalData);
-  // console.log("fallbackData: ", fallbackData);
 
   /** State */
   const [isAnimating, setIsAnimating] = useState(false);
@@ -102,14 +100,9 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
    * Determine if this modal is set to close without animation
    * @returns {Boolean}
    */
-  const closedWithoutAnimation = () => {
-    let queuedModal,
-      queued = previewModalStateById;
-    return (
-      (queuedModal = queued[videoId]) !== null &&
-      queuedModal !== undefined &&
-      queuedModal.closeWithoutAnimation
-    );
+  const modalClosedWithoutAnimation = () => {
+    const modal = previewModalStateById[videoId];
+    return modal !== null && modal !== undefined && modal.closeWithoutAnimation;
   };
 
   /**
@@ -299,12 +292,11 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
      */
     function closeMiniModal() {
       // Hide modal if closeWithoutAnimation is true
-      let queuedModal,
-        queued = previewModalStateById;
+      const modal = previewModalStateById[videoId];
       if (
-        (queuedModal = queued[videoId]) !== null &&
-        queuedModal !== undefined &&
-        queuedModal.closeWithoutAnimation
+        modal !== null &&
+        modal !== undefined &&
+        modal.closeWithoutAnimation
       ) {
         return {
           opacity: 0,
@@ -387,13 +379,14 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
             }),
             Object.assign(variantObj, {
               [animationStateActions.OPEN_MINI_MODAL]: Object.assign(
+                {},
                 resetMiniModal(),
                 openMiniModal()
               ),
             }),
             Object.assign(variantObj, {
               [animationStateActions.CLOSE_MINI_MODAL]: Object.assign(
-                resetMiniModal(),
+                {},
                 openMiniModal(),
                 closeMiniModal()
               ),
@@ -580,14 +573,9 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
      * @returns {Object}
      */
     function closeDetailModal() {
-      let queued = previewModalStateById,
-        queuedModal;
+      const modal = previewModalStateById[videoId];
       // If modal is to close without animation
-      if (
-        (queuedModal = queued[videoId]) !== null &&
-        queuedModal !== undefined &&
-        queuedModal.closeWithoutAnimation
-      )
+      if (modal !== null && modal !== undefined && modal.closeWithoutAnimation)
         return {
           opacity: 0,
           transition: {
@@ -669,13 +657,14 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
         }),
         Object.assign(variantObj, {
           [animationStateActions.OPEN_DETAIL_MODAL]: Object.assign(
+            {},
             mountDetailModal(),
             openDetailModal()
           ),
         }),
         Object.assign(variantObj, {
           [animationStateActions.CLOSE_DETAIL_MODAL]: Object.assign(
-            mountDetailModal(),
+            {},
             openDetailModal(),
             closeDetailModal()
           ),
@@ -683,11 +672,6 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
         variantObj),
     };
   };
-
-  // console.log("modalState:: ", modalState);
-  // console.log("animationState:: ", animationState);
-  // console.log("modalRect:: ", modalRect);
-  // console.log("titleCardRect:: ", titleCardRect);
 
   /**
    * Get the animation props for each animation state
@@ -702,7 +686,7 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
         return detailModalAnimationProps();
       }
       default: {
-        return {};
+        throw new Error("Invalid modal state");
       }
     }
   };
@@ -1069,8 +1053,6 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
   /**
    * Render the preview modal
    */
-  // console.log("isPresent: ", isPresent);
-  // console.log("isOpen: ", isOpen);
   const renderPreviewModal = () => {
     let parentRef = layoutWrapperRef.current.parentNode,
       isMiniModal = modalState === modalStateActions.MINI_MODAL,
@@ -1092,8 +1074,6 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
         // Detail modal
         !!(!isDetailAnimating && videoId);
 
-    // animationState-${animationState} willClose-${willClose} isAnimating-${isAnimating} isDetailAnimating-${isDetailAnimating}
-		
     return (
       <ModalFocusTrapWrapper
         ref={parentRef}
@@ -1101,9 +1081,7 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
         paused={!isPresent}
         className={`focus-trap preview-modal-wrapper ${
           isDetailModal ? "detail-modal" : "mini-modal"
-        } ${
-          model?.videoModel?.title
-        } isOpen-${isOpen} animationState-${animationState} willClose-${willClose} isAnimating-${isAnimating} isDetailAnimating-${isDetailAnimating}`}
+        }`}
         element={"div"}
         focusTrapOptions={{
           clickOutsideDeactivates: true,
@@ -1204,7 +1182,10 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
     );
   };
 
-  // if (closedWithoutAnimation()) return null;
+  /**
+   * Render nothing if modal was closed without animation
+   */
+  if (modalClosedWithoutAnimation()) return null;
 
   /**
    * Render the preview modal

@@ -192,14 +192,14 @@ const TitleCardContainer = forwardRef(
      */
     const closeAllPreviewModals = () => {
       return Object.values(previewModalStateById)
-        .filter((modal) => modal.isOpen)
-        .map((modal) => modal.videoId)
-        .forEach((videoId) =>
+        .filter(({ isOpen }) => isOpen)
+        .map(({ videoId }) => videoId)
+        .forEach((videoId) => {
           setPreviewModalClose({
             closeWithoutAnimation: true,
             videoId,
-          })
-        );
+          });
+        });
     };
 
     /**
