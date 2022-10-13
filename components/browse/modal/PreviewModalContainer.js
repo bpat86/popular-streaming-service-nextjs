@@ -3,10 +3,9 @@ import {
   forwardRef,
   useLayoutEffect,
   useContext,
-  useCallback,
   useMemo,
+  useCallback,
 } from "react";
-import debounce from "lodash.debounce";
 // Lib
 import { AnimatePresenceWrapper } from "lib/AnimatePresenceWrapper";
 import { MotionDivWrapper } from "lib/MotionDivWrapper";
@@ -24,16 +23,10 @@ const PreviewModalContainer = forwardRef((props, layoutWrapperRef) => {
     previewModalStateById,
     isPreviewModalOpen,
     setPreviewModalOpen,
-    setPreviewModalWasOpen,
     setPreviewModalClose,
     updatePreviewModalState,
-    resetRouteQuery,
-    rowHasExpandedInfoDensity,
-    isPreviewModalAnimating,
     getVideoId,
-    wasOpen,
     router,
-    modalIsOpenRef,
   } = useContext(InteractionContext);
 
   /**
@@ -240,55 +233,6 @@ const PreviewModalContainer = forwardRef((props, layoutWrapperRef) => {
   };
 
   /**
-   * Render detail preview modal overlay
-   */
-  const renderDetailModalOverlay = () => {
-    const modal = Object.values(previewModalStateById).find(
-      ({ closeWithoutAnimation, isOpen, modalState }) => {
-        return (
-          !closeWithoutAnimation &&
-          isOpen &&
-          modalState === modalStateActions.DETAIL_MODAL
-        );
-      }
-    );
-    const galleryModal = !isJBVRoute() && children;
-    return (
-      (modal?.modalState === modalStateActions.DETAIL_MODAL ||
-        galleryModal) && (
-        <ModalOverlay
-          ref={layoutWrapperRef?.current?.parentNode}
-          key={
-            modal?.modalState === modalStateActions.DETAIL_MODAL &&
-            modal?.isOpen
-          }
-          className={`preview-modal-backdrop`}
-          element={MotionDivWrapper}
-          inherit={false}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.7 }}
-          exit={{
-            opacity: 0,
-            transition: {
-              opacity: {
-                duration: 0.54,
-                ease: "circOut",
-              },
-            },
-            transitionEnd: {
-              display: "none",
-            },
-          }}
-          onClick={(e) => {
-            e.stopPropagation();
-            resetRouteQuery();
-          }}
-        />
-      )
-    );
-  };
-
-  /**
    * Render the preview modal component
    * @returns {JSX.Element}
    */
@@ -326,7 +270,7 @@ const PreviewModalContainer = forwardRef((props, layoutWrapperRef) => {
         previewModalStateById,
         undefined: {},
       }}
-      exitBeforeEnter={isMiniModal() ? true : false}
+      mode={isMiniModal() ? "wait" : "sync"}
     >
       {[
         // Mini modal
@@ -335,8 +279,6 @@ const PreviewModalContainer = forwardRef((props, layoutWrapperRef) => {
         renderDetailModal(),
         // Gallery modal
         renderGalleryModal(),
-        // Detail modal overlay
-        renderDetailModalOverlay(),
       ]}
     </AnimatePresenceWrapper>
   );

@@ -27,7 +27,7 @@ export default function MyApp({ Component, pageProps, router }) {
 
   return getLayout(
     <CombineContexts contextProviders={contextProviders}>
-      <AnimatePresenceWrapper exitBeforeEnter={true}>
+      <AnimatePresenceWrapper mode={"wait"}>
         <Component
           key={router.route}
           route={router.route}

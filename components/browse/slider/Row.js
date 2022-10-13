@@ -5,6 +5,7 @@ import Slider from "./Slider";
 import SliderItem from "./SliderItem";
 // Hooks
 import useWindowResize from "@/hooks/useWindowResize";
+import { flushSync } from "react-dom";
 
 const SliderRow = (props) => {
   const {
@@ -66,8 +67,10 @@ const SliderRow = (props) => {
    * @param {String} direction
    */
   const handleSliderMove = (idx, direction) => {
-    setLowestVisibleItemIndex(idx);
-    setSliderMoveDirection(direction);
+    flushSync(() => {
+      setLowestVisibleItemIndex(idx);
+      setSliderMoveDirection(direction);
+    });
   };
 
   /**
@@ -84,7 +87,7 @@ const SliderRow = (props) => {
           <SliderItem key={`title_${item.id}_${rowNum}`} model={model[idx]} />
         ))
       : model
-          ?.slice(0, itemsInRow + 2)
+          .slice(0, itemsInRow + 2)
           .map((item, idx) => (
             <SliderItem key={`title_${item.id}_${rowNum}`} model={model[idx]} />
           ));

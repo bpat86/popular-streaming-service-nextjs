@@ -1,11 +1,15 @@
 import {
   Children,
   cloneElement,
-  useContext,
   useLayoutEffect,
+  useContext,
   useState,
   useRef,
+  useTransition,
+  useMemo,
 } from "react";
+import { flushSync } from "react-dom";
+// Lib
 import { LayoutGroupWrapper } from "lib/LayoutGroupWrapper";
 import { AnimatePresenceWrapper } from "lib/AnimatePresenceWrapper";
 // Context
@@ -31,10 +35,8 @@ const Slider = (props) => {
     enableLooping,
     isMyListRow,
     listContext,
-    model,
     myListRowItemsLength,
     onSliderMove,
-    fullDataLoaded,
     initialLowestVisibleIndex,
     lowestVisibleItemIndex,
     setLowestVisibleItemIndex,
@@ -46,15 +48,17 @@ const Slider = (props) => {
     rowHasExpandedInfoDensity,
     toggleExpandedInfoDensity,
   } = props;
-
   /** Context */
-  const { closeAllModals, sliderActions, isPreviewModalOpen, wasOpen } =
-    useContext(InteractionContext);
-
+  const { sliderActions, isPreviewModalOpen } = useContext(InteractionContext);
+  /** Transition */
+  const [isPending, startTransition] = useTransition();
   /** State */
   const [isAnimating, setIsAnimating] = useState(false);
-  const [shift, setShift] = useState([]);
-
+  const [shift, setShift] = useState({
+    event: undefined,
+    xScrollDirection: undefined,
+    rowSegment: undefined,
+  });
   /** Refs */
   const sliderRef = useRef(null);
   const sliderItemRefs = useRef({});
@@ -153,19 +157,18 @@ const Slider = (props) => {
   };
 
   const getBaseSliderOffset = () => {
-    const items = itemsInRow;
     const itemWidth = getSliderItemWidth();
     let offset = 0;
     return (
       getTotalPages() > 1 &&
         (((hasMovedOnce && enableLooping && lowestVisibleItemIndex === 0) ||
-          lowestVisibleItemIndex >= items) &&
+          lowestVisibleItemIndex >= itemsInRow) &&
           (offset = -100),
         hasMovedOnce &&
-          (enableLooping || lowestVisibleItemIndex > items) &&
+          (enableLooping || lowestVisibleItemIndex > itemsInRow) &&
           (offset -= itemWidth),
         lowestVisibleItemIndex > 0 &&
-          lowestVisibleItemIndex < items &&
+          lowestVisibleItemIndex < itemsInRow &&
           (offset -= lowestVisibleItemIndex * itemWidth)),
       (offset *= !!(sliderMoveDirection === sliderActions.MOVE_DIRECTION_PREV
         ? -1
@@ -240,7 +243,7 @@ const Slider = (props) => {
           "_appended"
         )),
         // Combine arrays
-        (viewportIndex = [...viewportIndex, ...sliderContentIndex]));
+        (viewportIndex = viewportIndex.concat(sliderContentIndex)));
 
       /**
        * The state of the slider after it has shifted at least once.
@@ -262,7 +265,7 @@ const Slider = (props) => {
           "_prepended"
         )),
         // Combine arrays
-        (viewportIndex = [...sliderContentIndex, ...viewportIndex]));
+        (viewportIndex = sliderContentIndex.concat(viewportIndex)));
     }
 
     /**
@@ -371,7 +374,6 @@ const Slider = (props) => {
                 videoId: sliderItemChild.props.model?.id,
                 videoKey: getVideoKey(sliderItemChild.props.model),
                 videoModel: {
-                  // ...sliderItemChild.props.model,
                   cast: sliderItemChild.props.model?.cast,
                   crew: sliderItemChild.props.model?.crew,
                   dislikedMediaId:
@@ -481,14 +483,11 @@ const Slider = (props) => {
    * @param {Number} movePercentage
    * @returns
    */
-  const getAnimationStyle = (movePercentage) => {
-    let translateStyle = movePercentage
-      ? `translate3d(${movePercentage}%, 0px, 0px)`
-      : "translate3d(0%, 0px, 0px)";
+  const getAnimationStyle = (movePercentage = 0) => {
     return [
-      `-webkit-transform: ${translateStyle}`,
-      `-ms-transform: ${translateStyle}`,
-      `transform: ${translateStyle}`,
+      `-webkit-transform: translate3d(${movePercentage}%, 0px, 0px)`,
+      `-ms-transform: translate3d(${movePercentage}%, 0px, 0px)`,
+      `transform: translate3d(${movePercentage}%, 0px, 0px)`,
     ].join(";");
   };
 
@@ -497,16 +496,13 @@ const Slider = (props) => {
    * @param {Number} movePercentage
    * @returns
    */
-  const getReactAnimationStyle = (movePercentage) => {
-    if (movePercentage) {
-      const translateStyle = `translate3d(${movePercentage}%, 0px, 0px)`;
-      return {
-        WebkitTransform: translateStyle,
-        MsTransform: translateStyle,
-        transform: translateStyle,
-      };
-    }
-    return null;
+  const getReactAnimationStyle = (movePercentage = 0) => {
+    const transform = `translate3d(${movePercentage}%, 0px, 0px)`;
+    return {
+      WebkitTransform: transform,
+      MsTransform: transform,
+      transform: transform,
+    };
   };
 
   /**
@@ -546,19 +542,17 @@ const Slider = (props) => {
    */
   const advancePrev = (e) => {
     e && e.preventDefault();
-
-    const items = itemsInRow;
-    const totalItemCount = getTotalItemCount();
-    const lowestVisibleIdx = lowestVisibleItemIndex;
-    const rowItems = lowestVisibleItemIndex - itemsInRow;
-
+    // Proceed if the previous button is active and the slider is not currently animating
     if (isPrevBtnNavActive() && !isAnimating) {
       setIsAnimating(true);
-      lowestVisibleIdx !== 0 && rowItems < 0 && (rowItems = 0);
-      let amountToOffset = lowestVisibleIdx - rowItems;
-      lowestVisibleIdx === 0 && (rowItems = totalItemCount - items);
+      const totalItemCount = getTotalItemCount();
+      let rowItems = lowestVisibleItemIndex - itemsInRow;
+      lowestVisibleItemIndex !== 0 && rowItems < 0 && (rowItems = 0);
+      let amountToOffset = lowestVisibleItemIndex - rowItems;
+      lowestVisibleItemIndex === 0 && (rowItems = totalItemCount - itemsInRow);
       let getNewOffset = getNewSliderOffset(amountToOffset),
         newOffsetAmount = getNewOffset + getBaseSliderOffset();
+
       e && "wheel" === e.type
         ? shiftSlider(
             rowItems,
@@ -569,7 +563,7 @@ const Slider = (props) => {
               y: e.clientY,
             },
             false,
-            getActiveRowSegment(totalItemCount, items, rowItems)
+            getActiveRowSegment(totalItemCount, itemsInRow, rowItems)
           )
         : e && "keydown" === e.type
         ? shiftSlider(
@@ -578,7 +572,7 @@ const Slider = (props) => {
             sliderActions.MOVE_DIRECTION_PREV,
             null,
             true,
-            getActiveRowSegment(totalItemCount, items, rowItems)
+            getActiveRowSegment(totalItemCount, itemsInRow, rowItems)
           )
         : shiftSlider(
             rowItems,
@@ -586,7 +580,7 @@ const Slider = (props) => {
             sliderActions.MOVE_DIRECTION_PREV,
             null,
             false,
-            getActiveRowSegment(totalItemCount, items, rowItems)
+            getActiveRowSegment(totalItemCount, itemsInRow, rowItems)
           );
     }
   };
@@ -622,17 +616,14 @@ const Slider = (props) => {
    */
   const advanceNext = (e) => {
     e && e.preventDefault();
-
-    const items = itemsInRow;
-    const totalItemCount = getTotalItemCount();
-    const lowestVisibleIdx = lowestVisibleItemIndex;
-    const rowItems = lowestVisibleItemIndex + items;
-
+    // Proceed if the next button is active and the slider is not currently animating
     if (isNextBtnNavActive() && !isAnimating) {
       setIsAnimating(true);
-      const currentItemCount = lowestVisibleIdx + 2 * items;
+      const totalItemCount = getTotalItemCount();
+      const nextItems = lowestVisibleItemIndex + 2 * itemsInRow;
+      let rowItems = lowestVisibleItemIndex + itemsInRow;
       rowItems !== totalItemCount &&
-        currentItemCount > totalItemCount &&
+        nextItems > totalItemCount &&
         (rowItems = totalItemCount - itemsInRow);
       let amountToOffset = lowestVisibleItemIndex - rowItems,
         getNewOffset = getNewSliderOffset(amountToOffset),
@@ -648,7 +639,7 @@ const Slider = (props) => {
               y: e.clientY,
             },
             false,
-            getActiveRowSegment(totalItemCount, items, rowItems)
+            getActiveRowSegment(totalItemCount, itemsInRow, rowItems)
           )
         : e && "keydown" === e.type
         ? shiftSlider(
@@ -657,7 +648,7 @@ const Slider = (props) => {
             sliderActions.MOVE_DIRECTION_NEXT,
             null,
             true,
-            getActiveRowSegment(totalItemCount, items, rowItems)
+            getActiveRowSegment(totalItemCount, itemsInRow, rowItems)
           )
         : shiftSlider(
             rowItems,
@@ -665,7 +656,7 @@ const Slider = (props) => {
             sliderActions.MOVE_DIRECTION_NEXT,
             null,
             false,
-            getActiveRowSegment(totalItemCount, items, rowItems)
+            getActiveRowSegment(totalItemCount, itemsInRow, rowItems)
           );
     }
   };
@@ -692,19 +683,21 @@ const Slider = (props) => {
     slider.classList.add("animating");
     slider.setAttribute("style", getNewStyle);
     slider.addEventListener("transitionend", function transitionEnd(e) {
-      e.target === slider && e.target === this && resetSliderPosition();
-      setLowestVisibleItemIndex(totalItemCount);
-      handleActiveRowIndex(totalItemCount);
-      setShift({
-        event: sliderActions.SLIDER_SLIDING,
-        xScrollDirection: action,
-        rowSegment: activeRowSegment,
+      flushSync(() => {
+        e.target === slider && e.target === this && resetSliderPosition();
+        setLowestVisibleItemIndex(totalItemCount);
+        handleActiveRowIndex(totalItemCount);
+        setShift({
+          event: sliderActions.SLIDER_SLIDING,
+          xScrollDirection: action,
+          rowSegment: activeRowSegment,
+        });
+        onSliderMove(totalItemCount, action);
+        !hasMovedOnce && setHasMovedOnce(true);
+        slider.classList.remove("animating");
+        slider.removeEventListener("transitionend", transitionEnd);
+        setIsAnimating(false);
       });
-      onSliderMove(totalItemCount, action);
-      !hasMovedOnce && setHasMovedOnce(true);
-      slider.classList.remove("animating");
-      slider.removeEventListener("transitionend", transitionEnd);
-      setIsAnimating(false);
     });
   };
 
@@ -713,9 +706,9 @@ const Slider = (props) => {
    * @param {Array} viewportItems
    */
   const refocusAfterShift = () => {
-    const visibleItems = getSliderItemsInViewport();
-    let itemToFocus, itemIdx;
-
+    let visibleItems = getSliderItemsInViewport(),
+      itemToFocus,
+      itemIdx;
     visibleItems.length &&
       visibleItems.length > 1 &&
       (itemIdx =
@@ -759,7 +752,7 @@ const Slider = (props) => {
    */
   useLayoutEffect(() => {
     const totalItemCount = getTotalItemCount();
-    const initialLowestIdx = initialLowestVisibleIndex || 0;
+    let initialLowestIdx = initialLowestVisibleIndex || 0;
     !enableLooping &&
       totalItemCount &&
       initialLowestIdx + itemsInRow > totalItemCount &&
@@ -767,6 +760,10 @@ const Slider = (props) => {
       (initialLowestIdx = 0),
       setLowestVisibleItemIndex(initialLowestIdx),
       setHasMovedOnce(initialLowestVisibleIndex || false);
+    return () => {
+      setLowestVisibleItemIndex(initialLowestIdx);
+      setHasMovedOnce(initialLowestVisibleIndex || false);
+    };
   }, []);
 
   /**
@@ -776,7 +773,7 @@ const Slider = (props) => {
     if (hasMovedOnce) {
       refocusAfterShift();
     }
-  }, [hasMovedOnce, shift]);
+  }, [hasMovedOnce, shift.event]);
 
   /**
    * Update the lowest visible index if slider is on the last page
@@ -797,6 +794,13 @@ const Slider = (props) => {
       resetSliderPosition();
     }
   }, [itemsInRow]);
+
+  /**
+   * Memoize the slider's style attribute to prevent unnecessary re-renders
+   */
+  const animationStyles = useMemo(() => {
+    return getReactAnimationStyle(getBaseSliderOffset());
+  }, [getBaseSliderOffset]);
 
   return (
     <div className="row-content w-full whitespace-nowrap overflow-x-visible slider-hover-trigger-layer">
@@ -819,7 +823,7 @@ const Slider = (props) => {
           <div
             ref={sliderRef}
             className="slider-content row-with-x-columns"
-            style={{ ...getReactAnimationStyle(getBaseSliderOffset()) }}
+            style={animationStyles}
           >
             <LayoutGroupWrapper id={`slider-${sliderNum}`}>
               <AnimatePresenceWrapper>

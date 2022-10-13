@@ -1,6 +1,6 @@
 import {
   createContext,
-  useEffect,
+  useLayoutEffect,
   useState,
   useReducer,
   useCallback,
@@ -174,7 +174,6 @@ const previewModalReducer = (state, action) => {
         payload: { closeWithoutAnimation = false, videoId = undefined },
       } = action;
       let modal;
-      console.log("closeWithoutAnimation: ", closeWithoutAnimation);
       return {
         ...state,
         previewModalStateById: {
@@ -269,7 +268,6 @@ export const InteractionProvider = ({ children }) => {
   const router = useRouter();
 
   // Refs
-  const modalTimeoutIdRef = useRef(0);
   const timerIdRef = useRef(null);
 
   /**
@@ -350,32 +348,13 @@ export const InteractionProvider = ({ children }) => {
     setExitRouteHandler,
   } = usePreviewModalStateReducer();
 
-  console.log("previewModal: ", previewModalStateById);
-
-  /**
-   * Reset `wasOpen` state after 0.33 seconds
-   */
-  useEffect(() => {
-    !modalTimeoutIdRef.current && wasOpen
-      ? (modalTimeoutIdRef.current = setTimeout(() => {
-          setPreviewModalWasOpen(false);
-        }, 400))
-      : setPreviewModalWasOpen(false);
-    // Cleanup
-    return () => {
-      modalTimeoutIdRef.current && clearTimeout(modalTimeoutIdRef.current),
-        (modalTimeoutIdRef.current = 0);
-    };
-  }, [wasOpen]);
-  // console.log("wasOpen: ", wasOpen);
-
   /**
    * Determine if a preview modal is currently open
    * @returns {Boolean}
    */
   const isPreviewModalOpen = (videoId = null) => {
-    let modal,
-      modals = previewModalStateById;
+    const modals = previewModalStateById;
+    let modal;
     return videoId
       ? (modal = modals[videoId]) === null || modal === undefined
         ? undefined
@@ -442,7 +421,7 @@ export const InteractionProvider = ({ children }) => {
   /**
    * Disable hover while scrolling
    */
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (typeof window !== "undefined") {
       window.addEventListener("scroll", onScroll);
       return () => {

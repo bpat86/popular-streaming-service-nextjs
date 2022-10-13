@@ -30,7 +30,7 @@ const TitleCard = ({
   watchURL,
 }) => {
   // Context
-  const { isPreviewModalOpen, previewModalStateById } =
+  const { isPreviewModalOpen, previewModalStateById, wasOpen } =
     useContext(InteractionContext);
   // State
   const [isHovered, setIsHovered] = useState(false);
@@ -69,7 +69,7 @@ const TitleCard = ({
     (e) => {
       onKeyDown && onKeyDown(e, titleCardRef.current);
     },
-    [onKeyDown, titleCardRef]
+    [onKeyDown]
   );
 
   /**
@@ -82,7 +82,7 @@ const TitleCard = ({
       mouseEnter && mouseEnter(e, titleCardRef.current);
       toggleExpandedInfoDensity && toggleExpandedInfoDensity(true);
     },
-    [onMouseEnter, titleCardRef]
+    [onMouseEnter, wasOpen]
   );
 
   /**
@@ -93,7 +93,7 @@ const TitleCard = ({
     (e) => {
       onMouseMove && onMouseMove(e, titleCardRef.current);
     },
-    [onMouseMove, titleCardRef]
+    [onMouseMove]
   );
 
   /**
@@ -105,7 +105,7 @@ const TitleCard = ({
       onMouseLeave && onMouseLeave(e, titleCardRef.current);
       toggleExpandedInfoDensity && toggleExpandedInfoDensity(false);
     },
-    [onMouseLeave, titleCardRef]
+    [onMouseLeave]
   );
 
   /**
@@ -120,7 +120,7 @@ const TitleCard = ({
         e.preventDefault(),
         click(e, titleCardRef.current));
     },
-    [onClick, titleCardRef]
+    [onClick]
   );
 
   /**
@@ -128,7 +128,7 @@ const TitleCard = ({
    */
   const handleFocus = useCallback(() => {
     onFocus && onFocus(boxArtRef.current);
-  }, [onFocus, titleCardRef]);
+  }, [onFocus]);
 
   /**
    * Add event listeners to the title card when component mounts.
@@ -164,7 +164,7 @@ const TitleCard = ({
 
   // ${ rowHasPreviewModalOpen() && isPreviewModalOpen() ? "opacity-50" : "" }
   return (
-    <div ref={titleCardRef} className={`${className}`} id={id}>
+    <div ref={titleCardRef} id={id} className={`${className}`}>
       <WatchLink
         ref={watchLinkAnchorRef}
         className={`slider-refocus`}
