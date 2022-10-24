@@ -7,6 +7,7 @@ import PropTypes from "prop-types";
 import AuthContext from "@/context/AuthContext";
 import ProfileContext from "@/context/ProfileContext";
 import InteractionContext from "@/context/InteractionContext";
+import { PreviewModalProvider } from "@/context/PreviewModalContext";
 
 /**
  * Middlewares
@@ -195,12 +196,14 @@ const BrowseLayoutContainer = (props) => {
       title={pageTitle}
       {...pageProps}
     >
-      <MediaContainer
-        key={activeProfile?.id}
-        ref={layoutWrapperRef}
-        pageAPI={pageAPI}
-        shouldFreeze={shouldFreeze}
-      />
+      <PreviewModalProvider>
+        <MediaContainer
+          key={activeProfile?.id}
+          ref={layoutWrapperRef}
+          pageAPI={pageAPI}
+          shouldFreeze={shouldFreeze}
+        />
+      </PreviewModalProvider>
     </BrowseLayout>
   );
 };

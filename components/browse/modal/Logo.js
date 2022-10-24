@@ -38,7 +38,7 @@ const Logo = ({ logos, title }) => {
           inherit={false}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.15, delay: 1.5, ease: "easeOut" }}
+          transition={{ duration: 0.067, delay: 0.117, ease: "easeOut" }}
           className="title-treatment-logo origin-bottom-left text-3xl font-black leading-8 mt-auto mb-4"
         >
           {title}

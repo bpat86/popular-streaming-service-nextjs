@@ -1,19 +1,17 @@
 import {
   Children,
   cloneElement,
-  useLayoutEffect,
+  useEffect,
   useContext,
   useState,
   useRef,
-  useTransition,
-  useMemo,
 } from "react";
 import { flushSync } from "react-dom";
 // Lib
-import { LayoutGroupWrapper } from "lib/LayoutGroupWrapper";
 import { AnimatePresenceWrapper } from "lib/AnimatePresenceWrapper";
 // Context
 import InteractionContext from "@/context/InteractionContext";
+import PreviewModalContext from "@/context/PreviewModalContext";
 // Components
 import PaginationIndicator from "@/components/browse/slider/PaginationIndicator";
 import Controls from "@/components/browse/slider/Controls";
@@ -49,40 +47,46 @@ const Slider = (props) => {
     toggleExpandedInfoDensity,
   } = props;
   /** Context */
-  const { sliderActions, isPreviewModalOpen } = useContext(InteractionContext);
-  /** Transition */
-  const [isPending, startTransition] = useTransition();
+  const { sliderActions } = useContext(InteractionContext);
+  const { previewModalStateById } = useContext(PreviewModalContext);
   /** State */
   const [isAnimating, setIsAnimating] = useState(false);
-  const [shift, setShift] = useState({
+  /** Refs */
+  const sliderRef = useRef(null);
+  const sliderItemRefs = useRef({});
+  const wrappedSliderItems = useRef(new Set());
+  const sliderIntervalIdRef = useRef(0);
+  const shift = useRef({
     event: undefined,
     xScrollDirection: undefined,
     rowSegment: undefined,
   });
-  /** Refs */
-  const sliderRef = useRef(null);
-  const sliderItemRefs = useRef({});
-  const sliderIntervalId = useRef(0);
-  const wrappedSliderItems = [];
+
+  /**
+   * Set slider shift params
+   * @param {Object} shift.current
+   */
+  const setShift = ({ event, xScrollDirection, rowSegment }) => {
+    shift.current = { event, xScrollDirection, rowSegment };
+  };
 
   /**
    * Determine if a preview modal is currently open
    * @returns {Boolean}
    */
-  // const isPreviewModalOpen = () => {
-  //   const queued = previewModalStateById;
-  //   return Object?.values(queued)?.some((item) => item?.isOpen);
-  // };
+  const isPreviewModalOpen = () => {
+    const modals = previewModalStateById;
+    return Object.values(modals).some(({ isOpen }) => isOpen);
+  };
 
   /**
    * Determine if a preview modal is currently open
    * @returns {Boolean}
    */
   const rowHasPreviewModalOpen = () => {
-    const queued = previewModalStateById;
-    return !!Object.values(queued).some(
-      (queuedModal) =>
-        queuedModal.listContext === listContext && queuedModal.isOpen
+    const modals = previewModalStateById;
+    return Object.values(modals).some(
+      ({ isOpen, listContext }) => listContext === listContext && isOpen
     );
   };
 
@@ -198,8 +202,8 @@ const Slider = (props) => {
   const getSliderItemContents = () => {
     let lowestIndex = lowestVisibleItemIndex - getLowestIndex(),
       totalItemCount = getTotalItemCount(),
-      sliderContentIndex = [],
-      viewportIndex = [],
+      sliderContentIndex = new Array(),
+      viewportIndex = new Array(),
       itemRange = 0;
 
     /**
@@ -243,7 +247,9 @@ const Slider = (props) => {
           "_appended"
         )),
         // Combine arrays
-        (viewportIndex = viewportIndex.concat(sliderContentIndex)));
+        (viewportIndex = Array.from(
+          new Set(viewportIndex.concat(sliderContentIndex))
+        )));
 
       /**
        * The state of the slider after it has shifted at least once.
@@ -265,7 +271,9 @@ const Slider = (props) => {
           "_prepended"
         )),
         // Combine arrays
-        (viewportIndex = sliderContentIndex.concat(viewportIndex)));
+        (viewportIndex = Array.from(
+          new Set(sliderContentIndex.concat(viewportIndex))
+        )));
     }
 
     /**
@@ -300,7 +308,7 @@ const Slider = (props) => {
       itemPositionIdx = 0;
 
     return (
-      (wrappedSliderItems = []),
+      (wrappedSliderItems.current = new Set()),
       Children.map(sliderItemChildren, (sliderItemChild, idx) => {
         // Set item position based on its viewport positioning
         const uid = Number(`${rowNum}${idx}${sliderItemChild.props.model?.id}`);
@@ -327,7 +335,7 @@ const Slider = (props) => {
 
         // Push wrapped item into slider wrapped item array
         itemPosition && ((itemPositionIdx += 1), (itemInViewport = true)),
-          wrappedSliderItems.push({
+          wrappedSliderItems.current.add({
             uid: itemUid,
             inViewport: itemInViewport,
           });
@@ -446,7 +454,9 @@ const Slider = (props) => {
    * @returns {Array}
    */
   const getSliderItemsInViewport = () => {
-    return getSliderItems(wrappedSliderItems.filter((item) => item.inViewport));
+    return getSliderItems(
+      [...wrappedSliderItems.current].filter(({ inViewport }) => inViewport)
+    );
   };
 
   /**
@@ -454,7 +464,7 @@ const Slider = (props) => {
    * @returns {Object}
    */
   const getAllSliderItems = () => {
-    return getSliderItems(wrappedSliderItems);
+    return getSliderItems([...wrappedSliderItems.current]);
   };
 
   /**
@@ -462,20 +472,15 @@ const Slider = (props) => {
    * @param {Number} visibleSliderItemsIndex
    * @returns
    */
-  const getSliderItems = (visibleSliderItemsIndex) => {
-    let visibleSliderItems,
-      sliderItemIndex = [];
-    for (
-      let idx = 0;
-      (visibleSliderItems = visibleSliderItemsIndex[idx]);
-      idx++
-    ) {
-      sliderItemRefs.current[visibleSliderItems.uid] &&
-        sliderItemIndex.push(sliderItemRefs.current[visibleSliderItems.uid]);
-    }
-    // console.log("sliderItemIndex: ", sliderItemIndex);
+  const getSliderItems = (visibleItems) => {
+    const visibleItemsArray = new Array();
+    visibleItems.forEach(({ uid }) => {
+      sliderItemRefs.current[uid] &&
+        visibleItemsArray.push(sliderItemRefs.current[uid]);
+    });
+    // console.log("visibleItemsArray: ", visibleItemsArray);
     // console.log("sliderItemRefs: ", sliderItemRefs);
-    return sliderItemIndex;
+    return visibleItemsArray;
   };
 
   /**
@@ -552,7 +557,6 @@ const Slider = (props) => {
       lowestVisibleItemIndex === 0 && (rowItems = totalItemCount - itemsInRow);
       let getNewOffset = getNewSliderOffset(amountToOffset),
         newOffsetAmount = getNewOffset + getBaseSliderOffset();
-
       e && "wheel" === e.type
         ? shiftSlider(
             rowItems,
@@ -715,11 +719,12 @@ const Slider = (props) => {
         shift.xScrollDirection === sliderActions.MOVE_DIRECTION_NEXT
           ? 1
           : visibleItems.length - 2);
-    // console.log("itemToFocus: ", visibleItems[itemIdx]);
+    console.log("itemToFocus: ", visibleItems[itemIdx]);
     (itemToFocus = visibleItems[itemIdx]) &&
-      (sliderIntervalId.current = window.setInterval(() => {
-        window.clearInterval(sliderIntervalId.current),
-          (sliderIntervalId.current = 0),
+      (sliderIntervalIdRef.current = setInterval(() => {
+        sliderIntervalIdRef.current &&
+          clearInterval(sliderIntervalIdRef.current),
+          (sliderIntervalIdRef.current = 0),
           itemToFocus.querySelector(".slider-refocus").focus();
       }, 250));
   };
@@ -750,7 +755,7 @@ const Slider = (props) => {
   /**
    * Set state when slider mounts
    */
-  useLayoutEffect(() => {
+  useEffect(() => {
     const totalItemCount = getTotalItemCount();
     let initialLowestIdx = initialLowestVisibleIndex || 0;
     !enableLooping &&
@@ -769,16 +774,16 @@ const Slider = (props) => {
   /**
    * Refocus certain visible slider items after the slider shifts
    */
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (hasMovedOnce) {
       refocusAfterShift();
     }
-  }, [hasMovedOnce, shift.event]);
+  }, [hasMovedOnce, shift.current]);
 
   /**
    * Update the lowest visible index if slider is on the last page
    */
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (totalItems && isLastPage()) {
       // setLowestVisibleItemIndex(Math.max(0, totalItems));
       setLowestVisibleItemIndex(Math.min(0, totalItems));
@@ -789,18 +794,11 @@ const Slider = (props) => {
   /**
    * Update itemsInRow amount if values change
    */
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (itemsInRow) {
       resetSliderPosition();
     }
   }, [itemsInRow]);
-
-  /**
-   * Memoize the slider's style attribute to prevent unnecessary re-renders
-   */
-  const animationStyles = useMemo(() => {
-    return getReactAnimationStyle(getBaseSliderOffset());
-  }, [getBaseSliderOffset]);
 
   return (
     <div className="row-content w-full whitespace-nowrap overflow-x-visible slider-hover-trigger-layer">
@@ -823,13 +821,11 @@ const Slider = (props) => {
           <div
             ref={sliderRef}
             className="slider-content row-with-x-columns"
-            style={animationStyles}
+            style={getReactAnimationStyle(getBaseSliderOffset())}
           >
-            <LayoutGroupWrapper id={`slider-${sliderNum}`}>
-              <AnimatePresenceWrapper>
-                {getSliderItemContents()}
-              </AnimatePresenceWrapper>
-            </LayoutGroupWrapper>
+            <AnimatePresenceWrapper>
+              {getSliderItemContents()}
+            </AnimatePresenceWrapper>
           </div>
         </div>
         {/* Next button */}

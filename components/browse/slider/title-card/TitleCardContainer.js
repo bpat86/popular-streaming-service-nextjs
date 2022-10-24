@@ -1,7 +1,8 @@
-import { forwardRef, useContext, useRef, useTransition } from "react";
+import { forwardRef, useContext, useRef } from "react";
 import debounce from "lodash.debounce";
 // Context
 import InteractionContext from "@/context/InteractionContext";
+import PreviewModalContext from "@/context/PreviewModalContext";
 // import usePreviewModal from "@/context/PreviewModalContext";
 // Components
 import TitleCard from "./TitleCard";
@@ -27,7 +28,18 @@ const TitleCardContainer = forwardRef(
   ) => {
     // Context
     const {
-      isPreviewModalOpen,
+      // isPreviewModalOpen,
+      // previewModalStateById,
+      // setPreviewModalOpen,
+      // setPreviewModalClose,
+      // setPreviewModalWasOpen,
+      // updatePreviewModalState,
+      // modalStateActions,
+      // wasOpen,
+    } = useContext(InteractionContext);
+    const {
+      // isPreviewModalOpen,
+      usePreviewModalState,
       previewModalStateById,
       setPreviewModalOpen,
       setPreviewModalClose,
@@ -35,17 +47,7 @@ const TitleCardContainer = forwardRef(
       updatePreviewModalState,
       modalStateActions,
       wasOpen,
-    } = useContext(InteractionContext);
-    // const {
-    //   isPreviewModalOpen,
-    //   previewModalStateById,
-    //   setPreviewModalOpen,
-    //   setPreviewModalClose,
-    //   updatePreviewModalState,
-    //   wasOpen,
-    // } = usePreviewModal();
-    // Transition
-    const [isPending, startTransition] = useTransition();
+    } = useContext(PreviewModalContext);
     // Refs
     const scopeRef = useRef({
       hasFetchedModalData: false,
@@ -53,6 +55,15 @@ const TitleCardContainer = forwardRef(
       isModalOpen: false,
     });
     const hoverTimeoutIdRef = useRef(0);
+
+    /**
+     * Determine if a preview modal is currently open
+     * @returns {Boolean}
+     */
+    const isPreviewModalOpen = () => {
+      const modals = previewModalStateById;
+      return Object.values(modals).some(({ isOpen }) => isOpen);
+    };
 
     /**
      * Update modal state when the browser window resizes.
@@ -87,10 +98,10 @@ const TitleCardContainer = forwardRef(
         titleCardRef.contains(e.currentTarget) &&
         !isModalOpen;
       // Only visible titles can display a preview modal
-      if (!itemTabbable || isPending) return;
+      if (!itemTabbable) return;
       // Process the mouse enter event
       if (mouseEnter) {
-        startTransition(() => handleEnter(titleCardRef));
+        handleEnter(titleCardRef);
       }
     };
 
@@ -105,7 +116,7 @@ const TitleCardContainer = forwardRef(
       // If a titleCard hasn't been hovered over yet, fetch the modal data
       if (((scopeRef.current.isHovering = true), !hasFetchedModalData)) {
         scopeRef.current.hasFetchedModalData = true;
-        return void queuePreviewModalOpen(titleCardRef);
+        return queuePreviewModalOpen(titleCardRef);
       }
       // If a titleCard has been hovered over, open the modal immediately
       queuePreviewModalOpen(titleCardRef);
@@ -136,14 +147,15 @@ const TitleCardContainer = forwardRef(
      */
     const handleMouseMove = (e, titleCardRef) => {
       const { isHovering } = scopeRef.current;
-      // console.log(
-      //   `titleCardContainer handleMouseMove function: ${
-      //     model?.videoModel?.title
-      //   } isHovering is ${isHovering}, wasOpen is ${wasOpen}, and isPreviewModalOpen is ${isPreviewModalOpen()}`
-      // );
-      // Process the mouse move event
       isHovering ||
-        isPending ||
+        isPreviewModalOpen() ||
+        // console.log(
+        //   `titleCardContainer handleMouseMove function: ${
+        //     model?.videoModel?.title
+        //   } isHovering is ${isHovering}, wasOpen is ${wasOpen}, and isPreviewModalOpen is ${isPreviewModalOpen()}`
+        // );
+        // Process the mouse move event
+        isHovering ||
         isPreviewModalOpen() ||
         handleMouseEnter(e, titleCardRef);
     };
@@ -190,9 +202,9 @@ const TitleCardContainer = forwardRef(
      * @returns
      */
     const closePreviewModals = () => {
-      Object.values(previewModalStateById)
-        .filter(({ isOpen }) => isOpen)
-        .map(({ videoId }) => videoId)
+      return Object.values(previewModalStateById)
+        .filter((modal) => modal.isOpen)
+        .map((modal) => modal.videoId)
         .forEach((videoId) => {
           setPreviewModalClose({
             closeWithoutAnimation: true,
@@ -200,6 +212,8 @@ const TitleCardContainer = forwardRef(
           });
         });
     };
+
+    console.log(`rendering titleCardContainer ${model?.videoModel?.title}`);
 
     /**
      * Open the preview modal.
@@ -216,9 +230,9 @@ const TitleCardContainer = forwardRef(
           handleWindowResize(titleCardNode);
         });
       }
-      // Close all other preview modals
+      // Close all previously open preview modals
       if (isPreviewModalOpen()) {
-        return closePreviewModals(), void queuePreviewModalOpen(titleCardNode);
+        return closePreviewModals(), queuePreviewModalOpen(titleCardNode);
       }
       // Open this titleCard as a preview modal
       !openDetailModal && (scopeRef.current.isModalOpen = true),
@@ -248,8 +262,7 @@ const TitleCardContainer = forwardRef(
           },
           isMyListRow: model.videoModel.isMyListRow,
           animationContext: undefined, // galleryModal
-        }),
-        (scopeRef.current.isModalOpen = true);
+        });
     };
 
     /**

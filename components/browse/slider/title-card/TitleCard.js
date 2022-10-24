@@ -1,12 +1,4 @@
-import {
-  useContext,
-  useCallback,
-  useLayoutEffect,
-  useState,
-  useRef,
-} from "react";
-// Context
-import InteractionContext from "@/context/InteractionContext";
+import { useCallback, useEffect, useRef } from "react";
 // Components
 import WatchLink from "./WatchLink";
 import BoxArt from "./BoxArt";
@@ -29,11 +21,6 @@ const TitleCard = ({
   toggleExpandedInfoDensity,
   watchURL,
 }) => {
-  // Context
-  const { isPreviewModalOpen, previewModalStateById, wasOpen } =
-    useContext(InteractionContext);
-  // State
-  const [isHovered, setIsHovered] = useState(false);
   // Refs
   const boxArtRef = useRef();
   const titleCardRef = useRef();
@@ -76,20 +63,20 @@ const TitleCard = ({
    * Handle the onMouseEnter event for the title card.
    * @param {Object} e
    */
-  const handleMouseEnter = useCallback(
+  const handleOnMouseEnter = useCallback(
     (e) => {
       const mouseEnter = onMouseEnter;
       mouseEnter && mouseEnter(e, titleCardRef.current);
       toggleExpandedInfoDensity && toggleExpandedInfoDensity(true);
     },
-    [onMouseEnter, wasOpen]
+    [onMouseEnter]
   );
 
   /**
    * Handle the onMouseMove event for the title card.
    * @param {Object} e
    */
-  const handleMouseMove = useCallback(
+  const handleOnMouseMove = useCallback(
     (e) => {
       onMouseMove && onMouseMove(e, titleCardRef.current);
     },
@@ -100,7 +87,7 @@ const TitleCard = ({
    * Handle the onMouseLeave event for the title card.
    * @param {Object} e
    */
-  const handleMouseLeave = useCallback(
+  const handleOnMouseLeave = useCallback(
     (e) => {
       onMouseLeave && onMouseLeave(e, titleCardRef.current);
       toggleExpandedInfoDensity && toggleExpandedInfoDensity(false);
@@ -126,43 +113,42 @@ const TitleCard = ({
   /**
    * Handle the onFocus event for the title card.
    */
-  const handleFocus = useCallback(() => {
+  const handleOnFocus = useCallback(() => {
     onFocus && onFocus(boxArtRef.current);
   }, [onFocus]);
 
   /**
    * Add event listeners to the title card when component mounts.
    */
-  useLayoutEffect(() => {
+  useEffect(() => {
     const titleCard = titleCardRef.current;
     const watchLinkAnchor = watchLinkAnchorRef.current;
     const boxArt = boxArtRef.current;
     // Add listeners
     titleCardRef.current.addEventListener("keydown", handleOnKeyDown);
-    titleCardRef.current.addEventListener("mouseenter", handleMouseEnter);
-    titleCardRef.current.addEventListener("mouseleave", handleMouseLeave);
-    titleCardRef.current.addEventListener("mousemove", handleMouseMove);
+    titleCardRef.current.addEventListener("mouseenter", handleOnMouseEnter);
+    titleCardRef.current.addEventListener("mouseleave", handleOnMouseLeave);
+    titleCardRef.current.addEventListener("mousemove", handleOnMouseMove);
     watchLinkAnchorRef.current.addEventListener("click", handleAnchorClick);
-    boxArtRef.current.addEventListener("focus", handleFocus);
+    boxArtRef.current.addEventListener("focus", handleOnFocus);
     // Remove listeners
     return () => {
       titleCard.removeEventListener("keydown", handleOnKeyDown);
-      titleCard.removeEventListener("mouseenter", handleMouseEnter);
-      titleCard.removeEventListener("mouseleave", handleMouseLeave);
-      titleCard.removeEventListener("mousemove", handleMouseMove);
+      titleCard.removeEventListener("mouseenter", handleOnMouseEnter);
+      titleCard.removeEventListener("mouseleave", handleOnMouseLeave);
+      titleCard.removeEventListener("mousemove", handleOnMouseMove);
       watchLinkAnchor.removeEventListener("click", handleAnchorClick);
-      boxArt.removeEventListener("focus", handleFocus);
+      boxArt.removeEventListener("focus", handleOnFocus);
     };
   }, [
     handleOnKeyDown,
-    handleMouseEnter,
-    handleMouseLeave,
-    handleMouseMove,
+    handleOnMouseEnter,
+    handleOnMouseLeave,
+    handleOnMouseMove,
     handleAnchorClick,
-    handleFocus,
+    handleOnFocus,
   ]);
 
-  // ${ rowHasPreviewModalOpen() && isPreviewModalOpen() ? "opacity-50" : "" }
   return (
     <div ref={titleCardRef} id={id} className={`${className}`}>
       <WatchLink

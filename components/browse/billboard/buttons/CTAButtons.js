@@ -1,12 +1,12 @@
 import { useContext } from "react";
 import Link from "next/link";
-import InteractionContext from "@/context/InteractionContext";
+import PreviewModalContext from "@/context/PreviewModalContext";
 import { InformationCircleIcon } from "@heroicons/react/outline";
 
 const CTAButtons = (props) => {
   const { videoPlayback, handleWatchNow, model } = props;
   const { modalStateActions, setPreviewModalOpen } =
-    useContext(InteractionContext);
+    useContext(PreviewModalContext);
 
   /**
    * Open default preview modal.

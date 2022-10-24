@@ -1,33 +1,71 @@
 import {
   cloneElement,
   forwardRef,
-  useLayoutEffect,
+  useEffect,
   useContext,
   useMemo,
   useCallback,
 } from "react";
 // Lib
 import { AnimatePresenceWrapper } from "lib/AnimatePresenceWrapper";
-import { MotionDivWrapper } from "lib/MotionDivWrapper";
 // Components
 import PreviewModal from "./PreviewModal";
 import ModalOverlay from "./ModalOverlay";
 // Context
 import InteractionContext from "@/context/InteractionContext";
+import PreviewModalContext from "@/context/PreviewModalContext";
 
 const PreviewModalContainer = forwardRef((props, layoutWrapperRef) => {
   const { children, mutateSliderData } = props;
   /** Context */
   const {
+    // modalStateActions,
+    // previewModalStateById,
+    // isPreviewModalOpen,
+    // setPreviewModalOpen,
+    // setPreviewModalClose,
+    // updatePreviewModalState,
+    // getVideoId,
+    router,
+  } = useContext(InteractionContext);
+  const {
     modalStateActions,
     previewModalStateById,
-    isPreviewModalOpen,
+    // isPreviewModalOpen,
     setPreviewModalOpen,
     setPreviewModalClose,
     updatePreviewModalState,
-    getVideoId,
-    router,
-  } = useContext(InteractionContext);
+    wasOpen,
+    // getVideoId,
+  } = useContext(PreviewModalContext);
+
+  /**
+   * Determine if a preview modal is currently open
+   * @returns {Boolean}
+   */
+  const isPreviewModalOpen = () => {
+    const queued = previewModalStateById;
+    return Object?.values(queued)?.some((item) => item?.isOpen);
+  };
+
+  /**
+   * Returns the state of the currently open preview modal
+   * @returns {Object}
+   */
+  const openPreviewModalState = () => {
+    return (
+      Object.values(previewModalStateById).find((item) => item?.isOpen) || {}
+    );
+  };
+
+  /**
+   * Get videoId from open modal state
+   * @returns {Number}
+   */
+  const getVideoId = () => {
+    const modal = openPreviewModalState();
+    return modal && modal.videoId;
+  };
 
   /**
    *
@@ -173,28 +211,16 @@ const PreviewModalContainer = forwardRef((props, layoutWrapperRef) => {
   /**
    * Update preview modal state
    */
-  useLayoutEffect(() => {
+  useEffect(() => {
     handleUpdatePreviewModalState();
   }, []);
-
-  /**
-   * Determine if mini preview modal is open
-   */
-  const isMiniModal = () => {
-    return Object.values(previewModalStateById).some((modal) => {
-      return (
-        !modal.closeWithoutAnimation &&
-        modal.isOpen &&
-        modal.modalState === modalStateActions.MINI_MODAL
-      );
-    });
-  };
 
   /**
    * Render mini preview modal
    */
   const renderMiniModal = () => {
-    return Object.values(previewModalStateById)
+    const modals = previewModalStateById;
+    return Object.values(modals)
       .filter(({ closeWithoutAnimation, isOpen, modalState }) => {
         return (
           !closeWithoutAnimation &&
@@ -209,7 +235,8 @@ const PreviewModalContainer = forwardRef((props, layoutWrapperRef) => {
    * Render detail preview modal
    */
   const renderDetailModal = () => {
-    const modal = Object.values(previewModalStateById).find(
+    const modals = previewModalStateById;
+    const modal = Object.values(modals).find(
       ({ closeWithoutAnimation, isOpen, modalState }) => {
         return (
           !closeWithoutAnimation &&
@@ -265,13 +292,7 @@ const PreviewModalContainer = forwardRef((props, layoutWrapperRef) => {
    * @returns {JSX.Element}
    */
   return (
-    <AnimatePresenceWrapper
-      custom={{
-        previewModalStateById,
-        undefined: {},
-      }}
-      mode={isMiniModal() ? "wait" : "sync"}
-    >
+    <AnimatePresenceWrapper custom={previewModalStateById} mode={"wait"}>
       {[
         // Mini modal
         renderMiniModal(),

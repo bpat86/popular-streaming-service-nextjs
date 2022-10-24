@@ -1,14 +1,20 @@
 import {
   createContext,
-  useContext,
-  useReducer,
   useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
   useRef,
+  useSyncExternalStore,
 } from "react";
-// import previewModalReducer from "../reducers/previewModalReducer";
+import debounce from "lodash.debounce";
 
-const PreviewModalContext = createContext();
-
+const modalStateActions = {
+  MINI_MODAL: "MINI_MODAL",
+  DETAIL_MODAL: "DETAIL_MODAL",
+  DEFAULT_MODAL: "DEFAULT_MODAL",
+};
 const previewModalActions = {
   SET_PREVIEW_MODAL_WILL_OPEN: "SET_PREVIEW_MODAL_WILL_OPEN",
   SET_PREVIEW_MODAL_OPEN: "SET_PREVIEW_MODAL_OPEN",
@@ -18,6 +24,30 @@ const previewModalActions = {
   UPDATE_PREVIEW_MODAL_STATE: "UPDATE_PREVIEW_MODAL_STATE",
   SET_OPEN_NEW_MODAL: "SET_OPEN_NEW_MODAL",
   SET_EXIT_ROUTE_HANDLER: "SET_EXIT_ROUTE_HANDLER",
+};
+const animationStateActions = {
+  SET_MINI_MODAL: "SET_MINI_MODAL",
+  SET_DEFAULT_MODAL: "SET_DEFAULT_MODAL",
+  RESET_MINI_MODAL: "RESET_MINI_MODAL",
+  MOUNT_MINI_MODAL: "MOUNT_MINI_MODAL",
+  OPEN_MINI_MODAL: "OPEN_MINI_MODAL",
+  CLOSE_MINI_MODAL: "CLOSE_MINI_MODAL",
+  MOUNT_DETAIL_MODAL: "MOUNT_DETAIL_MODAL",
+  OPEN_DETAIL_MODAL: "OPEN_DETAIL_MODAL",
+  CLOSE_DETAIL_MODAL: "CLOSE_DETAIL_MODAL",
+};
+const buttonActions = {
+  ADD_TO_MEDIA_LIST: "ADD_TO_MEDIA_LIST",
+  REMOVE_FROM_MEDIA_LIST: "REMOVE_FROM_MEDIA_LIST",
+  ADD_TO_LIKED_MEDIA: "ADD_TO_LIKED_MEDIA",
+  REMOVE_FROM_LIKED_MEDIA: "REMOVE_FROM_LIKED_MEDIA",
+  ADD_TO_DISLIKED_MEDIA: "ADD_TO_DISLIKED_MEDIA",
+  REMOVE_FROM_DISLIKED_MEDIA: "REMOVE_FROM_DISLIKED_MEDIA",
+};
+const sliderActions = {
+  MOVE_DIRECTION_NEXT: "MOVE_DIRECTION_NEXT",
+  MOVE_DIRECTION_PREV: "MOVE_DIRECTION_PREV",
+  SLIDER_SLIDING: "SLIDER_SLIDING",
 };
 
 // Default values for the preview modal.
@@ -43,7 +73,7 @@ const initialPreviewModalState = {
 // Default UI values in relation to the preview modal state.
 const initialState = {
   galleryModalOpen: false,
-  previewModalStateById: {}, // undefined: {}
+  previewModalStateById: { undefined: {} },
   scrollPosition: undefined,
   titleCardId: undefined,
   titleCardRect: undefined,
@@ -93,130 +123,169 @@ const actions = {
  * @param {Object} action
  * @returns
  */
-const previewModalReducer = (state, action) => {
-  const { type, payload } = action;
-
-  switch (type) {
+const modalReducer = (state, action) => {
+  switch (action.type) {
     case previewModalActions.SET_PREVIEW_MODAL_WILL_OPEN: {
-      return Object.assign(Object.assign({}, state), {
-        showAwareness: false,
-        showReminder: false,
-      });
+      const {
+        payload: { titleCardId, willOpen },
+      } = action;
+      return {
+        ...state,
+        willOpen,
+        titleCardId,
+      };
     }
     case previewModalActions.SET_PREVIEW_MODAL_OPEN: {
-      let modalState,
-        videoId = payload.videoId,
-        queuedModal = state.previewModalStateById[videoId] || {};
-      return Object.assign(Object.assign({}, state), {
-        previewModalStateById: Object.assign(
-          Object.assign({}, state.previewModalStateById),
-          {
-            [videoId]: Object.assign(
-              Object.assign(
-                Object.assign({}, initialPreviewModalState),
-                {
-                  isOpen: true,
-                },
-                payload
-              ),
-              {
-                modalState:
-                  null !== (modalState = payload.modalState) &&
-                  undefined !== modalState
-                    ? modalState
-                    : modalStateActions.MINI_MODAL,
-                billboardVideoMerchId: queuedModal.billboardVideoMerchId,
-              }
-            ),
-          }
-        ),
-      });
+      const { previewModalStateById } = state;
+      const {
+        payload,
+        payload: { modalState, videoId = undefined },
+      } = action;
+      const modal = previewModalStateById[videoId] || {};
+      return {
+        ...state,
+        previewModalStateById: {
+          ...previewModalStateById,
+          [videoId]: {
+            ...initialPreviewModalState,
+            ...payload,
+            isOpen: true,
+            modalState:
+              modalState !== null && modalState !== undefined
+                ? modalState
+                : modalStateActions.MINI_MODAL,
+            billboardVideoMerchId: modal?.billboardVideoMerchId,
+          },
+        },
+      };
     }
     case previewModalActions.SET_PREVIEW_MODAL_WAS_OPEN: {
-      const wasOpen = payload;
-      return Object.assign(Object.assign({}, state), {
-        wasOpen,
-      });
+      const { payload } = action;
+      return {
+        ...state,
+        wasOpen: payload,
+      };
     }
     case previewModalActions.SET_PREVIEW_MODAL_CLOSE: {
-      let queuedModal,
-        previewModalPayload = payload || {},
-        videoId = previewModalPayload.videoId,
-        closeWithoutAnimation =
-          previewModalPayload.closeWithoutAnimation || false;
-      return Object.assign(Object.assign({}, state), {
-        previewModalStateById: Object.assign(
-          Object.assign({}, state.previewModalStateById),
-          {
-            [videoId]: Object.assign(
-              Object.assign({}, initialPreviewModalState),
-              {
-                closeWithoutAnimation,
-                isMyListRow:
-                  (queuedModal = state.previewModalStateById[videoId]) ===
-                    null || undefined === queuedModal
-                    ? undefined
-                    : queuedModal.isMyListRow,
-              }
-            ),
-          }
-        ),
-      });
+      const { previewModalStateById } = state;
+      const {
+        payload: { closeWithoutAnimation = false, videoId = undefined },
+      } = action;
+      let modal;
+      return {
+        ...state,
+        previewModalStateById: {
+          ...previewModalStateById,
+          [videoId]: {
+            ...initialPreviewModalState,
+            closeWithoutAnimation,
+            isOpen: false,
+            isMyListRow: (modal =
+              previewModalStateById[videoId] === null || modal === undefined
+                ? undefined
+                : modal.isMyListRow),
+          },
+        },
+      };
     }
     case previewModalActions.UPDATE_PREVIEW_MODAL_STATE: {
-      let previewModalPayload = payload,
-        individualState = previewModalPayload.individualState,
-        individualModal = undefined === individualState ? {} : individualState,
-        previewModalStateById = state.previewModalStateById,
-        videoId = individualModal.videoId;
-      return Object.assign(
-        Object.assign({}, state),
-        {
-          previewModalStateById: Object.assign(
-            Object.assign({}, previewModalStateById),
-            {
-              [videoId]: Object.assign(
-                Object.assign({}, previewModalStateById[videoId]),
-                individualModal
-              ),
-            }
-          ),
+      const { previewModalStateById } = state;
+      const {
+        payload,
+        payload: { individualState, individualState: { videoId } = {} },
+      } = action;
+      const modal = individualState === undefined ? {} : individualState;
+      return {
+        ...state,
+        previewModalStateById: {
+          ...previewModalStateById,
+          [videoId]: {
+            ...previewModalStateById[videoId],
+            ...modal,
+          },
         },
-        previewModalPayload
-      );
+        ...payload,
+      };
     }
     case previewModalActions.SET_OPEN_NEW_MODAL: {
-      const openedModalAtHistoryIndex = payload.historyIndex;
-      return Object.assign(Object.assign({}, state), {
-        openedModalAtHistoryIndex,
-      });
+      const {
+        payload: { historyIndex },
+      } = action;
+      return {
+        ...state,
+        openedModalAtHistoryIndex: historyIndex,
+      };
     }
     case previewModalActions.SET_EXIT_ROUTE_HANDLER: {
-      const exitRouteHandlerUrl = payload.exitRouteHandlerUrl;
-      return Object.assign(Object.assign({}, state), {
+      const {
+        payload: { exitRouteHandlerUrl },
+      } = action;
+      return {
+        ...state,
         exitRouteHandlerUrl,
-      });
+      };
     }
     default: {
-      throw new Error(`No case for this ${type}`);
+      return state;
     }
   }
 };
 
-export const PreviewModalProvider = ({ children }) => {
-  const modalTimeoutIdRef = useRef(null);
+const PreviewModalContext = createContext();
 
-  /**
-   * Preview modal state reducer wrapper
-   * @returns {Object}
-   */
-  const previewModalReducer = () => {
-    return reducerWithActions({
-      actions,
-      initialState,
-      previewModalReducer,
-    });
+/**
+ * Pub / sub for the preview modal state.
+ * @returns
+ */
+function useStoreData() {
+  // Initial values for the store.
+  const store = useRef(initialState);
+  // Initial subscribers reference.
+  const subscribers = useRef(new Set());
+  // Get the current store state.
+  const get = useCallback(() => store.current, []);
+  // Update the store state.
+  const update = useCallback((store, value) => modalReducer(store, value), []);
+  // Set the store state.
+  const set = useCallback((value) => {
+    store.current = Object.assign(
+      {},
+      store.current,
+      update(store.current, value)
+    );
+    subscribers.current.forEach((callback) => callback());
+  }, []);
+  // Subscribe to the store.
+  const subscribe = useCallback((callback) => {
+    subscribers.current.add(callback);
+    return () => subscribers.current.delete(callback);
+  }, []);
+  // Return the store state, set, and subscribe.
+  return {
+    get,
+    set,
+    subscribe,
   };
+}
+
+/**
+ * Access the store data.
+ * @returns
+ */
+function useStore() {
+  const { get, set, subscribe } = useStoreData();
+  const state = useSyncExternalStore(subscribe, get);
+  return [state, set];
+}
+
+/**
+ * Preview modal provider.
+ * @param {Object} children
+ * @returns
+ */
+export const PreviewModalProvider = ({ children }) => {
+  // Refs
+  const timerIdRef = useRef(null);
 
   /**
    * Custom hook: useReducer wrapper with actions
@@ -225,122 +294,66 @@ export const PreviewModalProvider = ({ children }) => {
    * @param {Object} reducer
    * @returns {Object}
    */
-  const reducerWithActions = ({
-    actions,
-    initialState,
-    previewModalReducer,
-  }) => {
-    const [state, dispatch] = useReducer(previewModalReducer, initialState);
-    const wrappedActions = Object.keys(actions).reduce(
-      (prevState, actionKey) => ({
-        ...prevState,
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        [actionKey]: useCallback(
-          (...args) => dispatch(actions[actionKey](...args)),
-          [actionKey]
-        ),
-      }),
-      {}
+  const usePreviewModalState = () => {
+    // Get the store state and set the store state with useReducer.
+    // const [state, dispatch] = useReducer(modalReducer, initialState);
+    // Get the store state and set the store state.
+    const [state, dispatch] = useStore();
+    // Make action creators that dispatch actions
+    const makeActionCreators = useMemo(
+      () =>
+        Object.keys(actions).reduce((previousValue, actionKey) => {
+          // eslint-disable-next-line react-hooks/rules-of-hooks
+          previousValue[actionKey] = (...args) => {
+            return dispatch(actions[actionKey](...args));
+          };
+          return previousValue;
+        }, {}),
+      []
     );
-    return {
-      ...initialState,
-      ...state,
-      ...wrappedActions,
-    };
+    // Return state and action creators
+    return Object.assign(state, makeActionCreators);
   };
 
+  /**
+   * Turn pointer events off while scrolling
+   */
   /**
    * Preview modal reducer state
    */
-  const {
-    wasOpen,
-    scrollPosition,
-    previewModalStateById,
-    getPreviewModalState,
-    setPreviewModalOpen,
-    previewModalWillOpen,
-    updatePreviewModalState,
-    setPreviewModalClose,
-    setPreviewModalWasOpen,
-    setExitRouteHandler,
-  } = previewModalReducer();
+  const { previewModalStateById } = usePreviewModalState();
+  const onScroll = debounce(
+    () => {
+      const modals = previewModalStateById;
+      const style = document.body.style;
+      timerIdRef.current && clearTimeout(timerIdRef.current),
+        (timerIdRef.current = null);
+      Object.values(modals).some((modal) => modal.isOpen) ||
+        (style.pointerEvents !== "none" && (style.pointerEvents = "none")),
+        (timerIdRef.current = setTimeout(() => {
+          style.pointerEvents = "";
+        }, 100));
+    },
+    100,
+    { maxWait: 100, leading: true, trailing: true }
+  );
 
   /**
-   * Wrapper function for setting preview modal state `isOpen` to true
-   * @param  {...any} args
+   * Disable hover while scrolling
    */
-  const handleSetPreviewModalOpen = (...args) => {
-    modalTimeoutIdRef.current && clearTimeout(modalTimeoutIdRef.current),
-      (modalTimeoutIdRef.current = null),
-      setPreviewModalOpen(...args);
-  };
-
-  /**
-   * Wrapper function for setting preview modal state `isOpen` to false
-   * @param  {...any} args
-   */
-  const handleSetPreviewModalClose = (...args) => {
-    setPreviewModalClose(...args);
-    modalTimeoutIdRef.current = setTimeout(() => {
-      setPreviewModalWasOpen(false),
-        clearTimeout(modalTimeoutIdRef.current),
-        (modalTimeoutIdRef.current = null);
-    }, 333);
-  };
-
-  /**
-   * Determine if a preview modal is currently open
-   * @returns {Boolean}
-   */
-  const isPreviewModalOpen = (videoId = null) => {
-    let queuedVideoId,
-      queued = previewModalStateById;
-    return videoId
-      ? (queuedVideoId = queued[videoId]) === null ||
-        queuedVideoId === undefined
-        ? undefined
-        : queuedVideoId.isOpen
-      : Object.values(queued)?.some((item) => item.isOpen);
-  };
-
-  /**
-   * Returns the state of the currently open preview modal
-   * @returns {Object}
-   */
-  const openPreviewModalState = () => {
-    const queued = previewModalStateById;
-    return Object.values(queued)?.find((item) => item?.isOpen) || {};
-  };
-
-  /**
-   * Returns true if the preview modal's state is `DETAIL_MODAL` or `DEFAULT_MODAL
-   * @returns {Boolean}
-   */
-  const isDetailModal = () => {
-    const queued = previewModalStateById;
-    return Object.values(queued)?.some(
-      (item) => !!(item?.modalState === modalStateActions.DETAIL_MODAL)
-    );
-  };
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.addEventListener("scroll", onScroll);
+      return () => {
+        window.removeEventListener("scroll", onScroll);
+      };
+    }
+  }, [onScroll]);
 
   const value = {
-    wasOpen,
-    scrollPosition,
-    previewModalStateById,
-    getPreviewModalState,
-    setPreviewModalOpen,
-    previewModalWillOpen,
-    updatePreviewModalState,
-    setPreviewModalClose,
-    setPreviewModalWasOpen,
-    setExitRouteHandler,
-    handleSetPreviewModalOpen,
-    handleSetPreviewModalClose,
-    isPreviewModalOpen,
-    openPreviewModalState,
-    isDetailModal,
-    // Refs
-    modalTimeoutIdRef,
+    modalStateActions,
+    animationStateActions,
+    ...usePreviewModalState(),
   };
   return (
     <PreviewModalContext.Provider value={value}>
@@ -349,18 +362,4 @@ export const PreviewModalProvider = ({ children }) => {
   );
 };
 
-/**
- * Custom hook for accessing preview modal context
- * @returns {Object}
- */
-const usePreviewModal = () => {
-  const context = useContext(PreviewModalContext);
-
-  if (context === undefined) {
-    throw new Error("usePreviewModal must be used within PreviewModalContext");
-  }
-
-  return context;
-};
-
-export default usePreviewModal;
+export default PreviewModalContext;

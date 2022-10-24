@@ -7,37 +7,37 @@ export default {
   fetchUpcomingMovies: {
     listContext: "comingSoon",
     title: "Coming Soon",
-    url: `/movie/upcoming?api_key=${API_KEY}&append_to_response=videos,images&region=US`,
+    url: `/movie/upcoming?api_key=${API_KEY}`,
   },
   fetchUpcomingTV: {
     listContext: "comingSoon",
     title: "Coming Soon",
-    url: `/tv/upcoming?api_key=${API_KEY}&append_to_response=videos,images&region=US`,
+    url: `/tv/upcoming?api_key=${API_KEY}`,
   },
   fetchTrendingMovies: {
     listContext: "trending",
     title: "Trending",
-    url: `/trending/movie/day?api_key=${API_KEY}&append_to_response=videos,images&region=US`,
+    url: `/trending/movie/day?api_key=${API_KEY}`,
   },
   fetchPopularMovies: {
     listContext: "popularMovies",
     title: "Popular on Netflix",
-    url: `/movie/popular?api_key=${API_KEY}&append_to_response=videos,images&region=US`,
+    url: `/movie/popular?api_key=${API_KEY}`,
   },
   fetchNowPlayingMovies: {
     listContext: "nowPlayingMovies",
     title: "Now Playing",
-    url: `/movie/now_playing?api_key=${API_KEY}&append_to_response=videos,images&region=US`,
+    url: `/movie/now_playing?api_key=${API_KEY}`,
   },
   fetchTopRatedMovies: {
     listContext: "topRatedMovies",
     title: "Top rated in the U.S. Today",
-    url: `/movie/top_rated?api_key=${API_KEY}&append_to_response=videos,images&region=US`,
+    url: `/movie/top_rated?api_key=${API_KEY}`,
   },
   fetchLatestMovies: {
     listContext: "newMovies",
     title: "New on Netflix",
-    url: `/movie/latest?api_key=${API_KEY}&append_to_response=videos,images&region=US`,
+    url: `/movie/latest?api_key=${API_KEY}`,
   },
   fetchActionMovies: {
     listContext: "actionMovies",
@@ -82,26 +82,26 @@ export default {
   fetchLatestTV: {
     listContext: "latestTV",
     title: "Latest TV",
-    url: `/tv/latest/?api_key=${API_KEY}&append_to_response=videos,images&region=US`,
+    url: `/tv/latest/?api_key=${API_KEY}`,
   },
   fetchTrendingTV: {
     listContext: "trendingTV",
     title: "Trending Shows",
-    url: `/trending/tv/day?api_key=${API_KEY}&append_to_response=videos,images&region=US`,
+    url: `/trending/tv/day?api_key=${API_KEY}`,
   },
   fetchAiringTodayTV: {
     listContext: "currentlyAiringTV",
     title: "Shows Currently Airing",
-    url: `/tv/airing_today/?api_key=${API_KEY}&append_to_response=videos,images&region=US`,
+    url: `/tv/airing_today/?api_key=${API_KEY}`,
   },
   fetchTopRatedTV: {
     listContext: "topRatedTV",
     title: "Top Rated Shows in the U.S.",
-    url: `/tv/top_rated/?api_key=${API_KEY}&append_to_response=videos,images&region=US`,
+    url: `/tv/top_rated/?api_key=${API_KEY}`,
   },
   fetchPopularTV: {
     listContext: "popularTV",
     title: "Popular Shows on Netflix",
-    url: `/tv/popular/?api_key=${API_KEY}&append_to_response=videos,images&region=US`,
+    url: `/tv/popular/?api_key=${API_KEY}`,
   },
 };

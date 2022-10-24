@@ -2,13 +2,15 @@ import { useState, useEffect, useContext, useRef, forwardRef } from "react";
 import YouTube from "react-youtube";
 
 import InteractionContext from "@/context/InteractionContext";
+import PreviewModalContext from "@/context/PreviewModalContext";
 import Info from "@/components/browse/billboard/Info";
 import MediaControls from "./buttons/MediaControls";
 
 const Billboard = forwardRef((props, billboardInViewRef) => {
   const { model, inView, shouldFreeze } = props;
-  const { handleClick, handleWatchNow, isDetailModal, wasOpen } =
-    useContext(InteractionContext);
+  const { handleWatchNow } = useContext(InteractionContext);
+  const { modalStateActions, previewModalStateById, wasOpen } =
+    useContext(PreviewModalContext);
 
   const requestRef = useRef(0);
   const playerRef = useRef();
@@ -26,6 +28,16 @@ const Billboard = forwardRef((props, billboardInViewRef) => {
     useState(false);
   const [textIsAnimating, setTextIsAnimating] = useState(false);
   const [audioEnabled, setAudioEnabled] = useState(false);
+
+  /**
+   * Returns true if the preview modal's state is `DETAIL_MODAL` or `DEFAULT_MODAL
+   * @returns {Boolean}
+   */
+  const isDetailModal = () => {
+    return Object.values(previewModalStateById).some(
+      (modal) => modal.modalState === modalStateActions.DETAIL_MODAL
+    );
+  };
 
   /**
    * Enable audio globally
@@ -352,7 +364,6 @@ const Billboard = forwardRef((props, billboardInViewRef) => {
                 videoCanPlayThrough && !videoCompleted && textIsAnimating
               }
               videoPlayback={getVideoPlayback()}
-              handleClick={handleClick}
               handleWatchNow={handleWatchNow}
               logos={model?.videoModel?.logos}
               model={model}

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build -p 3000",
     "start": "next start",
     "test": "jest --watchAll"
   },
@@ -20,7 +20,7 @@
     "formik": "^2.2.9",
     "formik-persist": "^1.1.0",
     "framer-motion": "^7.5.3",
-    "iron-session": "^6.0.5",
+    "iron-session": "^6.2.1",
     "js-cookie": "^2.2.1",
     "lodash.assign": "^4.2.0",
     "lodash.assignin": "^4.2.0",

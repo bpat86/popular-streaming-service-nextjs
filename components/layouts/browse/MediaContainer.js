@@ -1,5 +1,6 @@
-import { forwardRef, useContext, useLayoutEffect } from "react";
+import { forwardRef, useContext } from "react";
 import InteractionContext from "@/context/InteractionContext";
+import PreviewModalContext from "@/context/PreviewModalContext";
 import BillboardContainer from "@/components/browse/billboard/BillboardContainer";
 import Sliders from "@/components/browse/slider/Sliders";
 import useMedia from "@/middleware/useMedia";
@@ -9,31 +10,36 @@ import LoadingSpinner from "@/components/loading/LoadingSpinner";
 
 const MediaContainer = forwardRef((props, layoutWrapperRef) => {
   const { children, pageAPI, shouldFreeze } = props;
-  const { isPreviewModalOpen } = useContext(InteractionContext);
+  // const { PreviewModalProvider } = createFastContext();
+  // const { isPreviewModalOpen } = useContext(InteractionContext);
+  const { previewModalStateById } = useContext(PreviewModalContext);
 
   const { media, fetchingMedia, mutateMedia, mediaError, cancelRequest } =
     useMedia({
       pageAPI,
     });
 
-  useLayoutEffect(() => {
-    return () => {
-      cancelRequest();
-    };
-  }, []);
+  /**
+   * Determine if a preview modal is currently open
+   * @returns {Boolean}
+   */
+  const isPreviewModalOpen = () => {
+    const modals = previewModalStateById;
+    return Object.values(modals)?.some((item) => item?.isOpen);
+  };
+
+  if (mediaError) {
+    return (
+      <div className="flex items-center justify-center flex-col w-full min-h-screen text-white font-medium">
+        <p>{`${mediaError}`}</p>
+      </div>
+    );
+  }
 
   if (!media || fetchingMedia) {
     return (
       <div className="flex w-full min-h-screen">
         <LoadingSpinner />
-      </div>
-    );
-  }
-
-  if (mediaError) {
-    return (
-      <div className="flex w-full min-h-screen text-white font-medium">
-        Something went wrong.
       </div>
     );
   }

@@ -7,11 +7,12 @@ const Sliders = ({ model }) => {
    */
   const handleSliders = () => {
     return model?.filter((slider) => slider?.data)?.length > 0 ? (
-      model?.map(
-        (slider, idx) =>
+      model?.map((slider, idx) => {
+        // if (idx > 0) return;
+        return (
           slider?.data?.length > 0 && (
             <Row
-              key={slider?.listContext + idx}
+              key={`${slider?.listContext}_${slider?.id}_${idx}`}
               model={slider?.data}
               enablePeek={true}
               enableLooping={true}
@@ -28,7 +29,8 @@ const Sliders = ({ model }) => {
               title={slider?.name}
             />
           )
-      )
+        );
+      })
     ) : (
       <div className="my-list flex items-center justify-center min-h-screen">
         <h2 className="text-3xl text-white">

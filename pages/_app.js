@@ -2,7 +2,6 @@
 import { AuthProvider } from "@/context/AuthContext";
 import { ProfileProvider } from "@/context/ProfileContext";
 import { InteractionProvider } from "@/context/InteractionContext";
-import { PreviewModalProvider } from "@/context/PreviewModalContext";
 import { MediaProvider } from "@/context/MediaContext";
 import CombineContexts from "@/context/CombineContexts";
 // Libs
@@ -19,7 +18,6 @@ export default function MyApp({ Component, pageProps, router }) {
     ProfileProvider,
     MediaProvider,
     InteractionProvider,
-    PreviewModalProvider,
   ];
 
   // Use the layout defined at the page level, if available

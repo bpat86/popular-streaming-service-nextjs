@@ -1,5 +1,6 @@
 import {
   forwardRef,
+  useEffect,
   useLayoutEffect,
   useCallback,
   useContext,
@@ -21,6 +22,7 @@ import DetailInfo from "./detail/info/Info";
 import CloseButton from "./detail/CloseButton";
 // Context
 import InteractionContext from "@/context/InteractionContext";
+import PreviewModalContext from "@/context/PreviewModalContext";
 // Reducers
 import usePreviewModal from "@/middleware/usePreviewModal";
 
@@ -40,20 +42,28 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
   } = props;
   /** Context */
   const {
-    resetRouteQuery,
     isWatchModeEnabled,
     disableWatchMode,
     enableTooltips,
     disableTooltips,
-    modalStateActions,
-    animationStateActions,
+    // modalStateActions,
+    // animationStateActions,
     handleWatchNow,
     handleRouteChange,
+    resetRouteQuery,
+    // previewModalStateById,
+    // updatePreviewModalState,
+    // setPreviewModalClose,
+    // setPreviewModalWasOpen,
+  } = useContext(InteractionContext);
+  const {
+    modalStateActions,
+    animationStateActions,
     previewModalStateById,
     updatePreviewModalState,
     setPreviewModalClose,
     setPreviewModalWasOpen,
-  } = useContext(InteractionContext);
+  } = useContext(PreviewModalContext);
 
   /** Framer motion utility */
   const isPresent = useIsPresent();
@@ -725,7 +735,10 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
   /**
    * Close the modal and reset it's styles and state
    */
-  const handleCloseModal = ({ closeAll, closeWithoutAnimation } = {}) => {
+  const handleCloseModal = ({
+    closeAll = false,
+    closeWithoutAnimation = false,
+  } = {}) => {
     flushSync(() => {
       // set willClose true
       setWillClose(true);
@@ -744,7 +757,7 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
       resetRouteQuery();
       // Remove the preview modal's box shadow
       modalRef.current && (modalRef.current.style.boxShadow = "none");
-      // Reset the document body styles
+      // Reset the document body styles if preview modal is a detail modal
       closeAll &&
         modalState === modalStateActions.DETAIL_MODAL &&
         (document.body.style.overflowY = "");
@@ -778,9 +791,9 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
       let modal,
         pageX = e.pageX,
         pageY = e.pageY;
-      // console.log(
-      //   `previewModal handleMouseMove function: ${model?.videoModel?.title} isPresent - ${isPresent}`
-      // );
+      console.log(
+        `previewModal handleMouseMove function: ${model?.videoModel?.title}`
+      );
       animationState !== animationStateActions.OPEN_MINI_MODAL ||
         willClose ||
         (titleCardRect &&
@@ -795,7 +808,7 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
             handleExit()),
         window.removeEventListener("mousemove", handleOnMouseMove));
     },
-    [animationState, modalState, modalRef, titleCardRect, willClose]
+    [animationState, modalState, modalRef, willClose]
   );
 
   /**
@@ -951,7 +964,7 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
   /**
    * Manage event listeners
    */
-  useLayoutEffect(() => {
+  useEffect(() => {
     // Event listeners to handle visibility changes, resizing, and key presses
     switch (
       (document.addEventListener("visibilitychange", handleVisibilityChange),
@@ -980,7 +993,7 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
   /**
    * Manage preview modal's state transitions
    */
-  useLayoutEffect(() => {
+  useEffect(() => {
     // Open as mini modal
     if (titleCardRect) {
       switch (modalState) {
@@ -995,8 +1008,6 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
       cancelRequest();
       // Set `wasOpen` to false
       setPreviewModalWasOpen(false);
-      // Set Preview Modal closed
-      setPreviewModalClose({ videoId });
       // Reset timeout id
       cancelAnimationFrame(animationFrameId.current);
     };
@@ -1017,7 +1028,7 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
   /**
    * Reset detail modal parent layout styles when component unmounts
    */
-  useLayoutEffect(() => {
+  useEffect(() => {
     return () => {
       if (!isPresent) {
         modalState === modalStateActions.DETAIL_MODAL &&
@@ -1051,141 +1062,142 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
         !!(!isAnimating && videoId) ||
         // Detail modal
         !!(!isDetailAnimating && videoId);
+
     // Render the preview modal
-    return [
-      <ModalFocusTrapWrapper
-        key={`${model.uid}-${isOpen}`}
-        ref={parentRef}
-        active={true}
-        paused={false}
-        className={`focus-trap preview-modal-wrapper ${
-          isDetailModal ? "detail-modal" : "mini-modal"
-        }`}
-        element={"div"}
-        focusTrapOptions={{
-          clickOutsideDeactivates: true,
-          delayInitialFocus: true,
-          escapeDeactivates: true,
-          // fallbackFocus: modalRef.current,
-          initialFocus: false,
-          // onActivate: () => {},
-          // onDeactivate: () => {},
-          preventScroll: true,
-          returnFocusOnDeactivate: true,
-          setReturnFocus: true, // `#slider-${model.rowNum}`
-        }}
-        tabIndex="-1"
-      >
-        <Modal
-          ref={modalRef}
-          aria-modal={true}
-          className={`preview-modal-container ${
+    return (
+      <>
+        <ModalFocusTrapWrapper
+          ref={parentRef}
+          active={true}
+          paused={false}
+          className={`focus-trap preview-modal-wrapper ${
             isDetailModal ? "detail-modal" : "mini-modal"
           }`}
-          data-uia={`preview-modal-container-${modalState}`}
-          element={MotionDivWrapper}
-          id={modalData?.videoModel?.id}
-          {...getAnimationProps()}
-          role="dialog"
+          element={"div"}
+          focusTrapOptions={{
+            clickOutsideDeactivates: true,
+            delayInitialFocus: true,
+            escapeDeactivates: true,
+            // fallbackFocus: modalRef.current,
+            initialFocus: false,
+            // onActivate: () => {},
+            // onDeactivate: () => {},
+            preventScroll: true,
+            returnFocusOnDeactivate: true,
+            setReturnFocus: true, // `#slider-${model.rowNum}`
+          }}
           tabIndex="-1"
         >
-          <PlayerContainer
-            ref={mediaButtonsRef}
-            className={`player-container ${
+          <Modal
+            ref={modalRef}
+            aria-modal={true}
+            className={`preview-modal-container ${
               isDetailModal ? "detail-modal" : "mini-modal"
             }`}
-            handleWatchNow={handleWatchNow}
-            identifiers={modalData?.videoModel?.identifiers}
-            imageKey={modalData?.videoModel?.imageKey}
-            inMediaList={modalData?.videoModel?.inMediaList}
-            isAnimating={isAnimating}
-            isLoading={!modalDataError && fetchingModalData}
-            isMyListRow={modalData?.videoModel?.isMyListRow}
-            isDisliked={modalData?.videoModel?.isDisliked}
-            isLiked={modalData?.videoModel?.isLiked}
-            isMiniModal={isMiniModal}
-            isDetailModal={isDetailModal}
-            isDefaultModal={isDefaultModal}
-            logos={modalData?.videoModel?.logos}
-            modalOpen={isPresent}
-            showBoxArtOnMount={showBoxArtOnMount}
-            showBoxArtOnClose={showBoxArtOnClose}
-            showTitleGradient={isDefaultModal}
-            showVideo={showVideo}
-            title={modalData?.videoModel?.title}
-            videoId={modalData?.videoModel?.videoKey}
-            videoModel={{
-              ...modalData?.videoModel,
-              mutateModalData,
-              mutateSliderData,
-            }}
-            videoPlayback={modalData?.videoPlayback?.start || 0}
-          />
-          {isDetailModal && (
-            <CloseButton onClick={onCloseClick} onKeyDown={onCloseKeyDown} />
-          )}
-          {isDetailModal ? (
-            <DetailInfo
-              ref={modalInfoRef}
-              key={model.uid}
-              cast={modalData?.videoModel?.cast}
-              genres={modalData?.videoModel?.genres}
-              isLoading={isDetailAnimating && showBoxArtOnClose}
-              isMiniModal={isMiniModal}
-              isDefaultModal={!titleCardRect && isDetailModal}
-              synopsis={modalData?.videoModel?.synopsis}
-            />
-          ) : (
-            <MiniInfo
-              key={`${model.uid}-${isOpen}`}
+            data-uia={`preview-modal-container-${modalState}`}
+            element={MotionDivWrapper}
+            id={modalData?.videoModel?.id}
+            {...getAnimationProps()}
+            role="dialog"
+            tabIndex="-1"
+          >
+            <PlayerContainer
               ref={mediaButtonsRef}
-              genres={modalData?.videoModel?.genres}
-              handleCloseModal={handleCloseModal}
-              handleViewDetails={handleViewDetails}
-              handleMetadataAreaClicked={handleMetadataAreaClicked}
+              className={`player-container ${
+                isDetailModal ? "detail-modal" : "mini-modal"
+              }`}
               handleWatchNow={handleWatchNow}
               identifiers={modalData?.videoModel?.identifiers}
+              imageKey={modalData?.videoModel?.imageKey}
               inMediaList={modalData?.videoModel?.inMediaList}
+              isAnimating={isAnimating}
+              isLoading={!modalDataError && fetchingModalData}
               isMyListRow={modalData?.videoModel?.isMyListRow}
               isDisliked={modalData?.videoModel?.isDisliked}
               isLiked={modalData?.videoModel?.isLiked}
+              isMiniModal={isMiniModal}
+              isDetailModal={isDetailModal}
+              isDefaultModal={isDefaultModal}
+              logos={modalData?.videoModel?.logos}
+              modalOpen={isPresent}
+              showBoxArtOnMount={showBoxArtOnMount}
+              showBoxArtOnClose={showBoxArtOnClose}
+              showTitleGradient={isDefaultModal}
+              showVideo={showVideo}
+              title={modalData?.videoModel?.title}
+              videoId={modalData?.videoModel?.videoKey}
               videoModel={{
                 ...modalData?.videoModel,
                 mutateModalData,
                 mutateSliderData,
               }}
+              videoPlayback={modalData?.videoPlayback?.start || 0}
             />
-          )}
-        </Modal>
-      </ModalFocusTrapWrapper>,
-      modalState === modalStateActions.DETAIL_MODAL && (
-        <ModalOverlay
-          ref={parentRef}
-          key={modalState === modalStateActions.DETAIL_MODAL}
-          className={`preview-modal-backdrop`}
-          element={MotionDivWrapper}
-          inherit={false}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.7 }}
-          exit={{
-            opacity: 0,
-            transition: {
-              opacity: {
-                duration: 0.54,
-                ease: "circOut",
+            {isDetailModal && (
+              <CloseButton onClick={onCloseClick} onKeyDown={onCloseKeyDown} />
+            )}
+            {isDetailModal ? (
+              <DetailInfo
+                ref={modalInfoRef}
+                key={model.uid}
+                cast={modalData?.videoModel?.cast}
+                genres={modalData?.videoModel?.genres}
+                isLoading={isDetailAnimating && showBoxArtOnClose}
+                isMiniModal={isMiniModal}
+                isDefaultModal={!titleCardRect && isDetailModal}
+                synopsis={modalData?.videoModel?.synopsis}
+              />
+            ) : (
+              <MiniInfo
+                key={`${model.uid}-${isOpen}`}
+                ref={mediaButtonsRef}
+                genres={modalData?.videoModel?.genres}
+                handleCloseModal={handleCloseModal}
+                handleViewDetails={handleViewDetails}
+                handleMetadataAreaClicked={handleMetadataAreaClicked}
+                handleWatchNow={handleWatchNow}
+                identifiers={modalData?.videoModel?.identifiers}
+                inMediaList={modalData?.videoModel?.inMediaList}
+                isMyListRow={modalData?.videoModel?.isMyListRow}
+                isDisliked={modalData?.videoModel?.isDisliked}
+                isLiked={modalData?.videoModel?.isLiked}
+                videoModel={{
+                  ...modalData?.videoModel,
+                  mutateModalData,
+                  mutateSliderData,
+                }}
+              />
+            )}
+          </Modal>
+        </ModalFocusTrapWrapper>
+        {modalState === modalStateActions.DETAIL_MODAL && (
+          <ModalOverlay
+            ref={parentRef}
+            className={`preview-modal-backdrop`}
+            element={MotionDivWrapper}
+            inherit={false}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.7 }}
+            exit={{
+              opacity: 0,
+              transition: {
+                opacity: {
+                  duration: 0.54,
+                  ease: "circOut",
+                },
               },
-            },
-            transitionEnd: {
-              display: "none",
-            },
-          }}
-          onClick={(e) => {
-            e.stopPropagation();
-            handleCloseModal({ closeAll: true });
-          }}
-        />
-      ),
-    ];
+              transitionEnd: {
+                display: "none",
+              },
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleCloseModal({ closeAll: true });
+            }}
+          />
+        )}
+      </>
+    );
   };
 
   /**

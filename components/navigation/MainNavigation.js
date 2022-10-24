@@ -1,4 +1,4 @@
-import { useState, useContext, useRef } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 // Components
 import UserDropdown from "@/components/navigation/ProfilesDropdown";

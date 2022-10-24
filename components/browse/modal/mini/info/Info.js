@@ -31,7 +31,7 @@ const Info = forwardRef((props, buttonsRef) => {
         },
       }}
       transition={{
-        opacity: { duration: 0.067, ease: "linear" },
+        opacity: { duration: 0.067, duration: 0.117, ease: "linear" },
       }}
       className="preview-modal info"
       onClick={handleMetadataAreaClicked}

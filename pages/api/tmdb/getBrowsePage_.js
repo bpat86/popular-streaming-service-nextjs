@@ -40,13 +40,12 @@ const pickRandomInt = (max) => Math.floor(Math.random() * max);
  * @returns
  */
 function makeMediaArray({
-  srcArray,
-  mediaType,
-  profileMediaListArray,
-  profileLikedMediaArray,
-  profileDislikedMediaArray,
+  srcArray = [],
+  mediaType = null,
+  profileMediaListArray = [],
+  profileLikedMediaArray = [],
+  profileDislikedMediaArray = [],
 }) {
-  if (!srcArray.length) return [];
   const mediaArray = new Array();
   // Construct a new array with new keys denoting the user's media preferences
   srcArray
@@ -57,7 +56,7 @@ function makeMediaArray({
         !item.overview ||
         mediaArray?.some(({ id }) => id === item.id)
       )
-        return;
+        return false;
       return item;
     })
     .forEach((item) => {
@@ -84,7 +83,7 @@ function makeMediaArray({
         disliked_media_id: dislikedMediaItem?.disliked_media_id || null,
       });
     });
-  return mediaArray;
+  return mediaArray.length ? mediaArray : [];
 }
 
 /**
@@ -108,10 +107,10 @@ function getMaxValue(items) {
  * @returns
  */
 function mergeSortedArrays(arrays) {
-  const sortedList = new Array();
+  const sortedList = [];
   const elementIdxs = arrays.map(() => 0);
   while (true) {
-    const smallestItems = new Array();
+    const smallestItems = [];
     for (let arrayIdx = 0; arrayIdx < arrays.length; arrayIdx++) {
       const relevantArray = arrays[arrayIdx];
       const elementIdx = elementIdxs[arrayIdx];
@@ -182,13 +181,17 @@ async function getBillboardMedia({
   profileLikedMediaArray,
   profileDislikedMediaArray,
 }) {
-  if (!srcArray.length) return {};
+  if (srcArray == null) return {};
+  let filteredSrc = [];
+  filteredSrc = new Set(srcArray);
+  filteredSrc = [...filteredSrc];
   // const idsArray = [656663, 414906, 646380, 696806, 634649, 619979, 615904];
-  const idsArray = srcArray.slice(0, 46);
+  const idsArray = filteredSrc.slice(0, 46);
   const randomItem = idsArray[pickRandomIdx(idsArray)];
   const params = {
-    mediaType: randomItem.media_type || srcArray[pickRandomInt(6)].media_type,
-    mediaID: randomItem.id || srcArray[pickRandomInt(6)].id,
+    mediaType:
+      randomItem.media_type || filteredSrc[pickRandomInt(6)].media_type,
+    mediaID: randomItem.id || filteredSrc[pickRandomInt(6)].id,
   };
   const [getBillboardMedia, getBillboardMediaCredits] =
     await getFetchConcurrently([
@@ -209,6 +212,20 @@ async function getBillboardMedia({
   const dislikedMediaItem = profileDislikedMediaArray?.find(
     ({ id }) => id === billboardMedia?.id
   );
+
+  console.log("data: ", {
+    ...billboardMedia,
+    ...billboardMediaCredits,
+    is_billboard: true,
+    media_type: randomItem.media_type,
+    in_media_list: !!mediaListItem?.media_list_id,
+    media_list_id: mediaListItem?.media_list_id || null,
+    is_liked: !!likedMediaItem?.liked_media_id,
+    liked_media_id: likedMediaItem?.liked_media_id || null,
+    is_disliked: !!dislikedMediaItem?.disliked_media_id,
+    disliked_media_id: dislikedMediaItem?.disliked_media_id || null,
+  });
+
   return {
     data: {
       ...billboardMedia,
@@ -233,7 +250,7 @@ async function getBillboardMedia({
  */
 function getProfileMediaList({ profile }) {
   const { mediaList } = profile;
-  let profileMediaList = new Array();
+  let profileMediaList = [];
   // Add the liked items into a new media array and assign new keys
   mediaList?.map(({ id, mediaItem, mediaType, timestamp, mediaID }) => {
     profileMediaList.push({
@@ -244,6 +261,10 @@ function getProfileMediaList({ profile }) {
       in_media_list: !!id, // Refers to the `mediaID` field in Strapi
     });
   });
+  // Using Set(), an instance of unique values will be created removing any duplicates
+  profileMediaList = new Set(profileMediaList);
+  // Convert the instance into a new array
+  profileMediaList = [...profileMediaList];
   // Sort by last added
   profileMediaList = orderByLastAdded(profileMediaList);
   return profileMediaList.length ? profileMediaList : [];
@@ -255,11 +276,11 @@ function getProfileMediaList({ profile }) {
  * @param {Object} profile
  * @returns
  */
-function getProfileLikedMedia({ profile: { likedMedia } }) {
-  if (!likedMedia) return [];
-  const profileLikedMedia = new Array();
+function getProfileLikedMedia({ profile }) {
+  const { likedMedia } = profile;
+  let profileLikedMedia = [];
   // Add the liked items into a new media array and assign new keys
-  likedMedia.forEach(({ id, mediaItem, mediaType, timestamp, mediaID }) => {
+  likedMedia?.map(({ id, mediaItem, mediaType, timestamp, mediaID }) => {
     profileLikedMedia.push({
       ...mediaItem, // Refers to the `mediaItem` JSON collection field in Strapi
       media_type: mediaType, // Refers to the `mediaType` field in Strapi
@@ -269,7 +290,11 @@ function getProfileLikedMedia({ profile: { likedMedia } }) {
       strapi_id: id, // Refers to the item's id within Strapi
     });
   });
-  return profileLikedMedia;
+  // Using Set(), an instance of unique values will be created removing any duplicates
+  profileLikedMedia = new Set(profileLikedMedia);
+  // Convert the instance into a new array
+  profileLikedMedia = [...profileLikedMedia];
+  return profileLikedMedia.length ? profileLikedMedia : [];
 }
 
 /**
@@ -278,11 +303,11 @@ function getProfileLikedMedia({ profile: { likedMedia } }) {
  * @param {Object} profile
  * @returns
  */
-function getProfileDislikedMedia({ profile: { dislikedMedia } }) {
-  if (!dislikedMedia) return [];
-  let profileDislikedMedia = new Array();
+function getProfileDislikedMedia({ profile }) {
+  const { dislikedMedia } = profile;
+  let profileDislikedMedia = [];
   // Add the disliked items into a new media array and assign new keys
-  dislikedMedia.map(({ id, mediaItem, mediaType, timestamp, mediaID }) => {
+  dislikedMedia?.map(({ id, mediaItem, mediaType, timestamp, mediaID }) => {
     profileDislikedMedia.push({
       ...mediaItem, // Refers to the `mediaItem` JSON collection field in Strapi
       media_type: mediaType, // Refers to the `mediaType` field in Strapi
@@ -292,7 +317,11 @@ function getProfileDislikedMedia({ profile: { dislikedMedia } }) {
       strapi_id: id, // Refers to the item's id within Strapi
     });
   });
-  return profileDislikedMedia;
+  // Using Set(), an instance of unique values will be created removing any duplicates
+  profileDislikedMedia = new Set(profileDislikedMedia);
+  // Convert the instance into a new array
+  profileDislikedMedia = [...profileDislikedMedia];
+  return profileDislikedMedia.length ? profileDislikedMedia : [];
 }
 
 export default withSessionRoute(async (req, res) => {
@@ -316,103 +345,44 @@ export default withSessionRoute(async (req, res) => {
       const userMeURL = `${API_URL}/api/users/me`;
       // Genres URLs
       const upcomingMoviesUrl = requests.fetchUpcomingMovies.url;
-      const popularMoviesUrl = requests.fetchPopularMovies.url;
-      const trendingMoviesUrl = requests.fetchTrendingMovies.url;
-      const comedyMoviesUrl = requests.fetchComedyMovies.url;
-      const actionMoviesUrl = requests.fetchActionMovies.url;
-      // const romanceMoviesUrl = requests.fetchRomanceMovies.url;
-      const popularTVUrl = requests.fetchPopularTV.url;
-      // const animatedMoviesUrl = requests.fetchAnimatedMovies.url;
-      // const horrorMoviesUrl = requests.fetchHorrorMovies.url;
       // Fetch all data concurrently
       const [
         getUserMe,
         getUpcomingMoviesOne,
         getUpcomingMoviesTwo,
         getUpcomingMoviesThree,
-        getPopularMoviesOne,
-        getPopularMoviesTwo,
-        getPopularMoviesThree,
-        getPopularTVOne,
-        getPopularTVTwo,
-        getPopularTVThree,
-        getTrendingMoviesOne,
-        getTrendingMoviesTwo,
-        getTrendingMoviesThree,
-        getComedyMoviesOne,
-        getComedyMoviesTwo,
-        getComedyMoviesThree,
-        getActionMoviesOne,
-        getActionMoviesTwo,
-        getActionMoviesThree,
-        // getRomanceMoviesOne,
-        // getRomanceMoviesTwo,
-        // getRomanceMoviesThree,
-        // getHorrorMoviesOne,
-        // getHorrorMoviesTwo,
-        // getHorrorMoviesThree,
-        // getAnimatedMoviesOne,
-        // getAnimatedMoviesTwo,
-        // getAnimatedMoviesThree,
       ] = await getFetchConcurrently([
         getFetch(userMeURL, config),
         getFetch(makeMediaURL(upcomingMoviesUrl, 1)),
         getFetch(makeMediaURL(upcomingMoviesUrl, 2)),
         getFetch(makeMediaURL(upcomingMoviesUrl, 3)),
-        getFetch(makeMediaURL(popularMoviesUrl, 1)),
-        getFetch(makeMediaURL(popularMoviesUrl, 2)),
-        getFetch(makeMediaURL(popularMoviesUrl, 3)),
-        getFetch(makeMediaURL(popularTVUrl, 1)),
-        getFetch(makeMediaURL(popularTVUrl, 2)),
-        getFetch(makeMediaURL(popularTVUrl, 3)),
-        getFetch(makeMediaURL(trendingMoviesUrl, 1)),
-        getFetch(makeMediaURL(trendingMoviesUrl, 2)),
-        getFetch(makeMediaURL(trendingMoviesUrl, 3)),
-        getFetch(makeMediaURL(comedyMoviesUrl, 1)),
-        getFetch(makeMediaURL(comedyMoviesUrl, 2)),
-        getFetch(makeMediaURL(comedyMoviesUrl, 3)),
-        getFetch(makeMediaURL(actionMoviesUrl, 1)),
-        getFetch(makeMediaURL(actionMoviesUrl, 2)),
-        getFetch(makeMediaURL(actionMoviesUrl, 3)),
-        // getFetch(makeMediaURL(romanceMoviesUrl, 1)),
-        // getFetch(makeMediaURL(romanceMoviesUrl, 2)),
-        // getFetch(makeMediaURL(romanceMoviesUrl, 3)),
-        // getFetch(makeMediaURL(horrorMoviesUrl, 1)),
-        // getFetch(makeMediaURL(horrorMoviesUrl, 2)),
-        // getFetch(makeMediaURL(horrorMoviesUrl, 3)),
-        // getFetch(makeMediaURL(animatedMoviesUrl, 1)),
-        // getFetch(makeMediaURL(animatedMoviesUrl, 2)),
-        // getFetch(makeMediaURL(animatedMoviesUrl, 3)),
       ]);
       const profileMediaList = getProfileMediaList({
-        profile: Object.assign(
-          {},
-          getUserMe.status === 200
+        profile: {
+          ...(getUserMe.status === 200
             ? getUserMe.data.profiles?.find(
                 (profile) => profile.id == activeProfile
               )
-            : {}
-        ),
+            : {}),
+        },
       });
       const profileLikedMedia = getProfileLikedMedia({
-        profile: Object.assign(
-          {},
-          getUserMe.status === 200
+        profile: {
+          ...(getUserMe.status === 200
             ? getUserMe.data.profiles?.find(
                 (profile) => profile.id == activeProfile
               )
-            : {}
-        ),
+            : {}),
+        },
       });
       const profileDislikedMedia = getProfileDislikedMedia({
-        profile: Object.assign(
-          {},
-          getUserMe.status === 200
+        profile: {
+          ...(getUserMe.status === 200
             ? getUserMe.data.profiles?.find(
                 (profile) => profile.id == activeProfile
               )
-            : {}
-        ),
+            : {}),
+        },
       });
       // Build sliders
       const myMediaList = makeMediaArray({
@@ -433,127 +403,12 @@ export default withSessionRoute(async (req, res) => {
         profileLikedMediaArray: profileLikedMedia,
         profileDislikedMediaArray: profileDislikedMedia,
       });
-      const popularMovies = makeMediaArray({
-        srcArray: [].concat(
-          getPopularMoviesOne.data.results,
-          getPopularMoviesTwo.data.results,
-          getPopularMoviesThree.data.results
-        ),
-        mediaType: "movie",
-        profileMediaListArray: profileMediaList,
-        profileLikedMediaArray: profileLikedMedia,
-        profileDislikedMediaArray: profileDislikedMedia,
-      });
-      const popularTV = makeMediaArray({
-        srcArray: [].concat(
-          getPopularTVOne.data.results,
-          getPopularTVTwo.data.results,
-          getPopularTVThree.data.results
-        ),
-        mediaType: "tv",
-        profileMediaListArray: profileMediaList,
-        profileLikedMediaArray: profileLikedMedia,
-        profileDislikedMediaArray: profileDislikedMedia,
-      });
-      const trendingMovies = makeMediaArray({
-        srcArray: [].concat(
-          getTrendingMoviesOne.data.results,
-          getTrendingMoviesTwo.data.results,
-          getTrendingMoviesThree.data.results
-        ),
-        mediaType: "movie",
-        profileMediaListArray: profileMediaList,
-        profileLikedMediaArray: profileLikedMedia,
-        profileDislikedMediaArray: profileDislikedMedia,
-      });
-      const comedyMovies = makeMediaArray({
-        srcArray: [].concat(
-          getComedyMoviesOne.data.results,
-          getComedyMoviesTwo.data.results,
-          getComedyMoviesThree.data.results
-        ),
-        mediaType: "movie",
-        profileMediaListArray: profileMediaList,
-        profileLikedMediaArray: profileLikedMedia,
-        profileDislikedMediaArray: profileDislikedMedia,
-      });
-      const actionMovies = makeMediaArray({
-        srcArray: [].concat(
-          getActionMoviesOne.data.results,
-          getActionMoviesTwo.data.results,
-          getActionMoviesThree.data.results
-        ),
-        mediaType: "movie",
-        profileMediaListArray: profileMediaList,
-        profileLikedMediaArray: profileLikedMedia,
-        profileDislikedMediaArray: profileDislikedMedia,
-      });
-      // const romanceMovies = makeMediaArray({
-      //   srcArray: [
-      //     ...(getRomanceMoviesOne.status === 200
-      //       ? getRomanceMoviesOne.data.results
-      //       : []),
-      //     ...(getRomanceMoviesTwo.status === 200
-      //       ? getRomanceMoviesTwo.data.results
-      //       : []),
-      //     ...(getRomanceMoviesThree.status === 200
-      //       ? getRomanceMoviesThree.data.results
-      //       : []),
-      //   ],
-      //   mediaType: "movie",
-      //   profileMediaListArray: profileMediaList,
-      //   profileLikedMediaArray: profileLikedMedia,
-      //   profileDislikedMediaArray: profileDislikedMedia,
-      // });
-      // const horrorMovies = makeMediaArray({
-      //   srcArray: [
-      //     ...(getHorrorMoviesOne.status === 200
-      //       ? getHorrorMoviesOne.data.results
-      //       : []),
-      //     ...(getHorrorMoviesTwo.status === 200
-      //       ? getHorrorMoviesTwo.data.results
-      //       : []),
-      //     ...(getHorrorMoviesThree.status === 200
-      //       ? getHorrorMoviesThree.data.results
-      //       : []),
-      //   ],
-      //   mediaType: "movie",
-      //   profileMediaListArray: profileMediaList,
-      //   profileLikedMediaArray: profileLikedMedia,
-      //   profileDislikedMediaArray: profileDislikedMedia,
-      // });
-      // const animatedMovies = makeMediaArray({
-      //   srcArray: [
-      //     ...(getAnimatedMoviesOne.status === 200
-      //       ? getAnimatedMoviesOne.data.results
-      //       : []),
-      //     ...(getAnimatedMoviesTwo.status === 200
-      //       ? getAnimatedMoviesTwo.data.results
-      //       : []),
-      //     ...(getAnimatedMoviesThree.status === 200
-      //       ? getAnimatedMoviesThree.data.results
-      //       : []),
-      //   ],
-      //   mediaType: "movie",
-      //   profileMediaListArray: profileMediaList,
-      //   profileLikedMediaArray: profileLikedMedia,
-      //   profileDislikedMediaArray: profileDislikedMedia,
-      // });
-      // Merge tv and movies to create a mixed content array
-      const popularTVAndMovies = mergeSortedArrays([
-        popularMovies.slice(0, 30 || Math.floor(popularMovies.length / 2)),
-        popularTV.slice(0, 30 || Math.floor(popularTV.length / 2)),
-      ]);
+
       // Get the Billboard component movie media
       const { data: billboardMedia } = await getBillboardMedia({
         srcArray: profileMediaList.length
-          ? [
-              ...profileMediaList,
-              ...profileLikedMedia,
-              ...popularTVAndMovies,
-              ...upcomingMovies,
-            ]
-          : popularTVAndMovies,
+          ? [...profileMediaList, ...profileLikedMedia, ...upcomingMovies]
+          : upcomingMovies,
         profileMediaListArray: profileMediaList,
         profileLikedMediaArray: profileLikedMedia,
         profileDislikedMediaArray: profileDislikedMedia,
@@ -570,13 +425,6 @@ export default withSessionRoute(async (req, res) => {
           profileLikedMedia,
           profileDislikedMedia,
           upcomingMovies,
-          popularMovies,
-          trendingMovies,
-          comedyMovies,
-          actionMovies,
-          // romanceMovies,
-          // horrorMovies,
-          // animatedMovies,
           sliders: [
             {
               id: 0,
@@ -588,68 +436,12 @@ export default withSessionRoute(async (req, res) => {
             },
             {
               id: 1,
-              type: "mixed",
-              name: requests.fetchPopularMovies.title,
-              listContext: requests.fetchPopularMovies.listContext,
-              data: popularTVAndMovies,
-              isMyListRow: false,
-            },
-            {
-              id: 2,
               type: "movie",
               name: requests.fetchUpcomingMovies.title,
               listContext: requests.fetchUpcomingMovies.listContext,
               data: upcomingMovies,
               isMyListRow: false,
             },
-            {
-              id: 3,
-              type: "movie",
-              name: requests.fetchTrendingMovies.title,
-              listContext: requests.fetchTrendingMovies.listContext,
-              data: trendingMovies,
-              isMyListRow: false,
-            },
-            {
-              id: 4,
-              type: "movie",
-              name: requests.fetchComedyMovies.title,
-              listContext: requests.fetchComedyMovies.listContext,
-              data: comedyMovies,
-              isMyListRow: false,
-            },
-            {
-              id: 5,
-              type: "movie",
-              name: requests.fetchActionMovies.title,
-              listContext: requests.fetchActionMovies.listContext,
-              data: actionMovies,
-              isMyListRow: false,
-            },
-            // {
-            //   id: 6,
-            //   type: "movie",
-            //   name: requests.fetchRomanceMovies.title,
-            //   listContext: requests.fetchRomanceMovies.listContext,
-            //   data: romanceMovies,
-            //   isMyListRow: false,
-            // },
-            // {
-            //   id: 7,
-            //   type: "movie",
-            //   name: requests.fetchHorrorMovies.title,
-            //   listContext: requests.fetchHorrorMovies.listContext,
-            //   data: horrorMovies,
-            //   isMyListRow: false,
-            // },
-            // {
-            //   id: 8,
-            //   type: "movie",
-            //   name: requests.fetchAnimatedMovies.title,
-            //   listContext: requests.fetchAnimatedMovies.listContext,
-            //   data: animatedMovies,
-            //   isMyListRow: false,
-            // },
           ],
         },
       });

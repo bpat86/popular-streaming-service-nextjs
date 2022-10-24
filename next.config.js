@@ -1,4 +1,6 @@
 module.exports = {
+  // reactStrictMode: true,
+  swcMinify: true,
   serverRuntimeConfig: {
     // Will only be available on the server side
     apiUrl: process.env.DOCKER_API_URL,
@@ -10,5 +12,4 @@ module.exports = {
   images: {
     domains: ["image.tmdb.org"],
   },
-  swcMinify: true,
 };

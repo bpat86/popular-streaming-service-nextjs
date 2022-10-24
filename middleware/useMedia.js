@@ -24,7 +24,7 @@ const fetchWithProps = async (...args) => {
   return res.data;
 };
 
-export default function useMedia({ pageAPI }) {
+export default function useMedia({ pageAPI } = {}) {
   /**
    * useSWR api options
    * https://swr.vercel.app/docs/options
@@ -61,9 +61,10 @@ export default function useMedia({ pageAPI }) {
     );
 
     const fetchingMediaData = !media && !mediaError && isValidating;
-
+    // Abort fetch if the user navigates away
     if (signal.aborted) return;
     if (!fetchingMediaData) {
+      // Return the data, mutate function, and error
       return {
         fetchingMedia: isValidating,
         media,

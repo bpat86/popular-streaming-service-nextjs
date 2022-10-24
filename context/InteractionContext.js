@@ -1,6 +1,6 @@
 import {
   createContext,
-  useLayoutEffect,
+  useEffect,
   useState,
   useReducer,
   useCallback,
@@ -9,6 +9,7 @@ import {
 } from "react";
 import { useRouter } from "next/router";
 import debounce from "lodash.debounce";
+import createFastContext from "./createFastContext";
 
 const InteractionContext = createContext();
 
@@ -233,6 +234,7 @@ const previewModalReducer = (state, action) => {
 };
 
 export const InteractionProvider = ({ children }) => {
+  // const { useStore } = createFastContext();
   // Slider state
   const [rowHasExpandedInfoDensity, setRowHasExpandedInfoDensity] =
     useState(false);
@@ -316,20 +318,19 @@ export const InteractionProvider = ({ children }) => {
     initialState,
     previewModalReducer,
   }) => {
+    // const [state, dispatch] = useStore(previewModalReducer, initialState);
     const [state, dispatch] = useReducer(previewModalReducer, initialState);
     const makeActionCreators = Object.keys(actions).reduce(
-      (prevState, actionKey) => {
+      (previousValue, actionKey) => {
         // eslint-disable-next-line react-hooks/rules-of-hooks
-        prevState[actionKey] = (...args) =>
-          dispatch(actions[actionKey](...args));
-        return prevState;
+        previousValue[actionKey] = (...args) => {
+          return dispatch(actions[actionKey](...args));
+        };
+        return previousValue;
       },
       {}
     );
-    return {
-      ...state,
-      ...makeActionCreators,
-    };
+    return { ...state, ...makeActionCreators };
   };
 
   /**
@@ -353,13 +354,12 @@ export const InteractionProvider = ({ children }) => {
    * @returns {Boolean}
    */
   const isPreviewModalOpen = (videoId = null) => {
-    const modals = previewModalStateById;
     let modal;
     return videoId
-      ? (modal = modals[videoId]) === null || modal === undefined
+      ? (modal = previewModalStateById[videoId]) === null || modal === undefined
         ? undefined
         : modal.isOpen
-      : Object.values(modals).some((item) => item.isOpen);
+      : Object.values(previewModalStateById).some((item) => item.isOpen);
   };
 
   /**
@@ -367,8 +367,9 @@ export const InteractionProvider = ({ children }) => {
    * @returns {Object}
    */
   const openPreviewModalState = () => {
-    const modals = previewModalStateById;
-    return Object.values(modals).find((item) => item?.isOpen) || {};
+    return (
+      Object.values(previewModalStateById).find((item) => item?.isOpen) || {}
+    );
   };
 
   /**
@@ -376,8 +377,7 @@ export const InteractionProvider = ({ children }) => {
    * @returns {Boolean}
    */
   const isDetailModal = () => {
-    const modals = previewModalStateById;
-    return Object.values(modals).some(
+    return Object.values(previewModalStateById).some(
       (item) => !!(item?.modalState === modalStateActions.DETAIL_MODAL)
     );
   };
@@ -397,31 +397,27 @@ export const InteractionProvider = ({ children }) => {
   /**
    * Turn pointer events off while scrolling
    */
-  const onScroll = useCallback(
-    debounce(
-      () => {
-        const modals = previewModalStateById;
-        const style = document.body.style;
-        timerIdRef.current && clearTimeout(timerIdRef.current),
-          (timerIdRef.current = null);
-        Object.values(modals).some((modal) => {
-          return !!modal.isOpen;
-        }) ||
-          (style.pointerEvents !== "none" && (style.pointerEvents = "none")),
-          (timerIdRef.current = setTimeout(() => {
-            style.pointerEvents = "";
-          }, 100));
-      },
-      100,
-      { maxWait: 100, leading: true, trailing: true }
-    ),
-    [previewModalStateById, timerIdRef.current]
+  const onScroll = debounce(
+    () => {
+      const style = document.body.style;
+      timerIdRef.current && clearTimeout(timerIdRef.current),
+        (timerIdRef.current = null);
+      Object.values(previewModalStateById).some((modal) => {
+        return !!modal.isOpen;
+      }) ||
+        (style.pointerEvents !== "none" && (style.pointerEvents = "none")),
+        (timerIdRef.current = setTimeout(() => {
+          style.pointerEvents = "";
+        }, 100));
+    },
+    100,
+    { maxWait: 100, leading: true, trailing: true }
   );
 
   /**
    * Disable hover while scrolling
    */
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (typeof window !== "undefined") {
       window.addEventListener("scroll", onScroll);
       return () => {
