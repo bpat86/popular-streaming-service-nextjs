@@ -1,4 +1,7 @@
 module.exports = {
+  eslint: {
+    dirs: ["src"],
+  },
   // reactStrictMode: true,
   swcMinify: true,
   serverRuntimeConfig: {
@@ -10,6 +13,9 @@ module.exports = {
     apiUrl: process.env.CLIENT_API_URL,
   },
   images: {
-    domains: ["image.tmdb.org"],
+    domains: [
+      "image.tmdb.org",
+      "popular-streaming-service.s3.us-west-1.amazonaws.com",
+    ],
   },
 };

@@ -1,11 +1,16 @@
 {
-  "name": "with-tailwindcss",
+  "name": "popular-streaming-service",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build -p 3000",
     "start": "next start",
+    "lint": "next lint",
+    "lint:fix": "eslint src --fix && docker-compose run --rm npm run format",
+    "lint:strict": "eslint --max-warnings=0 src",
+    "format": "prettier -w .",
+    "format:check": "prettier -c .",
     "test": "jest --watchAll"
   },
   "dependencies": {
@@ -20,6 +25,7 @@
     "formik": "^2.2.9",
     "formik-persist": "^1.1.0",
     "framer-motion": "^7.5.3",
+    "immer": "^9.0.16",
     "iron-session": "^6.2.1",
     "js-cookie": "^2.2.1",
     "lodash.assign": "^4.2.0",
@@ -59,7 +65,9 @@
     "react-youtube": "^9.0.1",
     "stripe": "^8.203.0",
     "swr": "^1.3.0",
-    "yup": "^0.32.9"
+    "use-immer": "^0.7.0",
+    "yup": "^0.32.9",
+    "zustand": "^4.1.3"
   },
   "devDependencies": {
     "@headlessui/react": "^1.4.3",
@@ -68,9 +76,19 @@
     "@testing-library/jest-dom": "^5.16.2",
     "@testing-library/react": "^12.1.2",
     "autoprefixer": "^10.4.1",
+    "cross-env": "^7.0.3",
+    "eslint": "^8.26.0",
+    "eslint-config-next": "^13.0.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-simple-import-sort": "^8.0.0",
+    "eslint-plugin-unused-imports": "^2.0.0",
     "jest": "^27.4.7",
+    "lint-staged": "^13.0.3",
     "postcss": "^8.4.12",
-    "tailwindcss": "^3.1.6"
+    "prettier": "^2.7.1",
+    "prettier-plugin-tailwindcss": "^0.1.13",
+    "simple-zustand-devtools": "^1.1.0",
+    "tailwindcss": "^3.1.8"
   },
   "browserslist": [
     ">0.3%",
