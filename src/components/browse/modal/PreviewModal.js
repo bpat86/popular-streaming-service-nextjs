@@ -383,6 +383,9 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
               duration: 0,
             },
           },
+          transitionEnd: {
+            display: "none",
+          },
         };
       }
       // Hide modal if conditions aren't met
@@ -414,6 +417,9 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
             duration: 0.3,
             ease: [0.21, 0, 0.07, 1],
           },
+        },
+        transitionEnd: {
+          display: "none",
         },
       };
     }
@@ -685,6 +691,9 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
               ease: [0.42, 0, 0.58, 1],
             },
           },
+          transitionEnd: {
+            display: "none",
+          },
         };
       }
 
@@ -704,6 +713,9 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
             duration: 0.54,
             ease: [0.26, 1, 0.48, 1],
           },
+        },
+        transitionEnd: {
+          display: "none",
         },
       };
     }
@@ -1083,10 +1095,10 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
     return () => {
       // Cancel data fetch request
       cancelRequest();
-      // Set `wasOpen` to false
-      usePreviewModalStore.getState().setPreviewModalWasOpen(false);
       // Reset timeout id
       cancelAnimationFrame(animationFrameId.current);
+      // Set `wasOpen` to false
+      usePreviewModalStore.getState().setPreviewModalWasOpen(false);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modalState]);

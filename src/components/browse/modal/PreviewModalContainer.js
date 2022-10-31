@@ -21,6 +21,7 @@ const PreviewModalContainer = forwardRef((props, layoutWrapperRef) => {
     (state) => state.previewModalStateById,
     shallow
   );
+
   // Next Router
   const router = useRouter();
 

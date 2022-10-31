@@ -252,7 +252,7 @@ const PlayerContainer = forwardRef((props, buttonsRef) => {
       <div
         className="boxart-wrapper"
         style={{
-          position: isDetailModal ? "absolute" : "static",
+          position: isDetailModal ? "absolute" : "relative",
         }}
       >
         {imageKey && (
