@@ -51,107 +51,94 @@ export default function usePreviewModal({ initialData }) {
   // URL to fetch a single title
   const apiURL = `/api/tmdb/getTitle?id=${id}&type=${type}`;
 
-  /**
-   * Only attempt to fetch data if `data` is not null
-   */
-  try {
-    const {
-      data: modalData,
-      error: modalDataError,
-      mutate: mutateModalData,
-      isValidating,
-    } = useSWR(
-      apiURL,
-      (url) => (initialData ? fetchWithProps(url, { signal }) : null),
-      options
-    );
+  const {
+    data: modalData,
+    error: modalDataError,
+    mutate: mutateModalData,
+    isValidating,
+  } = useSWR(
+    apiURL,
+    (url) => (initialData ? fetchWithProps(url, { signal }) : null),
+    options
+  );
 
-    // Preview modal data
-    const previewModalData = Object.assign(
-      Object.assign({}, initialData, initialData?.model),
-      {},
-      {
-        id: initialData?.model?.id,
+  // Preview modal data
+  const previewModalData = Object.assign(
+    Object.assign({}, initialData, initialData?.model),
+    {},
+    {
+      id: initialData?.model?.id,
+      videoId: modalData?.data?.id,
+      videoKey: getVideoKey(modalData?.data),
+      videoModel: {
+        cast: modalData?.data?.cast,
+        crew: modalData?.data?.crew,
+        dislikedMediaId: modalData?.data?.disliked_media_id,
+        genres: modalData?.data?.genres,
+        id: modalData?.data?.id,
+        identifiers: {
+          uid: initialData?.model?.uid,
+          id: modalData?.data?.id,
+          mediaType: modalData?.data?.media_type,
+        },
+        imageKey: modalData?.data?.backdrop_path,
+        isBillboard: modalData?.data?.is_billboard,
+        inMediaList: modalData?.data?.in_media_list,
+        isMyListRow: initialData?.isMyListRow,
+        isDisliked: modalData?.data?.is_disliked,
+        isLiked: modalData?.data?.is_liked,
+        likedMediaId: modalData?.data?.liked_media_id,
+        logos: modalData?.data?.images?.logos,
+        mediaListId: modalData?.data?.media_list_id,
+        mediaType: modalData?.data?.media_type,
+        rankNum: modalData?.data?.rankNum,
+        rect: initialData?.rect,
+        reference: modalData?.data,
+        rowNum: initialData?.rowNum,
+        scrollPosition: initialData?.scrollPosition,
+        sliderName: modalData?.data?.sliderName,
+        synopsis: modalData?.data?.overview,
+        tagline: modalData?.data?.tagline,
+        title:
+          modalData?.data?.original_title || modalData?.data?.original_name,
+        titleCardRef: initialData?.titleCardRef,
         videoId: modalData?.data?.id,
         videoKey: getVideoKey(modalData?.data),
-        videoModel: {
-          cast: modalData?.data?.cast,
-          crew: modalData?.data?.crew,
-          dislikedMediaId: modalData?.data?.disliked_media_id,
-          genres: modalData?.data?.genres,
-          id: modalData?.data?.id,
-          identifiers: {
-            uid: initialData?.model?.uid,
-            id: modalData?.data?.id,
-            mediaType: modalData?.data?.media_type,
-          },
-          imageKey: modalData?.data?.backdrop_path,
-          isBillboard: modalData?.data?.is_billboard,
-          inMediaList: modalData?.data?.in_media_list,
-          isMyListRow: initialData?.isMyListRow,
-          isDisliked: modalData?.data?.is_disliked,
-          isLiked: modalData?.data?.is_liked,
-          likedMediaId: modalData?.data?.liked_media_id,
-          logos: modalData?.data?.images?.logos,
-          mediaListId: modalData?.data?.media_list_id,
-          mediaType: modalData?.data?.media_type,
-          rankNum: modalData?.data?.rankNum,
-          rect: initialData?.rect,
-          reference: modalData?.data,
-          rowNum: initialData?.rowNum,
-          scrollPosition: initialData?.scrollPosition,
-          sliderName: modalData?.data?.sliderName,
-          synopsis: modalData?.data?.overview,
-          tagline: modalData?.data?.tagline,
-          title:
-            modalData?.data?.original_title || modalData?.data?.original_name,
-          titleCardRef: initialData?.titleCardRef,
-          videoId: modalData?.data?.id,
-          videoKey: getVideoKey(modalData?.data),
-          videos: modalData?.data?.videos,
-          videoPlayback: {
-            start: initialData?.videoPlayback?.start,
-            length: initialData?.videoPlayback?.videoDuration,
-          },
-        },
         videos: modalData?.data?.videos,
         videoPlayback: {
           start: initialData?.videoPlayback?.start,
           length: initialData?.videoPlayback?.videoDuration,
         },
-      }
-    );
-
-    /**
-     * Data loading/fetching status
-     */
-    const fetchingModalData =
-      !modalData?.data && !modalDataError && isValidating;
-
-    if (signal.aborted) return;
-    if (!fetchingModalData) {
-      return {
-        modalData: previewModalData,
-        fetchingModalData,
-        mutateModalData,
-        modalDataError,
-        cancelRequest: () => controller.abort(),
-      };
-    } else {
-      return {
-        modalData: initialData,
-        fetchingModalData,
-        mutateModalData,
-        modalDataError,
-        cancelRequest: () => controller.abort(),
-      };
+      },
+      videos: modalData?.data?.videos,
+      videoPlayback: {
+        start: initialData?.videoPlayback?.start,
+        length: initialData?.videoPlayback?.videoDuration,
+      },
     }
-  } catch (err) {
-    if (err.name === "AbortError") {
-      console.log("Aborted");
-      return "Request Aborted ";
-    }
-    console.log("err: ", err);
-    return err;
+  );
+
+  /**
+   * Data loading/fetching status
+   */
+  const fetchingModalData = !modalData?.data && !modalDataError && isValidating;
+
+  if (signal.aborted) return;
+  if (!fetchingModalData) {
+    return {
+      modalData: previewModalData,
+      fetchingModalData,
+      mutateModalData,
+      modalDataError,
+      cancelRequest: () => controller.abort(),
+    };
+  } else {
+    return {
+      modalData: initialData,
+      fetchingModalData,
+      mutateModalData,
+      modalDataError,
+      cancelRequest: () => controller.abort(),
+    };
   }
 }

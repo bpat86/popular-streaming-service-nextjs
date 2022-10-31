@@ -51,7 +51,7 @@ const Billboard = forwardRef(
     const [textIsAnimating, setTextIsAnimating] = useState(false);
     const [audioEnabled, setAudioEnabled] = useState(false);
     // Local vars
-    const maxVolume = 50;
+    const maxVolume = 10;
 
     /**
      * Redirect to watch mode screen
@@ -231,26 +231,39 @@ const Billboard = forwardRef(
      * @returns
      */
     const onPlayerReady = (e) => {
-      if (!e.target) return;
-      e.target.mute();
-      e.target.playVideo();
-      setPlayer(e.target);
-      setTextIsAnimating(true);
-      setVideoPlaybackError(false);
-      setTimeout(() => setVideoCanPlayThrough(true), 1000);
+      if (e.target) {
+        setPlayer(e.target);
+      }
     };
+
+    /**
+     * Listen for when the video is ready to play
+     */
+    useEffect(() => {
+      let timerId;
+      if (player) {
+        player.mute();
+        player.playVideo();
+        setTextIsAnimating(true);
+        setVideoPlaybackError(false);
+        timerId = setTimeout(() => setVideoCanPlayThrough(true), 1000);
+      }
+      return () => {
+        player && player.destroy();
+        timerId && clearTimeout(timerId);
+      };
+    }, [player]);
 
     /**
      * YouTube API state change event
      * @param {Object} e
      */
     const onPlayerStateChange = (e) => {
-      if (!e) return;
       if (!e.data) {
         setVideoPlaybackError(true);
         setVideoCanPlayThrough(false);
       }
-      e.data === 1 && audioIsEnabled() && unMute();
+      if (e.data === 1) audioIsEnabled() && unMute();
     };
 
     /**
@@ -301,9 +314,9 @@ const Billboard = forwardRef(
       }
     }, [
       inView,
-      shouldFreeze,
       pauseVideo,
       playVideo,
+      shouldFreeze,
       videoCanPlayThrough,
       videoPlaybackError,
     ]);
@@ -312,7 +325,7 @@ const Billboard = forwardRef(
      * YouTube Player Component
      * @returns {JSX.Element}
      */
-    const youTubeComponent = () => {
+    const renderVideoPlayer = () => {
       const videoKey = model?.videoModel?.videoKey;
       if (videoKey) {
         return (
@@ -382,7 +395,7 @@ const Billboard = forwardRef(
                       ref={playerRef}
                       className="pointer-events-none relative h-full w-full overflow-hidden"
                     >
-                      {youTubeComponent()}
+                      {renderVideoPlayer()}
                     </div>
                   </div>
                 </div>

@@ -45,46 +45,35 @@ export default function useMedia({ pageAPI } = {}) {
   // URL to fetch a single title
   const apiURL = `/api/tmdb/${pageAPI}`;
 
-  /**
-   * Only attempt to fetch data if `pageAPI` is not null
-   */
-  try {
-    const {
-      data: media,
-      mutate: mutateMedia,
-      error: mediaError,
-      isValidating,
-    } = useSWR(
-      apiURL,
-      (url) => (pageAPI ? fetchWithProps(url, { signal }) : null),
-      options
-    );
+  const {
+    data: media,
+    mutate: mutateMedia,
+    error: mediaError,
+    isValidating,
+  } = useSWR(
+    apiURL,
+    (url) => (pageAPI ? fetchWithProps(url, { signal }) : null),
+    options
+  );
 
-    const fetchingMediaData = !media && !mediaError && isValidating;
-    // Abort fetch if the user navigates away
-    if (signal.aborted) return;
-    if (!fetchingMediaData) {
-      // Return the data, mutate function, and error
-      return {
-        fetchingMedia: isValidating,
-        media,
-        mutateMedia,
-        mediaError,
-        cancelRequest: () => controller.abort(),
-      };
-    }
+  const fetchingMediaData = !media && !mediaError && isValidating;
+  // Abort fetch if the user navigates away
+  if (signal.aborted) return;
+  if (!fetchingMediaData) {
+    // Return the data, mutate function, and error
     return {
       fetchingMedia: isValidating,
-      media: null,
+      media,
       mutateMedia,
       mediaError,
       cancelRequest: () => controller.abort(),
     };
-  } catch (err) {
-    if (err.name === "AbortError") {
-      console.log("Aborted");
-      return "Request Aborted ";
-    }
-    return err;
   }
+  return {
+    fetchingMedia: isValidating,
+    media: null,
+    mutateMedia,
+    mediaError,
+    cancelRequest: () => controller.abort(),
+  };
 }

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { forwardRef, useLayoutEffect, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import YouTube from "react-youtube";
 
 import MotionDivWrapper from "@/lib/MotionDivWrapper";
@@ -72,7 +72,7 @@ const PlayerContainer = forwardRef((props, buttonsRef) => {
   /**
    * Watch for errors
    */
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (videoPlaybackError) {
       setVideoCanPlayThrough(false);
     }
@@ -81,7 +81,7 @@ const PlayerContainer = forwardRef((props, buttonsRef) => {
   /**
    * Watch for when the video is finished playing
    */
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (videoCompleted) {
       setVideoCanPlayThrough(false);
     }
@@ -103,7 +103,7 @@ const PlayerContainer = forwardRef((props, buttonsRef) => {
    */
   const unMute = () => {
     if (player) {
-      player.setVolume(50);
+      player.setVolume(10);
       player.unMute();
       enableAudio();
     }
@@ -139,25 +139,36 @@ const PlayerContainer = forwardRef((props, buttonsRef) => {
    * @param {Object} e
    * @returns
    */
-  const onPlayerReady = (e = {}) => {
-    if (!e || !e.target) return;
-    e.target?.setVolume(0);
-    e.target?.mute();
-    e.target?.playVideo();
-    setPlayer(e.target);
+  const onPlayerReady = (e) => {
+    if (e.target) {
+      setPlayer(e.target);
+    }
   };
+
+  /**
+   * Listen for when the video is ready to play
+   */
+  useEffect(() => {
+    if (player) {
+      player.mute();
+      player.playVideo();
+      setVideoPlaybackError(false);
+    }
+    return () => {
+      player && player.destroy();
+    };
+  }, [player]);
 
   /**
    * YouTube API state change event
    * @param {Object} e
    */
-  const onPlayerStateChange = (e = {}) => {
-    if (!e || !e.data) return;
+  const onPlayerStateChange = (e) => {
     if (e.data) {
       setVideoPlaybackError(false);
       setVideoCanPlayThrough(true);
     }
-    e.data === 1 && audioIsEnabled() && unMute();
+    if (e.data === 1) audioIsEnabled() && unMute();
   };
 
   /**
@@ -212,7 +223,7 @@ const PlayerContainer = forwardRef((props, buttonsRef) => {
    * Handle the YoutTube player iframe
    * @returns {JSX.Element}
    */
-  const youTubeComponent = () => {
+  const renderVideoPlayer = () => {
     if (
       !isLoading &&
       !isAnimating &&
@@ -247,7 +258,7 @@ const PlayerContainer = forwardRef((props, buttonsRef) => {
 
   return (
     <div className={className}>
-      {youTubeComponent()}
+      {renderVideoPlayer()}
       {/* Boxart container */}
       <div
         className="boxart-wrapper"
