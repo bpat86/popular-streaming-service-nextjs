@@ -34,7 +34,15 @@ import ModalOverlay from "./ModalOverlay";
 import PlayerContainer from "./PlayerContainer";
 
 const PreviewModal = forwardRef((props, layoutWrapperRef) => {
-  /** Props */
+  // Context
+  const {
+    isWatchModeEnabled,
+    enableWatchMode,
+    disableWatchMode,
+    enableTooltips,
+    disableTooltips,
+  } = useContext(InteractionContext);
+  // Props
   const {
     previewModalState,
     previewModalState: {
@@ -47,14 +55,6 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
       videoId,
     },
   } = props;
-  // Context
-  const {
-    isWatchModeEnabled,
-    enableWatchMode,
-    disableWatchMode,
-    enableTooltips,
-    disableTooltips,
-  } = useContext(InteractionContext);
   // Framer motion utility
   const isPresent = useIsPresent();
   // State
@@ -1053,18 +1053,24 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
       window.removeEventListener("resize", handleResizeWindow);
       window.removeEventListener("keydown", handleEscKeydown);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     handleVisibilityChange,
     handleResizeWindow,
     handleEscKeydown,
     handleOnMouseMove,
+    modalState,
   ]);
 
   /**
    * Manage preview modal's state transitions
    */
   useLayoutEffect(() => {
+    // Open as detail modal
+    switch (modalState) {
+      case modalStateActions.DETAIL_MODAL: {
+        updateToDetailModal();
+      }
+    }
     // Open as mini modal
     if (titleCardRect) {
       switch (modalState) {
@@ -1082,19 +1088,6 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
       // Reset timeout id
       cancelAnimationFrame(animationFrameId.current);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  /**
-   * Manage preview modal's state transitions
-   */
-  useLayoutEffect(() => {
-    // Open as detail modal
-    switch (modalState) {
-      case modalStateActions.DETAIL_MODAL: {
-        updateToDetailModal();
-      }
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modalState]);
 

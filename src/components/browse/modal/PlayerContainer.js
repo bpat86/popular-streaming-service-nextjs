@@ -257,6 +257,7 @@ const PlayerContainer = forwardRef((props, buttonsRef) => {
       >
         {imageKey && (
           <Image
+            priority={true}
             layout="fill"
             className={`boxart-image ${isDisliked ? "grayscale" : null}`}
             src={`https://image.tmdb.org/t/p/${
@@ -282,6 +283,7 @@ const PlayerContainer = forwardRef((props, buttonsRef) => {
         <div className="story-art detail-modal">
           {imageKey && (
             <Image
+              priority={true}
               layout="fill"
               className={`boxart-image ${isDisliked ? "grayscale" : null}`}
               src={`https://image.tmdb.org/t/p/${
@@ -308,6 +310,7 @@ const PlayerContainer = forwardRef((props, buttonsRef) => {
         <div className="story-art detail-modal">
           {imageKey && (
             <Image
+              priority={true}
               layout="fill"
               className={`boxart-image ${isDisliked ? "grayscale" : null}`}
               src={`https://image.tmdb.org/t/p/${

@@ -5,7 +5,13 @@ module.exports = {
     node: true,
   },
   plugins: ["simple-import-sort", "unused-imports"],
-  extends: ["eslint:recommended", "next", "next/core-web-vitals", "prettier"],
+  extends: [
+    "plugin:react-hooks/recommended",
+    "eslint:recommended",
+    "next",
+    "next/core-web-vitals",
+    "prettier",
+  ],
   rules: {
     // "no-unused-vars": "off",
     "no-unused-vars": [1, { args: "after-used", argsIgnorePattern: "^_" }],

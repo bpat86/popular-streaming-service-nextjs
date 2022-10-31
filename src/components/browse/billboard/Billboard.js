@@ -390,6 +390,7 @@ const Billboard = forwardRef(
               <div className="motion-background-component bottom-layer full-screen">
                 <div className="hero-image-wrapper">
                   <Image
+                    priority={true}
                     layout="fill"
                     objectFit="cover"
                     className="hero static-image image-layer"

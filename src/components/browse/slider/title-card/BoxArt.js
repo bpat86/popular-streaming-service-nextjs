@@ -1,9 +1,9 @@
 import Image from "next/image";
-import { forwardRef } from "react";
 
-const BoxArt = forwardRef(({ alt = "", className, imageKey, onFocus }, ref) => {
+const BoxArt = ({ alt = "", className, imageKey, onFocus }) => {
   return (
     <Image
+      priority={true}
       layout="fill"
       objectFit="contain"
       className={className}
@@ -12,7 +12,6 @@ const BoxArt = forwardRef(({ alt = "", className, imageKey, onFocus }, ref) => {
       alt={alt}
     />
   );
-});
+};
 
-BoxArt.displayName = "BoxArt";
 export default BoxArt;

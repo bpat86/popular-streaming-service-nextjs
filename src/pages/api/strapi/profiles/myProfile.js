@@ -16,7 +16,7 @@ export default withSessionRoute(async (req, res) => {
       };
 
       // Destructure the body params from `request.body`
-      const { name, autoPlayNextEpisode, autoPlayPreviews } = req.body;
+      const { id, name, autoPlayNextEpisode, autoPlayPreviews } = req.body;
 
       // Body parameters to be sent to the backend
       const bodyParams = {
@@ -25,11 +25,11 @@ export default withSessionRoute(async (req, res) => {
           user: user.id,
           id,
           name,
-          user,
-          avatar,
+          // user,
+          // avatar,
           autoPlayNextEpisode,
           autoPlayPreviews,
-          kid,
+          // kid,
         },
       };
 

@@ -2,7 +2,7 @@ import {
   Children,
   cloneElement,
   useCallback,
-  useEffect,
+  useLayoutEffect,
   useRef,
   useState,
 } from "react";
@@ -40,7 +40,6 @@ const Slider = (props) => {
     listContext,
     myListRowItemsLength,
     onSliderMove,
-    initialLowestVisibleIndex,
     lowestVisibleItemIndex,
     setLowestVisibleItemIndex,
     sliderMoveDirection,
@@ -628,9 +627,9 @@ const Slider = (props) => {
    * Determine if the current page / segment is the last
    * @returns {Boolean}
    */
-  const isLastPage = useCallback(() => {
-    return getPageNumber(lowestVisibleItemIndex) + 1 === getTotalPages();
-  }, [lowestVisibleItemIndex, getPageNumber, getTotalPages]);
+  // const isLastPage = useCallback(() => {
+  //   return getPageNumber(lowestVisibleItemIndex) + 1 === getTotalPages();
+  // }, [lowestVisibleItemIndex, getPageNumber, getTotalPages]);
 
   /**
    * Move the slider forward when the Next button is clicked
@@ -771,61 +770,18 @@ const Slider = (props) => {
   };
 
   /**
-   * Set state when slider mounts
-   */
-  useEffect(() => {
-    const totalItemCount = getTotalItemCount();
-    let initialLowestIdx = initialLowestVisibleIndex || 0;
-    !enableLooping &&
-      totalItemCount &&
-      initialLowestIdx + itemsInRow > totalItemCount &&
-      (initialLowestIdx = totalItemCount - itemsInRow) < 0 &&
-      (initialLowestIdx = 0),
-      setLowestVisibleItemIndex(initialLowestIdx),
-      setHasMovedOnce(initialLowestVisibleIndex || false);
-    return () => {
-      setLowestVisibleItemIndex(initialLowestIdx);
-      setHasMovedOnce(initialLowestVisibleIndex || false);
-    };
-  }, [
-    setHasMovedOnce,
-    setLowestVisibleItemIndex,
-    getTotalItemCount,
-    initialLowestVisibleIndex,
-    itemsInRow,
-    enableLooping,
-  ]);
-
-  /**
    * Refocus certain visible slider items after the slider shifts
    */
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (hasMovedOnce) {
       refocusAfterShift();
     }
   }, [hasMovedOnce, refocusAfterShift]);
 
   /**
-   * Update the lowest visible index if slider is on the last page
-   */
-  useEffect(() => {
-    if (totalItems && isLastPage()) {
-      // setLowestVisibleItemIndex(Math.max(0, totalItems));
-      setLowestVisibleItemIndex(Math.min(0, totalItems));
-      setHasMovedOnce(initialLowestVisibleIndex || false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    totalItems,
-    initialLowestVisibleIndex,
-    setHasMovedOnce,
-    setLowestVisibleItemIndex,
-  ]);
-
-  /**
    * Update itemsInRow amount if values change
    */
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (itemsInRow) {
       resetSliderPosition();
     }

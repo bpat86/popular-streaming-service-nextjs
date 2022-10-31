@@ -39,7 +39,7 @@ export default withSessionRoute(async (req, res) => {
         res.status(200).json({ user: userResponse.user });
       }
     } catch (error) {
-      console.log("error.response: ", error.response);
+      // console.log("error.response: ", error.response);
       // Send error response to the frontend for user feedback
       res.status(error.response.data.error.status).json({
         message: error.response.data.error.message,

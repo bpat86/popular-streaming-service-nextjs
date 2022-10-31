@@ -21,7 +21,6 @@ export default withSessionRoute(async (req, res) => {
         lastName,
         email,
         phone,
-        password,
         plan,
         stripeCustomerId,
         subscriptionId,
@@ -67,7 +66,7 @@ export default withSessionRoute(async (req, res) => {
         res.status(200).json({ user: userResponse });
       }
     } catch (error) {
-      console.log("updateUser error: ", error.response.data.error.message);
+      // console.log("updateUser error: ", error.response.data.error.message);
       // Send error response to the frontend for user feedback
       res.status(error.response.data.error.status).json({
         message: error.response.data.error.message,

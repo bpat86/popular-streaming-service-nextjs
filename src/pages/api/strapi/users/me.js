@@ -76,7 +76,7 @@ export default withSessionRoute(async (req, res) => {
           });
         }
       } catch (error) {
-        console.log("error: ", error.response.data.error.message);
+        // console.log("error: ", error.response.data.error.message);
         // Send error response to the frontend for user feedback
         res.status(error.response.data.error.status).json({
           message: error.response.data.error.message,
