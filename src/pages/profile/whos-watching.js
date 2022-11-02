@@ -108,12 +108,7 @@ const WhosWatchingPage = (props) => {
 
 export default WhosWatchingPage;
 
-export const getServerSideProps = withSessionSsr(async function ({ req, res }) {
-  res.setHeader(
-    "Cache-Control",
-    "public, s-maxage=10, stale-while-revalidate=59"
-  );
-
+export const getServerSideProps = withSessionSsr(async function ({ req }) {
   // Get the `user` session if it exists
   const user = req.session.user;
   const isLoggedIn = user?.isLoggedIn || false;

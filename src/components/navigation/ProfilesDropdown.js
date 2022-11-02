@@ -87,37 +87,34 @@ const UserDropdown = (props) => {
         >
           <div className="relative py-4">
             <div className="cursor-pointer space-y-3 px-3">
-              {profiles &&
-                profiles.map((profile) => {
-                  if (
-                    profile.attributes.name !== activeProfile?.attributes.name
-                  ) {
-                    return (
-                      <Menu.Item as="div" key={profile.id}>
-                        {() => (
-                          <>
+              {profiles?.map((profile) => {
+                if (
+                  profile.attributes.name !== activeProfile?.attributes.name
+                ) {
+                  return (
+                    <Menu.Item as="div" key={profile.id}>
+                      {() => (
+                        <>
+                          <div
+                            className="group flex items-center justify-start"
+                            onClick={() => makeProfileActive(profile)}
+                          >
                             <div
-                              className="group flex items-center justify-start"
-                              onClick={() => {
-                                makeProfileActive(profile);
+                              className="profile-avatar mr-2 flex h-8 w-8 flex-col rounded-md bg-cover"
+                              style={{
+                                backgroundImage: `url("/images/profiles/avatars/${profile.attributes.avatar}.png")`,
                               }}
-                            >
-                              <div
-                                className="profile-avatar mr-2 flex h-8 w-8 flex-col rounded-md bg-cover"
-                                style={{
-                                  backgroundImage: `url("/images/profiles/avatars/${profile.attributes.avatar}.png")`,
-                                }}
-                              ></div>
-                              <span className="mr-4 text-sm font-semibold group-hover:underline">
-                                {profile.attributes.name}
-                              </span>
-                            </div>
-                          </>
-                        )}
-                      </Menu.Item>
-                    );
-                  }
-                })}
+                            ></div>
+                            <span className="mr-4 text-sm font-semibold group-hover:underline">
+                              {profile.attributes.name}
+                            </span>
+                          </div>
+                        </>
+                      )}
+                    </Menu.Item>
+                  );
+                }
+              })}
             </div>
             <div
               className={`px-3 ${
@@ -181,13 +178,15 @@ const UserDropdown = (props) => {
             <div className="mt-4 space-y-3 border-t border-gray-800 px-3 pt-4">
               <Menu.Item>
                 {({ active }) => (
-                  <Link href="/my-account">
-                    <a
-                      className={classNames(
-                        active ? "text-sm hover:underline" : "text-gray-100",
-                        "flex w-full items-center text-left text-sm font-bold focus:outline-none"
-                      )}
-                    >
+                  <Link
+                    href="/my-account"
+                    legacyBehavior={false}
+                    className={classNames(
+                      active ? "text-sm hover:underline" : "text-gray-100",
+                      "flex w-full items-center text-left text-sm font-bold focus:outline-none"
+                    )}
+                  >
+                    <>
                       <svg
                         aria-hidden="true"
                         width="20"
@@ -214,7 +213,7 @@ const UserDropdown = (props) => {
                         <path d="M14.618 15.5A5.249 5.249 0 0010 12.75a5.249 5.249 0 00-4.618 2.75"></path>
                       </svg>
                       Account
-                    </a>
+                    </>
                   </Link>
                 )}
               </Menu.Item>

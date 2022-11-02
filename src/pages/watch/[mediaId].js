@@ -261,7 +261,7 @@ const WatchMediaPage = () => {
    * YouTube Player Component
    * @returns {JSX.Element}
    */
-  const youTubeComponent = () => {
+  const renderVideoPlayer = () => {
     const videoKey = getVideoKey(titleData?.data);
     if (!videoKey) return <></>;
 
@@ -298,7 +298,7 @@ const WatchMediaPage = () => {
       transition={{ duration: 0.3, ease: "easeOut" }}
       className="watch-video"
     >
-      {!fetchingTitle && titleData?.data && youTubeComponent()}
+      {!fetchingTitle && titleData?.data && renderVideoPlayer()}
     </motion.div>
   );
 };

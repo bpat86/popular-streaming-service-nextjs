@@ -1,4 +1,5 @@
 import { useIsPresent } from "framer-motion";
+import produce from "immer";
 import debounce from "lodash.debounce";
 import { useRouter } from "next/router";
 import {
@@ -219,15 +220,15 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
         ((mainNavigation.style = ""),
         (layoutRef.style.top = ""),
         (layoutRef.style.position = "static"),
-        resetScrollPositionOnUnmount(),
+        restoreScrollPositionOnUnmount(),
         layoutRef.removeAttribute("isDetailModalRootStyleSet"));
     }
-  }, [layoutWrapperRef, resetScrollPositionOnUnmount]);
+  }, [layoutWrapperRef, restoreScrollPositionOnUnmount]);
 
   /**
    * Reset scroll position on unmount
    */
-  const resetScrollPositionOnUnmount = useCallback(() => {
+  const restoreScrollPositionOnUnmount = useCallback(() => {
     window.scrollTo(
       0,
       (null == previewModalState
@@ -252,7 +253,7 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
    * Compute the framer-motion `variants` for the modal's mini state
    * @returns {Object}
    */
-  const miniModalAnimationProps = () => {
+  const getMiniModalAnimationProps = () => {
     /**
      * Mini modal's mounting/reset state.
      * Some of the previous state's values are needed for the next transition.
@@ -423,7 +424,18 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
         },
       };
     }
-    let variantObj;
+    const variantObj = new Object();
+    const miniVariants = produce(variantObj, (draft) => {
+      draft[animationStateActions.RESET_MINI_MODAL] = resetMiniModal();
+      draft[animationStateActions.OPEN_MINI_MODAL] = {
+        ...resetMiniModal(),
+        ...openMiniModal(),
+      };
+      draft[animationStateActions.CLOSE_MINI_MODAL] = {
+        ...openMiniModal(),
+        ...closeMiniModal(),
+      };
+    });
     return titleCardRect
       ? {
           animate: animationState,
@@ -451,29 +463,31 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
               modalState === modalStateActions.MINI_MODAL &&
               handleCloseModal();
           },
-          variants:
-            ((variantObj = {}),
-            Object.assign(variantObj, {
-              [animationStateActions.RESET_MINI_MODAL]: Object.assign(
-                {},
-                resetMiniModal()
-              ),
-            }),
-            Object.assign(variantObj, {
-              [animationStateActions.OPEN_MINI_MODAL]: Object.assign(
-                {},
-                resetMiniModal(),
-                openMiniModal()
-              ),
-            }),
-            Object.assign(variantObj, {
-              [animationStateActions.CLOSE_MINI_MODAL]: Object.assign(
-                {},
-                openMiniModal(),
-                closeMiniModal()
-              ),
-            }),
-            variantObj),
+          variants: miniVariants,
+          // OLD
+          // variants:
+          //   ((variantObj = {}),
+          //   Object.assign(variantObj, {
+          //     [animationStateActions.RESET_MINI_MODAL]: Object.assign(
+          //       {},
+          //       resetMiniModal()
+          //     ),
+          //   }),
+          //   Object.assign(variantObj, {
+          //     [animationStateActions.OPEN_MINI_MODAL]: Object.assign(
+          //       {},
+          //       resetMiniModal(),
+          //       openMiniModal()
+          //     ),
+          //   }),
+          //   Object.assign(variantObj, {
+          //     [animationStateActions.CLOSE_MINI_MODAL]: Object.assign(
+          //       {},
+          //       openMiniModal(),
+          //       closeMiniModal()
+          //     ),
+          //   }),
+          //   variantObj),
         }
       : {
           exit: {},
@@ -484,7 +498,7 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
    * Compute the framer-motion `variants` for the modal's detail state
    * @returns {Object}
    */
-  const detailModalAnimationProps = () => {
+  const getDetailModalAnimationProps = () => {
     /**
      * Detail modal's mounting state.
      * Some of the previous state's values are neededfor the next transition.
@@ -720,7 +734,18 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
       };
     }
 
-    let variantObj;
+    const variantObj = new Object();
+    const detailVariants = produce(variantObj, (draft) => {
+      draft[animationStateActions.MOUNT_DETAIL_MODAL] = mountDetailModal();
+      draft[animationStateActions.OPEN_DETAIL_MODAL] = {
+        ...mountDetailModal(),
+        ...openDetailModal(),
+      };
+      draft[animationStateActions.CLOSE_DETAIL_MODAL] = {
+        ...openDetailModal(),
+        ...closeDetailModal(),
+      };
+    });
     return {
       initial: false,
       animate: animationState,
@@ -742,26 +767,27 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
           enableTooltips();
         });
       },
-      variants:
-        ((variantObj = {}),
-        Object.assign(variantObj, {
-          [animationStateActions.MOUNT_DETAIL_MODAL]: Object.assign(
-            mountDetailModal()
-          ),
-        }),
-        Object.assign(variantObj, {
-          [animationStateActions.OPEN_DETAIL_MODAL]: Object.assign(
-            mountDetailModal(),
-            openDetailModal()
-          ),
-        }),
-        Object.assign(variantObj, {
-          [animationStateActions.CLOSE_DETAIL_MODAL]: Object.assign(
-            openDetailModal(),
-            closeDetailModal()
-          ),
-        }),
-        variantObj),
+      variants: detailVariants,
+      // variants:
+      //   ((variantObj = {}),
+      //   Object.assign(variantObj, {
+      //     [animationStateActions.MOUNT_DETAIL_MODAL]: Object.assign(
+      //       mountDetailModal()
+      //     ),
+      //   }),
+      //   Object.assign(variantObj, {
+      //     [animationStateActions.OPEN_DETAIL_MODAL]: Object.assign(
+      //       mountDetailModal(),
+      //       openDetailModal()
+      //     ),
+      //   }),
+      //   Object.assign(variantObj, {
+      //     [animationStateActions.CLOSE_DETAIL_MODAL]: Object.assign(
+      //       openDetailModal(),
+      //       closeDetailModal()
+      //     ),
+      //   }),
+      //   variantObj),
     };
   };
 
@@ -772,11 +798,10 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
   const getAnimationProps = () => {
     switch (modalState) {
       case modalStateActions.MINI_MODAL: {
-        // console.log("mini ", miniModalAnimationProps());
-        return miniModalAnimationProps();
+        return getMiniModalAnimationProps();
       }
       case modalStateActions.DETAIL_MODAL: {
-        return detailModalAnimationProps();
+        return getDetailModalAnimationProps();
       }
       default: {
         return;
@@ -836,13 +861,13 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
         animationFrameId.current &&
           cancelAnimationFrame(animationFrameId.current),
           (animationFrameId.current = 0);
-        // Set wasOpen true
-        usePreviewModalStore.getState().setPreviewModalWasOpen(true);
         // Set preview modal closed
         usePreviewModalStore.getState().setPreviewModalClose({
           closeWithoutAnimation,
           videoId,
         });
+        // Set wasOpen true
+        usePreviewModalStore.getState().setPreviewModalWasOpen(true);
         // Reset the router path to the default path
         modalState === modalStateActions.DETAIL_MODAL && resetRouteQuery();
         // Remove the preview modal's box shadow

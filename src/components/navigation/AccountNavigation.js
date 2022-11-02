@@ -23,16 +23,15 @@ export const AccountNavigation = (props) => {
           <div className="main-navbar max-w-screen-3xl relative mx-auto flex h-[68px] items-center justify-between px-6 sm:px-12 md:justify-start md:space-x-10">
             <div className="flex justify-start">
               <Link href={`${isActive ? "/browse" : "/my-account"}`}>
-                <a>
-                  <Logo className="h-6 w-auto text-netflix-red" />
-                </a>
+                <span>
+                  <Logo className="h-6 w-auto cursor-pointer text-netflix-red" />
+                </span>
               </Link>
             </div>
             <div className="-my-2 -mr-2 md:hidden">
               <button
                 type="button"
                 className="focus:ring-netflix inline-flex items-center justify-center rounded-md bg-white p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset"
-                onClick={() => setIsOpen(!isOpen)}
               >
                 <span className="sr-only">Open menu</span>
                 {/* Heroicon name: menu */}
@@ -60,11 +59,9 @@ export const AccountNavigation = (props) => {
                     <ul className="flex list-none items-center space-x-6">
                       <li>
                         <Link href={`${isActive ? "/browse" : "/my-account"}`}>
-                          <a>
-                            <span className="text-sm text-white transition duration-700 ease-out">
-                              Home
-                            </span>
-                          </a>
+                          <span className="cursor-pointer text-sm text-white transition duration-700 ease-out">
+                            Home
+                          </span>
                         </Link>
                       </li>
                       <li>
@@ -73,11 +70,9 @@ export const AccountNavigation = (props) => {
                             isActive ? "/browse/genre/tv" : "/my-account"
                           }`}
                         >
-                          <a>
-                            <span className="text-sm text-white transition duration-300 ease-out hover:text-gray-300">
-                              TV Shows
-                            </span>
-                          </a>
+                          <span className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-gray-300">
+                            TV Shows
+                          </span>
                         </Link>
                       </li>
                       <li>
@@ -86,11 +81,9 @@ export const AccountNavigation = (props) => {
                             isActive ? "/browse/genre/movies" : "/my-account"
                           }`}
                         >
-                          <a>
-                            <span className="text-sm text-white transition duration-300 ease-out hover:text-gray-300">
-                              Movies
-                            </span>
-                          </a>
+                          <span className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-gray-300">
+                            Movies
+                          </span>
                         </Link>
                       </li>
                       <li>
@@ -99,20 +92,16 @@ export const AccountNavigation = (props) => {
                             isActive ? "/browse/latest" : "/my-account"
                           }`}
                         >
-                          <a>
-                            <span className="text-sm text-white transition duration-300 ease-out hover:text-gray-300">
-                              New & Popular
-                            </span>
-                          </a>
+                          <span className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-gray-300">
+                            New & Popular
+                          </span>
                         </Link>
                       </li>
                       <li>
                         <Link href={`${isActive ? "/browse" : "/my-account"}`}>
-                          <a>
-                            <span className="text-sm text-white transition duration-300 ease-out hover:text-gray-300">
-                              My List
-                            </span>
-                          </a>
+                          <span className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-gray-300">
+                            My List
+                          </span>
                         </Link>
                       </li>
                     </ul>

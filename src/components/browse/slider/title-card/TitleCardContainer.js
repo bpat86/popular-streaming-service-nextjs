@@ -36,6 +36,8 @@ const TitleCardContainer = forwardRef(
     });
     const hoverTimeoutIdRef = useRef(0);
 
+    // console.log("TitleCardContainer");
+
     /**
      * Determine if a preview modal is currently open
      * @returns {Boolean}
@@ -129,7 +131,10 @@ const TitleCardContainer = forwardRef(
     const handleMouseMove = (e, titleCardRef) => {
       const { isHovering } = scopeRef.current;
       // Process the mouse move event
-      isHovering || isPreviewModalOpen() || handleMouseEnter(e, titleCardRef);
+      isHovering ||
+        usePreviewModalStore.getState().isOpen() ||
+        isPreviewModalOpen() ||
+        handleMouseEnter(e, titleCardRef);
     };
 
     /**
@@ -168,7 +173,7 @@ const TitleCardContainer = forwardRef(
       }
     };
 
-    // console.log(`rendering titleCardContainer ${model?.videoModel?.title}`);
+    console.log(`rendering titleCardContainer ${model?.videoModel?.title}`);
 
     /**
      * Open the preview modal.

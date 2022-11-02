@@ -18,9 +18,9 @@ export const ProfileNavigation = ({ user }) => {
             <div className="max-w-screen-3xl mx-auto flex items-start justify-between px-6 py-2 sm:px-12 md:justify-start md:space-x-10">
               <div className="flex justify-start lg:w-0 lg:flex-1">
                 <Link href="/">
-                  <a>
-                    <Logo className="h-8 w-auto text-netflix-red sm:h-8" />
-                  </a>
+                  <span>
+                    <Logo className="h-8 w-auto cursor-pointer text-netflix-red sm:h-8" />
+                  </span>
                 </Link>
               </div>
               {/* <div className="-my-2 -mr-2 md:hidden">
@@ -61,9 +61,9 @@ export const ProfileNavigation = ({ user }) => {
                   ) : (
                     <>
                       <Link href="/login">
-                        <a className="ml-8 inline-flex items-center justify-center whitespace-nowrap rounded-sm border border-transparent bg-netflix-red px-4 py-1 text-base font-medium text-white transition duration-700 ease-out hover:bg-netflix-red-light">
+                        <span className="ml-8 inline-flex cursor-pointer items-center justify-center whitespace-nowrap rounded-sm border border-transparent bg-netflix-red px-4 py-1 text-base font-medium text-white transition duration-700 ease-out hover:bg-netflix-red-light">
                           Sign In
-                        </a>
+                        </span>
                       </Link>
                     </>
                   )}

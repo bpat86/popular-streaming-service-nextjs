@@ -149,7 +149,7 @@ const PlayerContainer = forwardRef((props, buttonsRef) => {
    * Listen for when the video is ready to play
    */
   useEffect(() => {
-    if (player) {
+    if (player && player?.getPlayerState() === 1) {
       player.mute();
       player.playVideo();
       setVideoPlaybackError(false);
@@ -263,7 +263,7 @@ const PlayerContainer = forwardRef((props, buttonsRef) => {
       <div
         className="boxart-wrapper"
         style={{
-          position: isDetailModal ? "absolute" : "relative",
+          position: isDetailModal ? "absolute" : "static",
         }}
       >
         {imageKey && (

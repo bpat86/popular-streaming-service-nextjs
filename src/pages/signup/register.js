@@ -53,12 +53,7 @@ const Register = (props) => {
 
 export default Register;
 
-export const getServerSideProps = withSessionSsr(async ({ req, res }) => {
-  res.setHeader(
-    "Cache-Control",
-    "public, s-maxage=10, stale-while-revalidate=59"
-  );
-
+export const getServerSideProps = withSessionSsr(async ({ req }) => {
   // Get the `user` session if it exists and set a couple helper variables
   const user = req.session.user || null;
   const isLoggedIn = user?.isLoggedIn || false;

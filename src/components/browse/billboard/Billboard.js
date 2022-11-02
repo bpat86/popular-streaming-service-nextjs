@@ -4,7 +4,7 @@ import {
   forwardRef,
   useCallback,
   useContext,
-  useEffect,
+  useLayoutEffect,
   useRef,
   useState,
 } from "react";
@@ -239,10 +239,9 @@ const Billboard = forwardRef(
     /**
      * Listen for when the video is ready to play
      */
-    useEffect(() => {
+    useLayoutEffect(() => {
       let timerId;
       if (player) {
-        player.mute();
         player.playVideo();
         setTextIsAnimating(true);
         setVideoPlaybackError(false);
@@ -259,11 +258,11 @@ const Billboard = forwardRef(
      * @param {Object} e
      */
     const onPlayerStateChange = (e) => {
-      if (!e.data) {
+      if (!e?.data) {
         setVideoPlaybackError(true);
         setVideoCanPlayThrough(false);
       }
-      if (e.data === 1) audioIsEnabled() && unMute();
+      if (e?.data === 1) audioIsEnabled() && unMute();
     };
 
     /**
@@ -298,14 +297,14 @@ const Billboard = forwardRef(
     /**
      * Listen for when the video finishes
      */
-    useEffect(() => {
+    useLayoutEffect(() => {
       videoCompleted && setVideoCanPlayThrough(false);
     }, [videoCompleted]);
 
     /**
      * Autoplay billbaord video on mount and play/pause when in and out of view
      */
-    useEffect(() => {
+    useLayoutEffect(() => {
       if (!videoCanPlayThrough || videoPlaybackError) return;
       if (inView && !shouldFreeze) {
         playVideo();

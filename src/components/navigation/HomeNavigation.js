@@ -23,6 +23,7 @@ export const HomeNavigation = (props) => {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /**
@@ -58,32 +59,29 @@ export const HomeNavigation = (props) => {
   const handleScroll = () => {
     if (!header.current) return;
     // Set variables
-    const startScroll = window.scrollTop;
-    window.scrollTop =
+    const startScroll = window.scrollTo;
+    window.scrollTo =
       document.documentElement.scrollTop || document.body.scrollTop;
-    const endScroll = Math.max(window.scrollTop, 0);
+    const endScroll = Math.max(window.scrollTo, 0);
     // When scrolled to top / bottom of page
-    if (window.scrollTop <= 0 || maxScrollDistance() <= 0) {
+    if (window.scrollTo <= 0 || maxScrollDistance() <= 0) {
       (window.navigationTop = 0),
         (header.current.style.position = "fixed"),
         (header.current.style.top = "");
     }
     // When user scrolls to bottom
-    else if (window.scrollTop >= maxScrollDistance()) {
+    else if (window.scrollTo >= maxScrollDistance()) {
       // console.log("You've hit rock bottom...");
     }
     // When user scrolls quickly
-    else if (scrollingFast(window.scrollTop - startScroll)) {
+    else if (scrollingFast(window.scrollTo - startScroll)) {
       (window.navigationTop = endScroll - getHeaderHeight()),
         (header.current.style.top = window.navigationTop + "px"),
         (header.current.style.position = "");
     }
     // When user scrolls up
-    else if (window.scrollTop < startScroll) {
-      const navigationHeight = Math.max(
-        window.scrollTop - getHeaderHeight(),
-        0
-      );
+    else if (window.scrollTo < startScroll) {
+      const navigationHeight = Math.max(window.scrollTo - getHeaderHeight(), 0);
       window.navigationTop > endScroll
         ? ((window.navigationTop = endScroll),
           (header.current.style.position = "fixed"),
@@ -91,9 +89,9 @@ export const HomeNavigation = (props) => {
         : (!window.navigationTop || window.navigationTop < navigationHeight) &&
           ((window.navigationTop = navigationHeight),
           (header.current.style.top = window.navigationTop + "px"));
-      console.log("scrolling up");
+      // console.log("scrolling up");
     } else {
-      window.scrollTop > startScroll &&
+      window.scrollTo > startScroll &&
         (isOpen
           ? ((window.navigationTop = endScroll),
             (header.current.style.top = ""),

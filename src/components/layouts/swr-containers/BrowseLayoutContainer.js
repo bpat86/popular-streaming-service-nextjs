@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import PropTypes from "prop-types";
 import { Fragment, useContext, useRef } from "react";
 
@@ -12,12 +13,10 @@ import useProfiles from "@/middleware/useProfiles";
 // Middleware
 import useUser from "@/middleware/useUser";
 
-const BrowseLayoutContainer = ({
-  pageAPI,
-  pageTitle,
-  shouldFreeze,
-  // activeProfile: initialActiveProfile,
-}) => {
+// Store
+import usePreviewModalStore from "@/stores/PreviewModalStore";
+
+const BrowseLayoutContainer = ({ initialUser, pageAPI, pageTitle }) => {
   // Context
   const { logout } = useContext(AuthContext);
   const { activeProfile } = useContext(ProfileContext);
@@ -29,31 +28,48 @@ const BrowseLayoutContainer = ({
     useProfiles({ user });
   // Refs
   const layoutWrapperRef = useRef();
+  // Router
+  const router = useRouter();
   // Local vars
+  const activeProfileId =
+    activeProfile?.id || initialUser?.activeProfile?.id || null;
+  const isLoggedIn = user?.isLoggedIn || initialUser?.isLoggedIn || false;
+  // User data
   const userData = {
     user,
     logout,
+    isLoggedIn,
     isActive: user?.isActive,
-    isLoggedIn: user?.isLoggedIn,
     activeProfile: user?.activeProfile,
   };
+  // Profile data
   const profilesData = {
     profiles,
     profileNames,
     mutateProfiles,
     loadingProfiles,
   };
-  const pageProps = Object.assign(userData, profilesData);
+  const pageProps = { ...userData, ...profilesData };
+
+  /**
+   * Determine if a preview modal is currently open
+   * @returns {Boolean}
+   */
+  const isPreviewModalOpen = () => {
+    const previewModalStateById =
+      usePreviewModalStore.getState().previewModalStateById;
+    return Object.values(previewModalStateById).some(({ isOpen }) => isOpen);
+  };
 
   /**
    * Show nothing if a user is not yet logged in
    */
-  if (!user?.isLoggedIn || !user?.isActive) {
+  if (!isLoggedIn || !user?.isActive) {
     return <></>;
   }
 
   const isShowingProfilesGate = () => {
-    return user?.isActive && user?.isLoggedIn && !activeProfile?.id;
+    return user?.isActive && isLoggedIn && !activeProfileId;
   };
 
   /**
@@ -62,17 +78,19 @@ const BrowseLayoutContainer = ({
   return isShowingProfilesGate() ? (
     <UserProfiles user={user} />
   ) : (
-    <Fragment key={activeProfile?.id}>
+    <Fragment key={activeProfileId}>
       <BrowseLayout
         ref={layoutWrapperRef}
-        profile={activeProfile?.id}
+        profile={activeProfileId}
         title={pageTitle}
         {...pageProps}
       >
         <MediaContainer
           ref={layoutWrapperRef}
           pageAPI={pageAPI}
-          shouldFreeze={shouldFreeze}
+          shouldFreeze={
+            router.query.jbv ?? isPreviewModalOpen() ? true : undefined
+          }
         />
       </BrowseLayout>
     </Fragment>

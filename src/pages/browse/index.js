@@ -6,28 +6,16 @@ import { withSessionSsr } from "@/middleware/withSession";
 import { parseCookies } from "@/utils/parseCookies";
 
 // Store
-import usePreviewModalStore from "@/stores/PreviewModalStore";
 
-const Index = ({ activeProfile, router }) => {
+const Index = ({ initialUser }) => {
   const pageAPI = "getBrowsePage";
   const pageTitle = "Home";
-
-  /**
-   * Determine if a preview modal is currently open
-   * @returns {Boolean}
-   */
-  const isPreviewModalOpen = () => {
-    const previewModalStateById =
-      usePreviewModalStore.getState().previewModalStateById;
-    return Object.values(previewModalStateById).some(({ isOpen }) => isOpen);
-  };
 
   return (
     <BrowseLayoutContainer
       pageAPI={pageAPI}
       pageTitle={pageTitle}
-      activeProfile={activeProfile}
-      shouldFreeze={router.query.jbv ?? isPreviewModalOpen() ? true : undefined}
+      initialUser={initialUser}
     />
   );
 };
@@ -45,6 +33,7 @@ export const getServerSideProps = withSessionSsr(async ({ req, res }) => {
   const isLoggedIn = userSessionObj?.isLoggedIn || false;
   const isRegistered = userSessionObj?.registrationComplete || false;
   const { activeProfile } = parseCookies(req);
+  const activeProfileId = Number(activeProfile?.id);
 
   // Redirect authenticated and registered users to the browse page
   if (!userSessionObj || !isLoggedIn || !isRegistered) {
@@ -54,6 +43,12 @@ export const getServerSideProps = withSessionSsr(async ({ req, res }) => {
   }
   // Send props to the frontend
   return {
-    props: { activeProfile: activeProfile || null },
+    props: {
+      initialUser: {
+        activeProfile: { id: activeProfileId || null },
+        isLoggedIn,
+        isRegistered,
+      },
+    },
   };
 });

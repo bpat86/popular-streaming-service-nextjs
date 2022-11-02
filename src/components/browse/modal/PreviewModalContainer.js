@@ -17,8 +17,10 @@ import PreviewModal from "./PreviewModal";
 const PreviewModalContainer = forwardRef((props, layoutWrapperRef) => {
   const { children, mutateSliderData } = props;
   // Store
-  const previewModalStateById = usePreviewModalStore(
-    (state) => state.previewModalStateById,
+  const { previewModalStateById } = usePreviewModalStore(
+    (state) => ({
+      previewModalStateById: state.previewModalStateById,
+    }),
     shallow
   );
 
@@ -257,11 +259,12 @@ const PreviewModalContainer = forwardRef((props, layoutWrapperRef) => {
       videoModel,
     } = modal;
     // A preview modal should only render if `isOpen` is true
-    if (!isOpen || !modal || !videoId || !uid || !videoModel) return null;
+    if (!isOpen || !modal || !modalState || !videoId || !uid || !videoModel)
+      return null;
     // Render the preview modal
     return (
       <PreviewModal
-        key={`${videoId}-${isOpen}`}
+        key={`${uid}-${isOpen}`}
         ref={layoutWrapperRef}
         modalState={modalState}
         previewModalState={{
@@ -283,5 +286,4 @@ const PreviewModalContainer = forwardRef((props, layoutWrapperRef) => {
   );
 });
 
-PreviewModalContainer.displayName = "PreviewModalContainer";
 export default PreviewModalContainer;

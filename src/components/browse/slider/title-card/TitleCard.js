@@ -131,6 +131,8 @@ const TitleCard = ({
     handleOnMouseLeave,
     handleOnMouseMove,
     handleAnchorClick,
+    titleCardRef,
+    watchLinkAnchorRef,
   ]);
 
   return (
