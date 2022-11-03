@@ -1,4 +1,6 @@
-const Genres = ({ genres }) => {
+import { memo } from "react";
+
+const Genres = memo(({ genres }) => {
   return genres ? (
     <div className="genres text-xs leading-snug text-gray-200 sm:text-sm xl:text-base">
       {genres?.slice(0, 3)?.map((genre) => (
@@ -25,6 +27,6 @@ const Genres = ({ genres }) => {
       </div>
     </div>
   );
-};
+});
 
 export default Genres;

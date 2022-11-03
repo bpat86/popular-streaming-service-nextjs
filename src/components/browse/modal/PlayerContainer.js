@@ -354,7 +354,7 @@ const PlayerContainer = forwardRef((props, buttonsRef) => {
           videoPlaybackError={videoPlaybackError}
         >
           <MotionDivWrapper
-            inherit={false.toString()}
+            inherit={false}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -410,7 +410,7 @@ const PlayerContainer = forwardRef((props, buttonsRef) => {
           videoPlaybackError={videoPlaybackError}
         >
           <MotionDivWrapper
-            inherit={false.toString()}
+            inherit={false}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}

@@ -84,6 +84,7 @@ const TitleCardContainer = forwardRef(
       if (!itemTabbable) return;
       // Process the mouse enter event
       if (mouseEnter) {
+        // handleEnter(titleCardRef);
         handleEnter(titleCardRef);
       }
     };
@@ -111,14 +112,14 @@ const TitleCardContainer = forwardRef(
      * @param {Object} ref
      */
     const handleMouseLeave = (e, titleCardRef) => {
-      const mouseLeave =
+      // Process the mouse leave event
+      if (
         (e && !e.relatedTarget) ||
         e.relatedTarget.location ||
         (e.relatedTarget &&
           titleCardRef instanceof HTMLElement &&
-          !titleCardRef.contains(e.relatedTarget));
-      // Process the mouse leave event
-      if (mouseLeave) {
+          !titleCardRef.contains(e.relatedTarget))
+      ) {
         handleLeave();
       }
     };
@@ -131,10 +132,7 @@ const TitleCardContainer = forwardRef(
     const handleMouseMove = (e, titleCardRef) => {
       const { isHovering } = scopeRef.current;
       // Process the mouse move event
-      isHovering ||
-        usePreviewModalStore.getState().isOpen() ||
-        isPreviewModalOpen() ||
-        handleMouseEnter(e, titleCardRef);
+      isHovering || isPreviewModalOpen() || handleMouseEnter(e, titleCardRef);
     };
 
     /**
@@ -163,6 +161,7 @@ const TitleCardContainer = forwardRef(
      */
     const queuePreviewModalOpen = (ref) => {
       const { isHovering, isModalOpen } = scopeRef.current;
+      // console.log(usePreviewModalStore.getState().wasOpen);
       if (!hoverTimeoutIdRef.current && !isModalOpen && isHovering) {
         const delay = usePreviewModalStore.getState().wasOpen ? 100 : 400;
         hoverTimeoutIdRef.current = setTimeout(() => {
@@ -172,8 +171,6 @@ const TitleCardContainer = forwardRef(
         }, delay);
       }
     };
-
-    console.log(`rendering titleCardContainer ${model?.videoModel?.title}`);
 
     /**
      * Open the preview modal.

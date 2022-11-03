@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 
 import Footer from "@/components/home/Footer";
-import IntroHeader from "@/components/home/IntroHeader";
+import IntroHero from "@/components/home/IntroHero";
 import PlatformFeatures from "@/components/home/PlatformFeatures";
 import { withSessionSsr } from "@/middleware/withSession";
 import { parseCookies } from "@/utils/parseCookies";
@@ -9,7 +9,7 @@ import { parseCookies } from "@/utils/parseCookies";
 const GetStarted = (props) => {
   return (
     <>
-      <IntroHeader {...props} />
+      <IntroHero {...props} />
       <PlatformFeatures />
       <Footer />
     </>

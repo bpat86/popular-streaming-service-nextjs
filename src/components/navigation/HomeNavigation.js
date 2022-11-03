@@ -1,3 +1,4 @@
+import debounce from "lodash.debounce";
 import Link from "next/link";
 import { useContext, useEffect, useRef, useState } from "react";
 
@@ -14,10 +15,11 @@ export const HomeNavigation = (props) => {
 
   // Set initial state
   const [isOpen, setIsOpen] = useState(false);
-  const header = useRef();
+  const headerRef = useRef();
+  const navigationTopRef = useRef();
 
   useEffect(() => {
-    if (header.current) {
+    if (headerRef.current) {
       window.addEventListener("scroll", handleScroll);
     }
     return () => {
@@ -56,60 +58,65 @@ export const HomeNavigation = (props) => {
   /**
    * Scroll handler logic
    */
-  const handleScroll = () => {
-    if (!header.current) return;
-    // Set variables
-    const startScroll = window.scrollTo;
-    window.scrollTo =
-      document.documentElement.scrollTop || document.body.scrollTop;
-    const endScroll = Math.max(window.scrollTo, 0);
-    // When scrolled to top / bottom of page
-    if (window.scrollTo <= 0 || maxScrollDistance() <= 0) {
-      (window.navigationTop = 0),
-        (header.current.style.position = "fixed"),
-        (header.current.style.top = "");
-    }
-    // When user scrolls to bottom
-    else if (window.scrollTo >= maxScrollDistance()) {
-      // console.log("You've hit rock bottom...");
-    }
-    // When user scrolls quickly
-    else if (scrollingFast(window.scrollTo - startScroll)) {
-      (window.navigationTop = endScroll - getHeaderHeight()),
-        (header.current.style.top = window.navigationTop + "px"),
-        (header.current.style.position = "");
-    }
-    // When user scrolls up
-    else if (window.scrollTo < startScroll) {
-      const navigationHeight = Math.max(window.scrollTo - getHeaderHeight(), 0);
-      window.navigationTop > endScroll
-        ? ((window.navigationTop = endScroll),
-          (header.current.style.position = "fixed"),
-          (header.current.style.top = ""))
-        : (!window.navigationTop || window.navigationTop < navigationHeight) &&
-          ((window.navigationTop = navigationHeight),
-          (header.current.style.top = window.navigationTop + "px"));
-      // console.log("scrolling up");
-    } else {
-      window.scrollTo > startScroll &&
-        (isOpen
-          ? ((window.navigationTop = endScroll),
-            (header.current.style.top = ""),
-            (header.current.style.position = "fixed"))
-          : "fixed" === header.current.style.position &&
-            ((window.navigationTop = endScroll),
-            (header.current.style.top = window.navigationTop + "px"),
-            (header.current.style.position = "")));
-      // console.log("scrolling down");
-    }
-  };
+  const handleScroll = debounce(
+    () => {
+      const startScroll = window.scrollY;
+      window.scrollY = document.documentElement.scrollTop || 0;
+      const endScroll = Math.max(window.scrollY, 0);
+      // When scrolled to top / bottom of page
+      if (window.scrollY <= 0 || maxScrollDistance() <= 0) {
+        (navigationTopRef.current = 0),
+          (headerRef.current.style.position = "fixed"),
+          (headerRef.current.style.top = "");
+      }
+      // When user scrolls to bottom
+      else if (window.scrollY >= maxScrollDistance()) {
+        // console.log("You've hit rock bottom...");
+      }
+      // When user scrolls quickly
+      else if (scrollingFast(window.scrollY - startScroll)) {
+        (navigationTopRef.current = endScroll - getHeaderHeight()),
+          (headerRef.current.style.top = navigationTopRef.current + "px"),
+          (headerRef.current.style.position = "");
+      }
+      // When user scrolls up
+      else if (window.scrollY < startScroll) {
+        const navigationHeight = Math.max(
+          window.scrollY - getHeaderHeight(),
+          0
+        );
+        navigationTopRef.current > endScroll
+          ? ((navigationTopRef.current = endScroll),
+            (headerRef.current.style.position = "fixed"),
+            (headerRef.current.style.top = ""))
+          : (!navigationTopRef.current ||
+              navigationTopRef.current < navigationHeight) &&
+            ((navigationTopRef.current = navigationHeight),
+            (headerRef.current.style.top = navigationTopRef.current + "px"));
+        // console.log("scrolling up");
+      } else {
+        window.scrollY > startScroll &&
+          (isOpen
+            ? ((navigationTopRef.current = endScroll),
+              (headerRef.current.style.top = ""),
+              (headerRef.current.style.position = "fixed"))
+            : "fixed" === headerRef.current.style.position &&
+              ((navigationTopRef.current = endScroll),
+              (headerRef.current.style.top = navigationTopRef.current + "px"),
+              (headerRef.current.style.position = "")));
+        // console.log("scrolling down");
+      }
+    },
+    100,
+    { leading: true, trailing: true }
+  );
 
   return (
     <>
-      <header className="navigation relative w-full">
+      <header className="navigation relative z-20 w-full">
         <div
-          ref={header}
-          className="navigation-content absolute z-10 w-full overflow-hidden backdrop-blur-sm backdrop-filter sm:backdrop-blur-0"
+          ref={headerRef}
+          className="navigation-content absolute z-10 w-full overflow-hidden backdrop-blur-sm backdrop-filter sm:backdrop-blur-none"
         >
           <div className="navbar relative z-20 bg-transparent pt-4">
             {/* Container */}

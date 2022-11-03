@@ -1,4 +1,4 @@
-import { useIsPresent } from "framer-motion";
+import { usePresence } from "framer-motion";
 import produce from "immer";
 import debounce from "lodash.debounce";
 import { useRouter } from "next/router";
@@ -6,6 +6,7 @@ import {
   forwardRef,
   useCallback,
   useContext,
+  useEffect,
   useLayoutEffect,
   useRef,
   useState,
@@ -57,7 +58,7 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
     },
   } = props;
   // Framer motion utility
-  const isPresent = useIsPresent();
+  const [isPresent, safeToRemove] = usePresence();
   // State
   const [isAnimating, setIsAnimating] = useState(false);
   const [isDetailAnimating, setIsDetailAnimating] = useState(false);
@@ -89,31 +90,34 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
   const scaleFactor = 1.5;
   const baseWidth = 850;
 
+  // console.log("PreviewModal ", router);
+  // console.log("PreviewModal ", modalData?.videoModel?.title);
+
   /**
    * Redirect to watch mode screen
    */
-  const handleWatchNow = ({ id, mediaType } = {}) => {
-    if (id) {
-      const as = `/watch/${mediaType}-${id}`;
-      const options = {
-        shallow: true,
-        scroll: false,
-      };
-      router.push(
-        {
-          pathname: "/watch/[mediaId]",
-          query: {
-            ...router.query,
-            id,
-            mediaId: `${mediaType}-${id}`,
-            type: mediaType,
-          },
+  const handleWatchNow = ({ id, mediaType }) => {
+    if (!id || !mediaType) return;
+    const pathname = "/watch/[mediaId]";
+    const as = `/watch/${mediaType}-${id}`;
+    const options = {
+      shallow: true,
+      scroll: false,
+    };
+    router.push(
+      {
+        pathname,
+        query: {
+          ...router.query,
+          id,
+          mediaId: `${mediaType}-${id}`,
+          type: mediaType,
         },
-        as,
-        options
-      );
-      enableWatchMode();
-    }
+      },
+      as,
+      options
+    );
+    enableWatchMode();
   };
 
   /**
@@ -121,7 +125,7 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
    * This will act as a dedicated page for link sharing.
    * @param {Object} query
    */
-  const handleRouteChange = useCallback(({ id, mediaType } = {}) => {
+  const updateRoute = useCallback(({ id, mediaType } = {}) => {
     // This method does not force a re-render
     window.history.replaceState(
       {
@@ -168,19 +172,6 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
     //   { scroll: false }
     // );
   }, [isWatchModeEnabled, router.route]);
-
-  /**
-   * Modal was closed without animation
-   */
-  const modalClosedWithoutAnimation = () => {
-    const previewModalStateById =
-      usePreviewModalStore.getState().previewModalStateById;
-    return (
-      previewModalStateById[videoId] !== null &&
-      previewModalStateById[videoId] !== undefined &&
-      previewModalStateById[videoId].closeWithoutAnimation
-    );
-  };
 
   /**
    * Set Detail Modal Parent styles
@@ -815,9 +806,9 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
    */
   // const handleExpandModal = (e) => {
   //   // modalState !== modalStateActions.DETAIL_MODAL &&
-  //   //   (e && e.stopPropagation(), willClose || handleRouteChange(modalData?.videoModel?.identifiers););
+  //   //   (e && e.stopPropagation(), willClose || updateRoute(modalData?.videoModel?.identifiers););
   //   modalState === modalStateActions.DETAIL_MODAL &&
-  //     handleRouteChange(modalData?.videoModel?.identifiers);
+  //     updateRoute(modalData?.videoModel?.identifiers);
   // };
 
   /**
@@ -908,6 +899,7 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
       let modal,
         pageX = e.pageX,
         pageY = e.pageY;
+      // console.log("mouse move ", modalData?.videoModel?.title);
       animationState !== animationStateActions.OPEN_MINI_MODAL ||
         willClose ||
         (titleCardRect &&
@@ -1035,7 +1027,7 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
     if (modalRef.current && !willClose) {
       animationState !== animationStateActions.MOUNT_DETAIL_MODAL &&
         setAnimationState(animationStateActions.MOUNT_DETAIL_MODAL);
-      handleRouteChange(modalData?.videoModel?.identifiers);
+      updateRoute(modalData?.videoModel?.identifiers);
       updateModalRect();
       window.removeEventListener("mousemove", handleOnMouseMove);
       modalRef.current &&
@@ -1116,30 +1108,38 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
         }
       }
     }
-    // Cleanup state and cancel async requests
+    // Cancel async requests
     return () => {
       // Cancel data fetch request
       cancelRequest();
       // Reset timeout id
-      cancelAnimationFrame(animationFrameId.current);
-      // Set `wasOpen` to false
-      usePreviewModalStore.getState().setPreviewModalWasOpen(false);
+      animationFrameId.current &&
+        cancelAnimationFrame(animationFrameId.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modalState]);
 
   /**
-   * Reset detail modal parent layout styles when component unmounts
+   * Handle the removal of the preview modal from the react tree
    */
-  useLayoutEffect(() => {
-    return () => {
-      if (!isPresent) {
+  useEffect(() => {
+    if (!isPresent) {
+      setTimeout(() => {
+        // Set preview modal to close
+        usePreviewModalStore.getState().setPreviewModalClose({ videoId });
+        // Set `wasOpen` to false
+        usePreviewModalStore.getState().setPreviewModalWasOpen(false);
+        // Explicitly call for the component to be removed from the react tree
+        safeToRemove();
+      }, 0);
+      // Reset detail modal parent layout styles
+      return () => {
         modalState === modalStateActions.DETAIL_MODAL &&
           resetDetailModalParentStyles();
         // Disable watch mode
         isWatchModeEnabled() && disableWatchMode();
-      }
-    };
+      };
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPresent]);
 
@@ -1307,15 +1307,9 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
   };
 
   /**
-   * Render nothing if modal was closed without animation
-   */
-  if (modalClosedWithoutAnimation()) return null;
-
-  /**
    * Render the preview modal
    */
   return renderPreviewModal();
 });
 
-PreviewModal.displayName = "PreviewModal";
 export default PreviewModal;

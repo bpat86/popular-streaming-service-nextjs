@@ -10,10 +10,11 @@ export const AuthNavigation = (props) => {
   const { isLoggedIn, isRegistered, user } = props;
   const { logout } = useContext(AuthContext);
   const [isOpen, setIsOpen] = useState(false);
-  const header = useRef();
+  const headerRef = useRef();
+  const navigationTopRef = useRef();
 
   useEffect(() => {
-    if (header.current) {
+    if (headerRef.current) {
       window.addEventListener("scroll", handleScroll);
     }
     return () => {
@@ -43,9 +44,10 @@ export const AuthNavigation = (props) => {
 
   /**
    * Detect a really fast scroll
-   * @param {number} scrollSpeed
+   * @param scrollSpeed
+   * @returns boolean
    */
-  const scrollingFast = (scrollSpeed) => {
+  const scrollingFast = (scrollSpeed = 0) => {
     return Math.abs(scrollSpeed) > 120;
   };
 
@@ -53,50 +55,45 @@ export const AuthNavigation = (props) => {
    * Scroll handler logic
    */
   const handleScroll = () => {
-    if (!header.current) return;
-
-    const startScroll = window.scrollTo || 0;
+    if (!headerRef.current) return;
+    const startScroll = window.scrollY || 0;
     // Set variables
-    window.scrollTo =
-      document.documentElement.scrollTop || document.body.scrollTop || 0;
-    const endScroll = Math.max(window.scrollTo, 0);
+    window.scrollY = document.documentElement.scrollTop || 0;
+    const endScroll = Math.max(window.scrollY, 0);
     // When scrolled to top / bottom of page
-    if (window.scrollTo <= 0 || maxScrollDistance() <= 0) {
-      window.navigationTop = 0;
-      header.current.style.position = "fixed";
-      header.current.style.top = "";
+    if (window.scrollY <= 0 || maxScrollDistance() <= 0) {
+      navigationTopRef.current = 0;
+      headerRef.current.style.position = "fixed";
+      headerRef.current.style.top = "";
     }
     // When user scrolls to bottom
-    else if (window.scrollTo >= maxScrollDistance()) {
+    else if (window.scrollY >= maxScrollDistance()) {
       // console.log("You've hit rock bottom...");
     }
     // When user scrolls quickly
-    else if (scrollingFast(window.scrollTo - startScroll)) {
-      window.navigationTop = endScroll - getHeaderHeight();
-      header.current.style.top = window.navigationTop + "px";
-      header.current.style.position = "";
+    else if (scrollingFast(window.scrollY - startScroll)) {
+      navigationTopRef.current = endScroll - getHeaderHeight();
+      headerRef.current.style.top = navigationTopRef.current + "px";
+      headerRef.current.style.position = "";
     }
     // When user scrolls up
-    else if (window.scrollTo < startScroll) {
-      const navigationHeight = Math.max(window.scrollTo - getHeaderHeight(), 0);
-      window.navigationTop > endScroll
-        ? ((window.navigationTop = endScroll),
-          (header.current.style.position = "fixed"),
-          (header.current.style.top = ""))
-        : (!window.navigationTop || window.navigationTop < navigationHeight) &&
-          ((window.navigationTop = navigationHeight),
-          (header.current.style.top = window.navigationTop + "px"));
+    else if (window.scrollY < startScroll) {
+      const navigationHeight = Math.max(window.scrollY - getHeaderHeight(), 0);
+      navigationTopRef.current > endScroll
+        ? ((navigationTopRef.current = endScroll),
+          (headerRef.current.style.position = "fixed"),
+          (headerRef.current.style.top = ""))
+        : (!navigationTopRef.current ||
+            navigationTopRef.current < navigationHeight) &&
+          ((navigationTopRef.current = navigationHeight),
+          (headerRef.current.style.top = navigationTopRef.current + "px"));
       // console.log("scrolling up");
     } else {
-      window.scrollTo > startScroll &&
-        (isOpen
-          ? ((window.navigationTop = endScroll),
-            (header.current.style.top = ""),
-            (header.current.style.position = "fixed"))
-          : "fixed" === header.current.style.position &&
-            ((window.navigationTop = endScroll),
-            (header.current.style.top = window.navigationTop + "px"),
-            (header.current.style.position = "")));
+      window.scrollY > startScroll &&
+        "fixed" === headerRef.current.style.position &&
+        ((navigationTopRef.current = endScroll),
+        (headerRef.current.style.top = navigationTopRef.current + "px"),
+        (headerRef.current.style.position = ""));
       // console.log("scrolling down");
     }
   };
@@ -106,7 +103,7 @@ export const AuthNavigation = (props) => {
       {
         <header className="navigation relative z-10 w-full">
           <div
-            ref={header}
+            ref={headerRef}
             className="navigation-content absolute z-10 w-full overflow-hidden"
           >
             <div className="navbar relative z-20 border-b border-gray-200 bg-white bg-opacity-90 py-4 backdrop-blur-sm backdrop-filter">

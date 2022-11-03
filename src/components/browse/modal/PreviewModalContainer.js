@@ -31,9 +31,21 @@ const PreviewModalContainer = forwardRef((props, layoutWrapperRef) => {
    * Determine if a preview modal is currently open
    * @returns {Boolean}
    */
-  const isPreviewModalOpen = useCallback(() => {
-    return Object.values(previewModalStateById).some(({ isOpen }) => isOpen);
-  }, [previewModalStateById]);
+  const isPreviewModalOpen = useCallback(
+    (videoId) => {
+      if (!usePreviewModalStore) return false;
+      let modal;
+      return videoId
+        ? null === (modal = previewModalStateById[videoId]) ||
+          undefined === modal
+          ? undefined
+          : modal.isOpen
+        : Object.values(previewModalStateById).some((e) => {
+            return e.isOpen;
+          });
+    },
+    [previewModalStateById]
+  );
 
   /**
    * Returns the state of the currently open preview modal
@@ -105,9 +117,9 @@ const PreviewModalContainer = forwardRef((props, layoutWrapperRef) => {
   /**
    * Open a preview modal on page load if there is a jbv query param
    */
-  const handleUpdatePreviewModalState = () => {
+  const updatePreviewModalState = useCallback(() => {
     const videoId = getVideoId();
-    if (isJBVRoute() && !isPreviewModalOpen()) {
+    if (isJBVRoute() && !isPreviewModalOpen(videoId)) {
       if ((closeAllModals(), Number.isNaN(videoId))) return;
       usePreviewModalStore.getState().setPreviewModalOpen({
         listContext: undefined,
@@ -161,48 +173,17 @@ const PreviewModalContainer = forwardRef((props, layoutWrapperRef) => {
           titleCardRef: undefined,
         },
       });
-    } else {
-      isJBVRoute() &&
-      [modalStateActions.MINI_MODAL].includes(
-        previewModalStateById[getVideoId()]?.modalState
-      )
-        ? (Object.values(previewModalStateById)
-            .filter((modal) => {
-              return (
-                modal.videoId &&
-                modal.videoId !== videoId &&
-                modal.modalState === modalStateActions.DETAIL_MODAL
-              );
-            })
-            .forEach(({ videoId }) => {
-              closeModal(videoId);
-            }),
-          usePreviewModalStore.getState().updatePreviewModalState({
-            individualState: {
-              videoId: getVideoId(),
-              modalState: modalStateActions.DETAIL_MODAL,
-              titleCardId: undefined,
-              titleCardRect: undefined,
-            },
-          }))
-        : Object.values(previewModalStateById).some((modal) => {
-            return (
-              modal.isOpen &&
-              modal.modalState === modalStateActions.DETAIL_MODAL
-            );
-          }) &&
-          !isJBVRoute() &&
-          closeAllModals();
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   /**
    * Update preview modal state
    */
   useLayoutEffect(() => {
-    handleUpdatePreviewModalState();
+    updatePreviewModalState();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [updatePreviewModalState]);
 
   /**
    * Render mini preview modal

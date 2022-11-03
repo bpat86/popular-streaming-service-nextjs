@@ -1,15 +1,13 @@
-const MediaControls = (props) => {
-  const {
-    audioIsEnabled,
-    isDetailModal,
-    replayVideo,
-    title,
-    toggleAudio,
-    videoCompleted,
-    videoCanPlayThrough,
-    videoHasPlayedAtLeastOnce,
-  } = props;
-
+const MediaControls = ({
+  audioIsEnabled,
+  isDetailModal,
+  replayVideo,
+  title,
+  toggleAudio,
+  videoCompleted,
+  videoCanPlayThrough,
+  videoHasPlayedAtLeastOnce,
+}) => {
   return (
     <div
       className={`${
