@@ -107,7 +107,8 @@ function getMaxValue(items) {
 function mergeSortedArrays(arrays) {
   const sortedList = [];
   const elementIdxs = arrays.map(() => 0);
-  while (true) {
+  const isTrue = true;
+  while (isTrue) {
     const smallestItems = [];
     for (let arrayIdx = 0; arrayIdx < arrays.length; arrayIdx++) {
       const relevantArray = arrays[arrayIdx];

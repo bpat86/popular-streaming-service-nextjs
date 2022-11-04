@@ -6,7 +6,7 @@ import { requests } from "@/utils/requests";
 export default withSessionRoute(async (req, res) => {
   if (req.method === "GET") {
     try {
-      const { id } = req.query;
+      const { id, type } = req.query;
       const apiKey = requests.API_KEY;
 
       // Get single media item URL

@@ -85,48 +85,6 @@ function makeMediaArray({
 }
 
 /**
- * Return the maximum popularity value
- * @param {Array} items
- * @returns
- */
-function getMaxValue(items) {
-  let minValueIdx = 0;
-  for (let i = 1; i < items.length; i++) {
-    if (items[i].num.popularity > items[minValueIdx].num.popularity) {
-      minValueIdx = i;
-    }
-  }
-  return items[minValueIdx];
-}
-
-/**
- * Merge and sort by most popular
- * @param {Array} arrays
- * @returns
- */
-function mergeSortedArrays(arrays) {
-  const sortedList = [];
-  const elementIdxs = arrays.map(() => 0);
-  while (true) {
-    const smallestItems = [];
-    for (let arrayIdx = 0; arrayIdx < arrays.length; arrayIdx++) {
-      const relevantArray = arrays[arrayIdx];
-      const elementIdx = elementIdxs[arrayIdx];
-      if (elementIdx === relevantArray.length) continue;
-      smallestItems.push({
-        arrayIdx,
-        num: relevantArray[elementIdx],
-      });
-    }
-    if (smallestItems.length === 0) break;
-    const nextItem = getMaxValue(smallestItems);
-    sortedList.push(nextItem.num);
-    elementIdxs[nextItem.arrayIdx]++;
-  }
-  return sortedList;
-}
-
-/**
  * Format the URL to fetch media items
  * This function returns a URL string.
  * @param {String} mediaGenreUrl

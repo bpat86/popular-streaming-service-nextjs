@@ -2,38 +2,13 @@ import axios from "axios";
 
 import { withSessionRoute } from "@/middleware/withSession";
 import { parseCookies } from "@/utils/parseCookies";
-import { requests } from "@/utils/requests";
 
 import { API_URL } from "@/config/index";
-
-const apiKey = requests.API_KEY;
-const apiBaseURL = requests.BASE_URL;
 
 function orderByLastAdded(array) {
   array.sort((a, b) => parseFloat(b.timestamp) - parseFloat(a.timestamp));
   return array;
 }
-
-/**
- * Return a random result from an array
- * @param {Array} array
- * @returns
- */
-function pickRandomIdx(array) {
-  const date = new Date();
-  // const random = array[Math.floor(Math.random() * array.length)];
-  const random =
-    (date.getFullYear() * date.getDate() * (date.getMonth() + 1)) %
-    array.length;
-  return random;
-}
-
-/**
- * Return a random result integer
- * @param {Array} array
- * @returns
- */
-const pickRandomInt = (max) => Math.floor(Math.random() * max);
 
 /**
  * Remove items if they don't have a backdrop images or overviews
@@ -82,142 +57,6 @@ function makeMediaArray({
     }
   });
   return mediaArray.length ? mediaArray : [];
-}
-
-/**
- * Return the maximum popularity value
- * @param {Array} items
- * @returns
- */
-function getMaxValue(items) {
-  let minValueIdx = 0;
-  for (let i = 1; i < items.length; i++) {
-    if (items[i].num.popularity > items[minValueIdx].num.popularity) {
-      minValueIdx = i;
-    }
-  }
-  return items[minValueIdx];
-}
-
-/**
- * Merge and sort by most popular
- * @param {Array} arrays
- * @returns
- */
-function mergeSortedArrays(arrays) {
-  const sortedList = [];
-  const elementIdxs = arrays.map(() => 0);
-  while (true) {
-    const smallestItems = [];
-    for (let arrayIdx = 0; arrayIdx < arrays.length; arrayIdx++) {
-      const relevantArray = arrays[arrayIdx];
-      const elementIdx = elementIdxs[arrayIdx];
-      if (elementIdx === relevantArray.length) continue;
-      smallestItems.push({
-        arrayIdx,
-        num: relevantArray[elementIdx],
-      });
-    }
-    if (smallestItems.length === 0) break;
-    const nextItem = getMaxValue(smallestItems);
-    sortedList.push(nextItem.num);
-    elementIdxs[nextItem.arrayIdx]++;
-  }
-  return sortedList;
-}
-
-/**
- * Format the URL to fetch media items
- * This function returns a URL string.
- * @param {String} mediaGenreUrl
- * @param {Number} pageNumber
- * @returns
- */
-function makeMediaURL(mediaGenreUrl, pageNumber) {
-  const url = apiBaseURL + mediaGenreUrl;
-  const mediaURL = new URL(url);
-  mediaURL.searchParams.set("page", pageNumber);
-  return mediaURL.href;
-}
-
-/**
- * Format the URL to fetch a single media item.
- * This function returns a URL string.
- * @param {Object}
- * @returns
- */
-function makeMediaItemSingleURL({ mediaType, mediaID }) {
-  const url = apiBaseURL + `/${mediaType}/${mediaID}`;
-  const mediaURL = new URL(url);
-  mediaURL.searchParams.set("api_key", apiKey);
-  mediaURL.searchParams.set("append_to_response", "videos,images");
-  return mediaURL.href;
-}
-
-/**
- * Format the URL to fetch the media items credits.
- * This function returns a URL string.
- * @param {Object}
- * @returns
- */
-function makeMediaItemSingleCreditsURL({ mediaType, mediaID }) {
-  const url = apiBaseURL + `/${mediaType}/${mediaID}` + "/credits";
-  const mediaURL = new URL(url);
-  mediaURL.searchParams.set("api_key", apiKey);
-  mediaURL.searchParams.set("append_to_response", "videos,images");
-  return mediaURL.href;
-}
-
-/**
- * Fetch the media item to be displayed in the billboard component
- * @param {Array} array
- * @returns
- */
-async function getBillboardMedia({
-  srcArray,
-  profileMediaListArray,
-  profileLikedMediaArray,
-  profileDislikedMediaArray,
-}) {
-  if (srcArray == null) return {};
-  // const idsArray = [656663, 414906, 646380, 696806, 634649, 619979, 615904];
-  const idsArray = [...srcArray.slice(0, 15)];
-  const randomItem = idsArray[pickRandomIdx(idsArray)];
-  const params = {
-    mediaType: randomItem.media_type,
-    mediaID: randomItem.id || srcArray[pickRandomInt(6)].id,
-  };
-  const [getBillboardMedia, getBillboardMediaCredits] = await Promise.all([
-    axios.get(makeMediaItemSingleURL(params)),
-    axios.get(makeMediaItemSingleCreditsURL(params)),
-  ]);
-  const billboardMedia = await getBillboardMedia?.data;
-  const billboardMediaCredits = await getBillboardMediaCredits?.data;
-  // Determine if item appears in the media list
-  const mediaListItem = profileMediaListArray?.find(
-    ({ id }) => id === billboardMedia?.id
-  );
-  // Determine if item appears in the liked media list
-  const likedMediaItem = profileLikedMediaArray?.find(
-    ({ id }) => id === billboardMedia?.id
-  );
-  // Determine if item appears in the disliked media list
-  const dislikedMediaItem = profileDislikedMediaArray?.find(
-    ({ id }) => id === billboardMedia?.id
-  );
-  return {
-    data: {
-      ...billboardMedia,
-      ...billboardMediaCredits,
-      media_type: randomItem.media_type,
-      in_media_list: !!mediaListItem?.media_list_id,
-      media_list_id: mediaListItem?.media_list_id || null,
-      is_liked: !!likedMediaItem?.liked_media_id,
-      liked_media_id: likedMediaItem?.liked_media_id || null,
-      is_disliked: !!dislikedMediaItem?.disliked_media_id,
-      disliked_media_id: dislikedMediaItem?.disliked_media_id || null,
-    },
-  };
 }
 
 /**
