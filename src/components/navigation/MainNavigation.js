@@ -38,10 +38,10 @@ export const MainNavigation = memo(({ isLoggedIn, ...rest }) => {
         >
           <div className="main-navbar max-w-screen-3xl relative mx-auto flex h-[68px] items-center justify-between px-6 sm:px-12 md:justify-start md:space-x-10">
             <div className="flex justify-start">
-              <Link href="/browse">
-                <span>
+              <Link href="/browse" legacyBehavior>
+                <a>
                   <Logo className="h-6 w-auto cursor-pointer text-netflix-red" />
-                </span>
+                </a>
               </Link>
             </div>
             <nav className="hidden items-center justify-end md:flex md:flex-1 lg:w-0">
@@ -50,38 +50,54 @@ export const MainNavigation = memo(({ isLoggedIn, ...rest }) => {
                   <div className="mr-auto">
                     <ul className="flex list-none items-center space-x-6">
                       <li>
-                        <Link href="/browse" scroll={false}>
-                          <span className="cursor-pointer text-sm text-white transition duration-700 ease-out hover:text-gray-300">
+                        <Link href="/browse" scroll={false} legacyBehavior>
+                          <a className="cursor-pointer text-sm text-white transition duration-700 ease-out hover:text-gray-300">
                             Home
-                          </span>
+                          </a>
                         </Link>
                       </li>
                       <li>
-                        <Link href="/browse/genre/tv" scroll={false}>
-                          <span className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-gray-300">
+                        <Link
+                          href="/browse/genre/tv"
+                          scroll={false}
+                          legacyBehavior
+                        >
+                          <a className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-gray-300">
                             TV Shows
-                          </span>
+                          </a>
                         </Link>
                       </li>
                       <li>
-                        <Link href="/browse/genre/movies" scroll={false}>
-                          <span className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-gray-300">
+                        <Link
+                          href="/browse/genre/movies"
+                          scroll={false}
+                          legacyBehavior
+                        >
+                          <a className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-gray-300">
                             Movies
-                          </span>
+                          </a>
                         </Link>
                       </li>
                       <li>
-                        <Link href="/browse/latest" scroll={false}>
-                          <span className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-gray-300">
+                        <Link
+                          href="/browse/latest"
+                          scroll={false}
+                          legacyBehavior
+                        >
+                          <a className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-gray-300">
                             New & Popular
-                          </span>
+                          </a>
                         </Link>
                       </li>
                       <li>
-                        <Link href="/browse/my-list" scroll={false}>
-                          <span className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-gray-300">
+                        <Link
+                          href="/browse/my-list"
+                          scroll={false}
+                          legacyBehavior
+                        >
+                          <a className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-gray-300">
                             My List
-                          </span>
+                          </a>
                         </Link>
                       </li>
                     </ul>

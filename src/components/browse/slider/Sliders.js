@@ -11,7 +11,7 @@ const Sliders = ({ model }) => {
         (slider, idx) =>
           slider?.data?.length > 0 && (
             <Row
-              key={slider?.listContext + idx}
+              key={`${slider?.id}-${idx}`}
               model={slider?.data}
               enablePeek={true}
               enableLooping={true}
@@ -38,6 +38,9 @@ const Sliders = ({ model }) => {
     );
   };
 
+  /**
+   * Render the slider component
+   */
   return handleSliders();
 };
 

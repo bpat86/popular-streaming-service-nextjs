@@ -29,7 +29,6 @@ const PlayerContainer = forwardRef((props, buttonsRef) => {
     isDetailModal,
     isDefaultModal,
     handleWatchNow,
-    modalOpen,
     showBoxArtOnMount,
     showBoxArtOnClose,
     showTitleGradient,
@@ -231,7 +230,6 @@ const PlayerContainer = forwardRef((props, buttonsRef) => {
       !showBoxArtOnClose &&
       !videoPlaybackError &&
       !videoCompleted &&
-      modalOpen &&
       showVideo &&
       videoId
     ) {
@@ -263,7 +261,7 @@ const PlayerContainer = forwardRef((props, buttonsRef) => {
       <div
         className="boxart-wrapper"
         style={{
-          position: isDetailModal ? "absolute" : "static",
+          position: isDetailModal ? "absolute" : "relative",
         }}
       >
         {imageKey && (
@@ -291,7 +289,7 @@ const PlayerContainer = forwardRef((props, buttonsRef) => {
       </div>
       {/* Expandable detail modal */}
       {isDetailModal && !isDefaultModal && (
-        <div className="story-art detail-modal">
+        <div className="story-art detail-modal relative">
           {imageKey && (
             <Image
               priority={true}
@@ -307,7 +305,6 @@ const PlayerContainer = forwardRef((props, buttonsRef) => {
                   !showBoxArtOnClose &&
                   !videoPlaybackError &&
                   !videoCompleted &&
-                  modalOpen &&
                   showVideo &&
                   videoId
                     ? 0
@@ -318,7 +315,7 @@ const PlayerContainer = forwardRef((props, buttonsRef) => {
         </div>
       )}
       {isDefaultModal && (
-        <div className="story-art detail-modal">
+        <div className="story-art detail-modal relative">
           {imageKey && (
             <Image
               priority={true}
@@ -334,7 +331,6 @@ const PlayerContainer = forwardRef((props, buttonsRef) => {
                   !showBoxArtOnClose &&
                   !videoPlaybackError &&
                   !videoCompleted &&
-                  modalOpen &&
                   showVideo &&
                   videoId
                     ? 0

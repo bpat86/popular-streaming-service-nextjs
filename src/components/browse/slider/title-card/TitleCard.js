@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from "react";
 
-import BoxArt from "./BoxArt";
 // Components
+import BoxArt from "./BoxArt";
 import WatchLink from "./WatchLink";
 
 const TitleCard = ({

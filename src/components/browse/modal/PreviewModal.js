@@ -68,12 +68,12 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
       : animationStateActions.MOUNT_DETAIL_MODAL
   );
   const [modalRect, setModalRect] = useState(undefined);
-  const [willClose, setWillClose] = useState(false);
   // Refs
   const modalRef = useRef();
   const modalInfoRef = useRef();
   const mediaButtonsRef = useRef();
   const animationFrameId = useRef(0);
+  const willClose = useRef(false);
   // Middleware (SWR)
   const {
     modalData,
@@ -125,53 +125,52 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
    * This will act as a dedicated page for link sharing.
    * @param {Object} query
    */
-  const updateRoute = useCallback(({ id, mediaType } = {}) => {
-    // This method does not force a re-render
-    window.history.replaceState(
-      {
-        ...window.history.state,
-        as: `?jbv=${id}&type=${mediaType}`,
-        url: `?jbv=${id}&type=${mediaType}`,
-      },
-      "",
-      `?jbv=${id}&type=${mediaType}`
-    );
-    // This method forces a re-render :(
-    // router.push(
-    //   {
-    //     pathname: router.pathname,
-    //     query: { ...router.query, jbv: id, type: mediaType },
-    //   },
-    //   undefined,
-    //   { shallow: true, scroll: false }
-    // );
-  }, []);
+  const updateRoute = useCallback(
+    ({ id, mediaType } = {}) => {
+      // window.history.replaceState(
+      //   {
+      //     ...window.history.state,
+      //     as: `?jbv=${id}&type=${mediaType}`,
+      //     url: `?jbv=${id}&type=${mediaType}`,
+      //   },
+      //   "",
+      //   `?jbv=${id}&type=${mediaType}`
+      // );
+      router.push(
+        {
+          pathname: router.pathname,
+          query: { ...router.query, jbv: id, type: mediaType },
+        },
+        undefined,
+        { shallow: true, scroll: false }
+      );
+    },
+    [router]
+  );
 
   /**
    * Remove the route query string and set the query state to null
    */
-  const resetRouteQuery = useCallback(() => {
+  const resetRoute = useCallback(() => {
     if (isWatchModeEnabled()) return;
-    // This method does not force a re-render
-    window.history.replaceState(
-      {
-        ...window.history.state,
-        as: router.route,
-        url: router.route,
-      },
-      "",
-      router.route
-    );
-    // This method forces re-renders :(
-    // router.push(
+    // window.history.replaceState(
     //   {
-    //     pathname: null,
-    //     query: null,
+    //     ...window.history.state,
+    //     as: "",
+    //     url: "",
     //   },
-    //   undefined,
-    //   { scroll: false }
+    //   "",
+    //   ""
     // );
-  }, [isWatchModeEnabled, router.route]);
+    router.push(
+      {
+        pathname: null,
+        query: null,
+      },
+      undefined,
+      { scroll: false }
+    );
+  }, [isWatchModeEnabled, router]);
 
   /**
    * Set Detail Modal Parent styles
@@ -366,7 +365,7 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
       if (
         previewModalStateById[videoId] !== null &&
         previewModalStateById[videoId] !== undefined &&
-        previewModalStateById[videoId].closeWithoutAnimation
+        previewModalStateById[videoId]?.closeWithoutAnimation
       ) {
         return {
           opacity: 0,
@@ -375,13 +374,15 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
               duration: 0,
             },
           },
-          transitionEnd: {
-            display: "none",
-          },
         };
       }
       // Hide modal if conditions aren't met
-      if (!modalRect || !modalRef.current || !titleCardRect || !willClose)
+      if (
+        !modalRect ||
+        !modalRef.current ||
+        !titleCardRect ||
+        !willClose.current
+      )
         return {};
       // Render normally
       let scaleX = 1 / scaleFactor,
@@ -416,8 +417,8 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
       };
     }
     const variantObj = new Object();
-    const miniVariants = produce(variantObj, (draft) => {
-      draft[animationStateActions.RESET_MINI_MODAL] = resetMiniModal();
+    const miniModalVariants = produce(variantObj, (draft) => {
+      draft[animationStateActions.RESET_MINI_MODAL] = { ...resetMiniModal() };
       draft[animationStateActions.OPEN_MINI_MODAL] = {
         ...resetMiniModal(),
         ...openMiniModal(),
@@ -427,6 +428,7 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
         ...closeMiniModal(),
       };
     });
+    // console.log("variants", miniModalVariants);
     return titleCardRect
       ? {
           animate: animationState,
@@ -438,7 +440,7 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
             if (
               animationState === animationStateActions.RESET_MINI_MODAL &&
               isPresent &&
-              !willClose
+              !willClose.current
             )
               return (
                 setAnimationState(animationStateActions.OPEN_MINI_MODAL),
@@ -454,31 +456,7 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
               modalState === modalStateActions.MINI_MODAL &&
               handleCloseModal();
           },
-          variants: miniVariants,
-          // OLD
-          // variants:
-          //   ((variantObj = {}),
-          //   Object.assign(variantObj, {
-          //     [animationStateActions.RESET_MINI_MODAL]: Object.assign(
-          //       {},
-          //       resetMiniModal()
-          //     ),
-          //   }),
-          //   Object.assign(variantObj, {
-          //     [animationStateActions.OPEN_MINI_MODAL]: Object.assign(
-          //       {},
-          //       resetMiniModal(),
-          //       openMiniModal()
-          //     ),
-          //   }),
-          //   Object.assign(variantObj, {
-          //     [animationStateActions.CLOSE_MINI_MODAL]: Object.assign(
-          //       {},
-          //       openMiniModal(),
-          //       closeMiniModal()
-          //     ),
-          //   }),
-          //   variantObj),
+          variants: miniModalVariants,
         }
       : {
           exit: {},
@@ -726,8 +704,10 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
     }
 
     const variantObj = new Object();
-    const detailVariants = produce(variantObj, (draft) => {
-      draft[animationStateActions.MOUNT_DETAIL_MODAL] = mountDetailModal();
+    const detailModalVariants = produce(variantObj, (draft) => {
+      draft[animationStateActions.MOUNT_DETAIL_MODAL] = {
+        ...mountDetailModal(),
+      };
       draft[animationStateActions.OPEN_DETAIL_MODAL] = {
         ...mountDetailModal(),
         ...openDetailModal(),
@@ -737,6 +717,7 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
         ...closeDetailModal(),
       };
     });
+    // console.log("variants", detailModalVariants);
     return {
       initial: false,
       animate: animationState,
@@ -746,39 +727,19 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
         disableTooltips();
       },
       onAnimationComplete: () => {
-        flushSync(() => {
-          if (animationState === animationStateActions.MOUNT_DETAIL_MODAL)
-            return (
-              window.scrollTo(0, 0),
-              setAnimationState(animationStateActions.OPEN_DETAIL_MODAL),
-              animationState === animationStateActions.OPEN_DETAIL_MODAL &&
-                setResponsiveDetailModalWidth()
-            );
-          setIsDetailAnimating(false);
-          enableTooltips();
-        });
+        if (animationState === animationStateActions.MOUNT_DETAIL_MODAL)
+          return (
+            window.scrollTo(0, 0),
+            flushSync(() =>
+              setAnimationState(animationStateActions.OPEN_DETAIL_MODAL)
+            ),
+            animationState === animationStateActions.OPEN_DETAIL_MODAL &&
+              setResponsiveDetailModalWidth()
+          );
+        setIsDetailAnimating(false);
+        enableTooltips();
       },
-      variants: detailVariants,
-      // variants:
-      //   ((variantObj = {}),
-      //   Object.assign(variantObj, {
-      //     [animationStateActions.MOUNT_DETAIL_MODAL]: Object.assign(
-      //       mountDetailModal()
-      //     ),
-      //   }),
-      //   Object.assign(variantObj, {
-      //     [animationStateActions.OPEN_DETAIL_MODAL]: Object.assign(
-      //       mountDetailModal(),
-      //       openDetailModal()
-      //     ),
-      //   }),
-      //   Object.assign(variantObj, {
-      //     [animationStateActions.CLOSE_DETAIL_MODAL]: Object.assign(
-      //       openDetailModal(),
-      //       closeDetailModal()
-      //     ),
-      //   }),
-      //   variantObj),
+      variants: detailModalVariants,
     };
   };
 
@@ -845,31 +806,30 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
    */
   const handleCloseModal = useCallback(
     ({ closeAll = false, closeWithoutAnimation = false } = {}) => {
-      flushSync(() => {
-        // set willClose true
-        setWillClose(true);
-        // Reset timeout id
-        animationFrameId.current &&
-          cancelAnimationFrame(animationFrameId.current),
-          (animationFrameId.current = 0);
-        // Set preview modal closed
-        usePreviewModalStore.getState().setPreviewModalClose({
-          closeWithoutAnimation,
-          videoId,
-        });
-        // Set wasOpen true
-        usePreviewModalStore.getState().setPreviewModalWasOpen(true);
-        // Reset the router path to the default path
-        modalState === modalStateActions.DETAIL_MODAL && resetRouteQuery();
-        // Remove the preview modal's box shadow
-        modalRef.current && (modalRef.current.style.boxShadow = "none");
-        // Reset the document body styles if preview modal is a detail modal
-        closeAll &&
-          modalState === modalStateActions.DETAIL_MODAL &&
-          (document.body.style.overflowY = "");
+      // set willClose true
+      // flushSync(() => setWillClose(true));
+      willClose.current = true;
+      // Reset timeout id
+      animationFrameId.current &&
+        cancelAnimationFrame(animationFrameId.current),
+        (animationFrameId.current = 0);
+      // Set preview modal closed
+      usePreviewModalStore.getState().setPreviewModalClose({
+        closeWithoutAnimation,
+        videoId,
       });
+      // Set `wasOpen` true
+      usePreviewModalStore.getState().setPreviewModalWasOpen(true);
+      // Reset the router path to the default path
+      modalState === modalStateActions.DETAIL_MODAL && resetRoute();
+      // Remove the preview modal's box shadow
+      modalRef.current && (modalRef.current.style.boxShadow = "none");
+      // Reset the document body styles if preview modal is a detail modal
+      closeAll &&
+        modalState === modalStateActions.DETAIL_MODAL &&
+        (document.body.style.overflowY = "");
     },
-    [modalState, videoId, resetRouteQuery]
+    [modalState, videoId, resetRoute]
   );
 
   /**
@@ -901,7 +861,7 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
         pageY = e.pageY;
       // console.log("mouse move ", modalData?.videoModel?.title);
       animationState !== animationStateActions.OPEN_MINI_MODAL ||
-        willClose ||
+        willClose.current ||
         (titleCardRect &&
           (isInsideRect(pageX, pageY, titleCardRect) ||
             isInsideRect(
@@ -1024,7 +984,7 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
    * Animate the detail / default modal's mount animation
    */
   const updateToDetailModal = () => {
-    if (modalRef.current && !willClose) {
+    if (modalRef.current && !willClose.current) {
       animationState !== animationStateActions.MOUNT_DETAIL_MODAL &&
         setAnimationState(animationStateActions.MOUNT_DETAIL_MODAL);
       updateRoute(modalData?.videoModel?.identifiers);
@@ -1046,7 +1006,7 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
    * Animate the mini modal's mount animation
    */
   const updateToMiniModal = () => {
-    if (modalRef.current && !willClose) {
+    if (modalRef.current && !willClose.current) {
       const modalWidth = Math.round(titleCardRect?.width * scaleFactor);
       (modalRef.current.style.width = `${modalWidth}px`),
         disableTooltips(),
@@ -1120,19 +1080,18 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
   }, [modalState]);
 
   /**
-   * Handle the removal of the preview modal from the react tree
+   * Remove of the preview modal from the react tree (explicitly)
+   * Reset detail modal parent layout styles
    */
   useEffect(() => {
     if (!isPresent) {
       setTimeout(() => {
-        // Set preview modal to close
-        usePreviewModalStore.getState().setPreviewModalClose({ videoId });
-        // Set `wasOpen` to false
-        usePreviewModalStore.getState().setPreviewModalWasOpen(false);
-        // Explicitly call for the component to be removed from the react tree
+        // Remove preview modal from the react tree
         safeToRemove();
+        // Set `wasOpen` false
+        usePreviewModalStore.getState().setPreviewModalWasOpen(false);
       }, 0);
-      // Reset detail modal parent layout styles
+      // cleanup
       return () => {
         modalState === modalStateActions.DETAIL_MODAL &&
           resetDetailModalParentStyles();
@@ -1155,12 +1114,15 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
         // Mini modal
         (!isDefaultModal &&
           !isDetailModal &&
-          !willClose &&
+          !willClose.current &&
           (isAnimating ||
             animationState !== animationStateActions.OPEN_MINI_MODAL)) ||
         // Detail modal
-        (isDetailModal && isDetailAnimating && !titleCardRect && !willClose),
-      showBoxArtOnClose = !isDefaultModal && willClose,
+        (isDetailModal &&
+          isDetailAnimating &&
+          !titleCardRect &&
+          !willClose.current),
+      showBoxArtOnClose = !isDefaultModal && willClose.current,
       showVideo =
         // Mini modal
         !!(!isAnimating && videoId) ||
@@ -1223,7 +1185,6 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
               isDetailModal={isDetailModal}
               isDefaultModal={isDefaultModal}
               logos={modalData?.videoModel?.logos}
-              modalOpen={isPresent}
               showBoxArtOnMount={showBoxArtOnMount}
               showBoxArtOnClose={showBoxArtOnClose}
               showTitleGradient={isDefaultModal}

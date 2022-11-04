@@ -1,4 +1,3 @@
-import { useRouter } from "next/router";
 import PropTypes from "prop-types";
 import { Fragment, useContext, useRef } from "react";
 
@@ -14,7 +13,6 @@ import useProfiles from "@/middleware/useProfiles";
 import useUser from "@/middleware/useUser";
 
 // Store
-import usePreviewModalStore from "@/stores/PreviewModalStore";
 
 const BrowseLayoutContainer = ({ initialUser, pageAPI, pageTitle }) => {
   // Context
@@ -28,8 +26,6 @@ const BrowseLayoutContainer = ({ initialUser, pageAPI, pageTitle }) => {
     useProfiles({ user });
   // Refs
   const layoutWrapperRef = useRef();
-  // Router
-  const router = useRouter();
   // Local vars
   const activeProfileId =
     activeProfile?.id || initialUser?.activeProfile?.id || null;
@@ -50,16 +46,6 @@ const BrowseLayoutContainer = ({ initialUser, pageAPI, pageTitle }) => {
     loadingProfiles,
   };
   const pageProps = { ...userData, ...profilesData };
-
-  /**
-   * Determine if a preview modal is currently open
-   * @returns {Boolean}
-   */
-  const isPreviewModalOpen = () => {
-    const previewModalStateById =
-      usePreviewModalStore.getState().previewModalStateById;
-    return Object.values(previewModalStateById).some(({ isOpen }) => isOpen);
-  };
 
   /**
    * Show nothing if a user is not yet logged in
@@ -85,13 +71,7 @@ const BrowseLayoutContainer = ({ initialUser, pageAPI, pageTitle }) => {
         title={pageTitle}
         {...pageProps}
       >
-        <MediaContainer
-          ref={layoutWrapperRef}
-          pageAPI={pageAPI}
-          shouldFreeze={
-            router.query.jbv ?? isPreviewModalOpen() ? true : undefined
-          }
-        />
+        <MediaContainer ref={layoutWrapperRef} pageAPI={pageAPI} />
       </BrowseLayout>
     </Fragment>
   );

@@ -180,11 +180,11 @@ const UserDropdown = (props) => {
                 {({ active }) => (
                   <Link
                     href="/my-account"
-                    legacyBehavior={false}
                     className={classNames(
                       active ? "text-sm hover:underline" : "text-gray-100",
                       "flex w-full items-center text-left text-sm font-bold focus:outline-none"
                     )}
+                    legacyBehavior={false}
                   >
                     <>
                       <svg

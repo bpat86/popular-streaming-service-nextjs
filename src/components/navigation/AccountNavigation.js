@@ -22,10 +22,13 @@ export const AccountNavigation = (props) => {
         <header className="main-navigation-content fixed w-full bg-gray-900 transition duration-150 ease-out">
           <div className="main-navbar max-w-screen-3xl relative mx-auto flex h-[68px] items-center justify-between px-6 sm:px-12 md:justify-start md:space-x-10">
             <div className="flex justify-start">
-              <Link href={`${isActive ? "/browse" : "/my-account"}`}>
-                <span>
+              <Link
+                href={`${isActive ? "/browse" : "/my-account"}`}
+                legacyBehavior
+              >
+                <a>
                   <Logo className="h-6 w-auto cursor-pointer text-netflix-red" />
-                </span>
+                </a>
               </Link>
             </div>
             <div className="-my-2 -mr-2 md:hidden">
@@ -69,10 +72,11 @@ export const AccountNavigation = (props) => {
                           href={`${
                             isActive ? "/browse/genre/tv" : "/my-account"
                           }`}
+                          legacyBehavior
                         >
-                          <span className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-gray-300">
+                          <a className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-gray-300">
                             TV Shows
-                          </span>
+                          </a>
                         </Link>
                       </li>
                       <li>
@@ -80,10 +84,11 @@ export const AccountNavigation = (props) => {
                           href={`${
                             isActive ? "/browse/genre/movies" : "/my-account"
                           }`}
+                          legacyBehavior
                         >
-                          <span className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-gray-300">
+                          <a className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-gray-300">
                             Movies
-                          </span>
+                          </a>
                         </Link>
                       </li>
                       <li>
@@ -91,17 +96,21 @@ export const AccountNavigation = (props) => {
                           href={`${
                             isActive ? "/browse/latest" : "/my-account"
                           }`}
+                          legacyBehavior
                         >
-                          <span className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-gray-300">
+                          <a className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-gray-300">
                             New & Popular
-                          </span>
+                          </a>
                         </Link>
                       </li>
                       <li>
-                        <Link href={`${isActive ? "/browse" : "/my-account"}`}>
-                          <span className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-gray-300">
+                        <Link
+                          href={`${isActive ? "/browse" : "/my-account"}`}
+                          legacyBehavior
+                        >
+                          <a className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-gray-300">
                             My List
-                          </span>
+                          </a>
                         </Link>
                       </li>
                     </ul>

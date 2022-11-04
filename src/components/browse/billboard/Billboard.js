@@ -125,60 +125,6 @@ const Billboard = forwardRef(
     }, [maxVolume, player]);
 
     /**
-     * Set the audio to fade in
-     */
-    // const fadeInAudio = (audioElement = {}, duration = 28) => {
-    //   if (usePreviewModalStore.getState().wasOpen) return;
-    //   requestRef.current = requestAnimationFrame(() => {
-    //     let i = 0;
-    //     // Reset the player state
-    //     audioElement?.unMute();
-    //     audioElement?.setVolume(0);
-    //     let intervalId = setInterval(() => {
-    //       let updatedVolume = (maxVolume / duration) * i;
-    //       audioElement?.setVolume(updatedVolume);
-    //       // Iterate the volume up from zero (muted)
-    //       if (++i >= duration) {
-    //         cancelAnimationFrame(requestRef.current);
-    //         clearInterval(intervalId);
-    //         requestRef.current = 0;
-    //         // Reset the player state
-    //         audioElement?.unMute();
-    //         audioElement?.setVolume(maxVolume);
-    //       }
-    //     }, duration);
-    //   });
-    // };
-
-    /**
-     * Set the audio to fade out
-     */
-    // const fadeOutAudio = (audioElement = {}, duration = 28) => {
-    //   const currentVolume = audioElement?.getVolume();
-    //   if (!audioIsEnabled() || currentVolume === 0) return;
-    //   requestRef.current = requestAnimationFrame(() => {
-    //     let i = 0.1;
-    //     // Reset the player state
-    //     audioElement?.unMute();
-    //     audioElement?.setVolume(maxVolume);
-    //     let intervalId = setInterval(() => {
-    //       let newVolume = audioElement?.getVolume() - i;
-    //       // Adjust volume down if still greater than zero (muted)
-    //       if (newVolume >= 0) {
-    //         audioElement?.setVolume(newVolume);
-    //       } else {
-    //         cancelAnimationFrame(requestRef.current);
-    //         clearInterval(intervalId);
-    //         requestRef.current = 0;
-    //         // Reset the player state
-    //         audioElement?.mute();
-    //         audioElement?.setVolume(0);
-    //       }
-    //     }, duration);
-    //   });
-    // };
-
-    /**
      * Toggle the player audio on / off
      */
     const toggleAudio = () => {
@@ -380,7 +326,7 @@ const Billboard = forwardRef(
                 videoCanPlayThrough
                   ? "dismiss-static"
                   : ""
-              } `}
+              }`}
             >
               {!videoCompleted && (
                 <div

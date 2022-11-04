@@ -22,7 +22,7 @@ export default function MyApp({ Component, pageProps, router }) {
   return getLayout(
     <CombineContexts contextProviders={contextProviders}>
       <AnimatePresenceWrapper mode="wait">
-        <Component key={router.route} router={router} {...pageProps} />
+        <Component key={router.route} {...pageProps} />
       </AnimatePresenceWrapper>
     </CombineContexts>
   );

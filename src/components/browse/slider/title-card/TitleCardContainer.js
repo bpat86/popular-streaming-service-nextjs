@@ -75,18 +75,11 @@ const TitleCardContainer = forwardRef(
     const handleMouseEnter = (e, titleCardRef) => {
       const { isModalOpen } = scopeRef.current;
       const mouseEnter =
-        e &&
-        e.currentTarget &&
-        titleCardRef instanceof HTMLElement &&
-        titleCardRef.contains(e.currentTarget) &&
-        !isModalOpen;
+        e && e.currentTarget && titleCardRef.contains(e.currentTarget);
       // Only visible titles can display a preview modal
-      if (!itemTabbable) return;
+      if (!itemTabbable || isModalOpen) return;
       // Process the mouse enter event
-      if (mouseEnter) {
-        // handleEnter(titleCardRef);
-        handleEnter(titleCardRef);
-      }
+      if (mouseEnter) handleEnter(titleCardRef);
     };
 
     /**
@@ -97,41 +90,36 @@ const TitleCardContainer = forwardRef(
      */
     const handleEnter = (titleCardRef) => {
       const { hasFetchedModalData } = scopeRef.current;
-      // If a titleCard hasn't been hovered over yet, fetch the modal data
-      if (((scopeRef.current.isHovering = true), !hasFetchedModalData)) {
+      // Set hasFetchedModalData to true after the modal has opened once
+      scopeRef.current.isHovering = true;
+      if (!hasFetchedModalData) {
         scopeRef.current.hasFetchedModalData = true;
         return queuePreviewModalOpen(titleCardRef);
       }
-      // If a titleCard has been hovered over, open the modal immediately
       queuePreviewModalOpen(titleCardRef);
     };
 
     /**
-     * Handle when a user hovers out of a titlecard.
+     * Handle when a user hovers out of a titlecard
      * @param {Object} e
      * @param {Object} ref
      */
     const handleMouseLeave = (e, titleCardRef) => {
-      // Process the mouse leave event
-      if (
+      const mouseLeave =
         (e && !e.relatedTarget) ||
         e.relatedTarget.location ||
-        (e.relatedTarget &&
-          titleCardRef instanceof HTMLElement &&
-          !titleCardRef.contains(e.relatedTarget))
-      ) {
-        handleLeave();
-      }
+        (e.relatedTarget && !titleCardRef.contains(e.relatedTarget));
+      // Process the mouse leave event
+      if (mouseLeave) handleLeave();
     };
 
     /**
-     * Determine if a preview modal should open on mouse move.
+     * If a preview modal is open or this titleCard is hovered over
      * @param {Object} e
      * @param {Object} ref
      */
     const handleMouseMove = (e, titleCardRef) => {
       const { isHovering } = scopeRef.current;
-      // Process the mouse move event
       isHovering || isPreviewModalOpen() || handleMouseEnter(e, titleCardRef);
     };
 
@@ -161,11 +149,13 @@ const TitleCardContainer = forwardRef(
      */
     const queuePreviewModalOpen = (ref) => {
       const { isHovering, isModalOpen } = scopeRef.current;
-      // console.log(usePreviewModalStore.getState().wasOpen);
+      console.log(usePreviewModalStore.getState().wasOpen);
+      let delay;
       if (!hoverTimeoutIdRef.current && !isModalOpen && isHovering) {
-        const delay = usePreviewModalStore.getState().wasOpen ? 100 : 400;
+        (delay = rowHasPreviewModalOpen() ? 100 : 400),
+          (delay = usePreviewModalStore.getState().wasOpen ? 100 : 400);
         hoverTimeoutIdRef.current = setTimeout(() => {
-          openPreviewModal({
+          return openPreviewModal({
             titleCardNode: ref,
           });
         }, delay);
@@ -292,5 +282,4 @@ const TitleCardContainer = forwardRef(
   }
 );
 
-TitleCardContainer.displayName = "TitleCardContainer";
 export default TitleCardContainer;

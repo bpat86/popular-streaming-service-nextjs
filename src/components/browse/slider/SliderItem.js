@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import MotionDivWrapper from "@/lib/MotionDivWrapper";
 
 const SliderItem = (props) => {
   const {
@@ -36,7 +36,7 @@ const SliderItem = (props) => {
   };
 
   return (
-    <motion.div
+    <MotionDivWrapper
       className={
         fullDataLoaded
           ? `slider-item slider-item-${viewportIndex}${
@@ -51,7 +51,7 @@ const SliderItem = (props) => {
       ) : (
         <div className="boxart-size-16x9 animate-pulse bg-gray-800"></div>
       )}
-    </motion.div>
+    </MotionDivWrapper>
   );
 };
 
