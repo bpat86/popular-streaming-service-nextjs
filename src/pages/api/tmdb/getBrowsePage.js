@@ -51,18 +51,12 @@ function makeMediaArray({
   if (!srcArray.length) return [];
   const mediaArray = new Array();
   // Construct a new array with new keys denoting the user's media preferences
-  srcArray
-    .filter((item) => {
-      // Remove items if they don't have a backdrop images or overviews
-      if (
-        !item.backdrop_path ||
-        !item.overview ||
-        mediaArray?.some(({ id }) => id === item.id)
-      )
-        return;
-      return item;
-    })
-    .forEach((item) => {
+  srcArray.map((item) => {
+    if (
+      item.overview &&
+      item.backdrop_path &&
+      !mediaArray?.some(({ id }) => id === item.id)
+    ) {
       // Find item in media list
       const mediaListItem = profileMediaListArray?.find(
         ({ id }) => id === item.id
@@ -85,8 +79,10 @@ function makeMediaArray({
         is_disliked: !!dislikedMediaItem?.disliked_media_id,
         disliked_media_id: dislikedMediaItem?.disliked_media_id || null,
       });
-    });
-  return mediaArray;
+      return mediaArray;
+    }
+  });
+  return mediaArray.length ? mediaArray : [];
 }
 
 /**
@@ -187,7 +183,7 @@ async function getBillboardMedia({
 }) {
   if (!srcArray.length) return {};
   // const idsArray = [656663, 414906, 646380, 696806, 634649, 619979, 615904];
-  const idsArray = srcArray.slice(0, 46);
+  const idsArray = srcArray.slice(0, 42);
   const randomItem = idsArray[pickRandomIdx(idsArray)];
   const params = {
     mediaType: randomItem.media_type || srcArray[pickRandomInt(6)].media_type,
@@ -323,10 +319,10 @@ export default withSessionRoute(async (req, res) => {
       const trendingMoviesUrl = requests.fetchTrendingMovies.url;
       const comedyMoviesUrl = requests.fetchComedyMovies.url;
       const actionMoviesUrl = requests.fetchActionMovies.url;
-      // const romanceMoviesUrl = requests.fetchRomanceMovies.url;
+      const romanceMoviesUrl = requests.fetchRomanceMovies.url;
       const popularTVUrl = requests.fetchPopularTV.url;
-      // const animatedMoviesUrl = requests.fetchAnimatedMovies.url;
-      // const horrorMoviesUrl = requests.fetchHorrorMovies.url;
+      const animatedMoviesUrl = requests.fetchAnimatedMovies.url;
+      const horrorMoviesUrl = requests.fetchHorrorMovies.url;
       // Fetch all data concurrently
       const [
         getUserMe,
@@ -348,15 +344,15 @@ export default withSessionRoute(async (req, res) => {
         getActionMoviesOne,
         getActionMoviesTwo,
         getActionMoviesThree,
-        // getRomanceMoviesOne,
-        // getRomanceMoviesTwo,
-        // getRomanceMoviesThree,
-        // getHorrorMoviesOne,
-        // getHorrorMoviesTwo,
-        // getHorrorMoviesThree,
-        // getAnimatedMoviesOne,
-        // getAnimatedMoviesTwo,
-        // getAnimatedMoviesThree,
+        getRomanceMoviesOne,
+        getRomanceMoviesTwo,
+        getRomanceMoviesThree,
+        getHorrorMoviesOne,
+        getHorrorMoviesTwo,
+        getHorrorMoviesThree,
+        getAnimatedMoviesOne,
+        getAnimatedMoviesTwo,
+        getAnimatedMoviesThree,
       ] = await getFetchConcurrently([
         getFetch(userMeURL, config),
         getFetch(makeMediaURL(upcomingMoviesUrl, 1)),
@@ -377,15 +373,15 @@ export default withSessionRoute(async (req, res) => {
         getFetch(makeMediaURL(actionMoviesUrl, 1)),
         getFetch(makeMediaURL(actionMoviesUrl, 2)),
         getFetch(makeMediaURL(actionMoviesUrl, 3)),
-        // getFetch(makeMediaURL(romanceMoviesUrl, 1)),
-        // getFetch(makeMediaURL(romanceMoviesUrl, 2)),
-        // getFetch(makeMediaURL(romanceMoviesUrl, 3)),
-        // getFetch(makeMediaURL(horrorMoviesUrl, 1)),
-        // getFetch(makeMediaURL(horrorMoviesUrl, 2)),
-        // getFetch(makeMediaURL(horrorMoviesUrl, 3)),
-        // getFetch(makeMediaURL(animatedMoviesUrl, 1)),
-        // getFetch(makeMediaURL(animatedMoviesUrl, 2)),
-        // getFetch(makeMediaURL(animatedMoviesUrl, 3)),
+        getFetch(makeMediaURL(romanceMoviesUrl, 1)),
+        getFetch(makeMediaURL(romanceMoviesUrl, 2)),
+        getFetch(makeMediaURL(romanceMoviesUrl, 3)),
+        getFetch(makeMediaURL(horrorMoviesUrl, 1)),
+        getFetch(makeMediaURL(horrorMoviesUrl, 2)),
+        getFetch(makeMediaURL(horrorMoviesUrl, 3)),
+        getFetch(makeMediaURL(animatedMoviesUrl, 1)),
+        getFetch(makeMediaURL(animatedMoviesUrl, 2)),
+        getFetch(makeMediaURL(animatedMoviesUrl, 3)),
       ]);
       const profileMediaList = getProfileMediaList({
         profile: Object.assign(
@@ -491,57 +487,57 @@ export default withSessionRoute(async (req, res) => {
         profileLikedMediaArray: profileLikedMedia,
         profileDislikedMediaArray: profileDislikedMedia,
       });
-      // const romanceMovies = makeMediaArray({
-      //   srcArray: [
-      //     ...(getRomanceMoviesOne.status === 200
-      //       ? getRomanceMoviesOne.data.results
-      //       : []),
-      //     ...(getRomanceMoviesTwo.status === 200
-      //       ? getRomanceMoviesTwo.data.results
-      //       : []),
-      //     ...(getRomanceMoviesThree.status === 200
-      //       ? getRomanceMoviesThree.data.results
-      //       : []),
-      //   ],
-      //   mediaType: "movie",
-      //   profileMediaListArray: profileMediaList,
-      //   profileLikedMediaArray: profileLikedMedia,
-      //   profileDislikedMediaArray: profileDislikedMedia,
-      // });
-      // const horrorMovies = makeMediaArray({
-      //   srcArray: [
-      //     ...(getHorrorMoviesOne.status === 200
-      //       ? getHorrorMoviesOne.data.results
-      //       : []),
-      //     ...(getHorrorMoviesTwo.status === 200
-      //       ? getHorrorMoviesTwo.data.results
-      //       : []),
-      //     ...(getHorrorMoviesThree.status === 200
-      //       ? getHorrorMoviesThree.data.results
-      //       : []),
-      //   ],
-      //   mediaType: "movie",
-      //   profileMediaListArray: profileMediaList,
-      //   profileLikedMediaArray: profileLikedMedia,
-      //   profileDislikedMediaArray: profileDislikedMedia,
-      // });
-      // const animatedMovies = makeMediaArray({
-      //   srcArray: [
-      //     ...(getAnimatedMoviesOne.status === 200
-      //       ? getAnimatedMoviesOne.data.results
-      //       : []),
-      //     ...(getAnimatedMoviesTwo.status === 200
-      //       ? getAnimatedMoviesTwo.data.results
-      //       : []),
-      //     ...(getAnimatedMoviesThree.status === 200
-      //       ? getAnimatedMoviesThree.data.results
-      //       : []),
-      //   ],
-      //   mediaType: "movie",
-      //   profileMediaListArray: profileMediaList,
-      //   profileLikedMediaArray: profileLikedMedia,
-      //   profileDislikedMediaArray: profileDislikedMedia,
-      // });
+      const romanceMovies = makeMediaArray({
+        srcArray: [
+          ...(getRomanceMoviesOne.status === 200
+            ? getRomanceMoviesOne.data.results
+            : []),
+          ...(getRomanceMoviesTwo.status === 200
+            ? getRomanceMoviesTwo.data.results
+            : []),
+          ...(getRomanceMoviesThree.status === 200
+            ? getRomanceMoviesThree.data.results
+            : []),
+        ],
+        mediaType: "movie",
+        profileMediaListArray: profileMediaList,
+        profileLikedMediaArray: profileLikedMedia,
+        profileDislikedMediaArray: profileDislikedMedia,
+      });
+      const horrorMovies = makeMediaArray({
+        srcArray: [
+          ...(getHorrorMoviesOne.status === 200
+            ? getHorrorMoviesOne.data.results
+            : []),
+          ...(getHorrorMoviesTwo.status === 200
+            ? getHorrorMoviesTwo.data.results
+            : []),
+          ...(getHorrorMoviesThree.status === 200
+            ? getHorrorMoviesThree.data.results
+            : []),
+        ],
+        mediaType: "movie",
+        profileMediaListArray: profileMediaList,
+        profileLikedMediaArray: profileLikedMedia,
+        profileDislikedMediaArray: profileDislikedMedia,
+      });
+      const animatedMovies = makeMediaArray({
+        srcArray: [
+          ...(getAnimatedMoviesOne.status === 200
+            ? getAnimatedMoviesOne.data.results
+            : []),
+          ...(getAnimatedMoviesTwo.status === 200
+            ? getAnimatedMoviesTwo.data.results
+            : []),
+          ...(getAnimatedMoviesThree.status === 200
+            ? getAnimatedMoviesThree.data.results
+            : []),
+        ],
+        mediaType: "movie",
+        profileMediaListArray: profileMediaList,
+        profileLikedMediaArray: profileLikedMedia,
+        profileDislikedMediaArray: profileDislikedMedia,
+      });
       // Merge tv and movies to create a mixed content array
       const popularTVAndMovies = mergeSortedArrays([
         popularMovies.slice(0, 30 || Math.floor(popularMovies.length / 2)),
@@ -577,9 +573,9 @@ export default withSessionRoute(async (req, res) => {
           trendingMovies,
           comedyMovies,
           actionMovies,
-          // romanceMovies,
-          // horrorMovies,
-          // animatedMovies,
+          romanceMovies,
+          horrorMovies,
+          animatedMovies,
           sliders: [
             {
               id: 0,
@@ -629,30 +625,30 @@ export default withSessionRoute(async (req, res) => {
               data: actionMovies,
               isMyListRow: false,
             },
-            // {
-            //   id: 6,
-            //   type: "movie",
-            //   name: requests.fetchRomanceMovies.title,
-            //   listContext: requests.fetchRomanceMovies.listContext,
-            //   data: romanceMovies,
-            //   isMyListRow: false,
-            // },
-            // {
-            //   id: 7,
-            //   type: "movie",
-            //   name: requests.fetchHorrorMovies.title,
-            //   listContext: requests.fetchHorrorMovies.listContext,
-            //   data: horrorMovies,
-            //   isMyListRow: false,
-            // },
-            // {
-            //   id: 8,
-            //   type: "movie",
-            //   name: requests.fetchAnimatedMovies.title,
-            //   listContext: requests.fetchAnimatedMovies.listContext,
-            //   data: animatedMovies,
-            //   isMyListRow: false,
-            // },
+            {
+              id: 6,
+              type: "movie",
+              name: requests.fetchRomanceMovies.title,
+              listContext: requests.fetchRomanceMovies.listContext,
+              data: romanceMovies,
+              isMyListRow: false,
+            },
+            {
+              id: 7,
+              type: "movie",
+              name: requests.fetchHorrorMovies.title,
+              listContext: requests.fetchHorrorMovies.listContext,
+              data: horrorMovies,
+              isMyListRow: false,
+            },
+            {
+              id: 8,
+              type: "movie",
+              name: requests.fetchAnimatedMovies.title,
+              listContext: requests.fetchAnimatedMovies.listContext,
+              data: animatedMovies,
+              isMyListRow: false,
+            },
           ],
         },
       });

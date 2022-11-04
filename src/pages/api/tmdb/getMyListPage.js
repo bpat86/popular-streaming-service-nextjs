@@ -50,18 +50,12 @@ function makeMediaArray({
   if (!srcArray.length) return [];
   const mediaArray = new Array();
   // Construct a new array with new keys denoting the user's media preferences
-  srcArray
-    .filter((item) => {
-      // Remove items if they don't have a backdrop images or overviews
-      if (
-        !item.backdrop_path ||
-        !item.overview ||
-        mediaArray?.some(({ id }) => id === item.id)
-      )
-        return;
-      return item;
-    })
-    .forEach((item) => {
+  srcArray.map((item) => {
+    if (
+      item.overview &&
+      item.backdrop_path &&
+      !mediaArray?.some(({ id }) => id === item.id)
+    ) {
       // Find item in media list
       const mediaListItem = profileMediaListArray?.find(
         ({ id }) => id === item.id
@@ -84,8 +78,10 @@ function makeMediaArray({
         is_disliked: !!dislikedMediaItem?.disliked_media_id,
         disliked_media_id: dislikedMediaItem?.disliked_media_id || null,
       });
-    });
-  return mediaArray;
+      return mediaArray;
+    }
+  });
+  return mediaArray.length ? mediaArray : [];
 }
 
 /**

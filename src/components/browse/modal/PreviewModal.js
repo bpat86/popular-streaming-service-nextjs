@@ -731,17 +731,17 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
         disableTooltips();
       },
       onAnimationComplete: () => {
-        flushSync(() => {
-          if (animationState === animationStateActions.MOUNT_DETAIL_MODAL)
-            return (
-              window.scrollTo(0, 0),
-              setAnimationState(animationStateActions.OPEN_DETAIL_MODAL),
-              animationState === animationStateActions.OPEN_DETAIL_MODAL &&
-                setResponsiveDetailModalWidth()
-            );
-          setIsDetailAnimating(false);
-          enableTooltips();
-        });
+        if (animationState === animationStateActions.MOUNT_DETAIL_MODAL)
+          return (
+            window.scrollTo(0, 0),
+            flushSync(() =>
+              setAnimationState(animationStateActions.OPEN_DETAIL_MODAL)
+            ),
+            animationState === animationStateActions.OPEN_DETAIL_MODAL &&
+              setResponsiveDetailModalWidth()
+          );
+        setIsDetailAnimating(false);
+        enableTooltips();
       },
       variants: detailModalVariants,
     };

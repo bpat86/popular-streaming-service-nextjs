@@ -41,11 +41,6 @@ const Info = forwardRef(
             isDefaultModal={isDefaultModal}
             isLoading={isLoading}
           />
-          <Cast
-            cast={cast}
-            isDefaultModal={isDefaultModal}
-            isLoading={isLoading}
-          />
         </div>
       </MotionDivWrapper>
     );

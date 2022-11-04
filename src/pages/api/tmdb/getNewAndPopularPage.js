@@ -40,51 +40,48 @@ const pickRandomInt = (max) => Math.floor(Math.random() * max);
  * @param {Array} array
  * @returns
  */
-function makeMediaArray(props) {
-  const {
-    srcArray,
-    mediaType,
-    profileMediaListArray,
-    profileLikedMediaArray,
-    profileDislikedMediaArray,
-  } = props;
-  let mediaArray = [];
+function makeMediaArray({
+  srcArray = [],
+  mediaType = null,
+  profileMediaListArray = [],
+  profileLikedMediaArray = [],
+  profileDislikedMediaArray = [],
+}) {
+  if (!srcArray.length) return [];
+  const mediaArray = new Array();
   // Construct a new array with new keys denoting the user's media preferences
-  srcArray?.map((srcItem) => {
-    // Discard items that don't have images and overviews
-    if (srcItem?.backdrop_path !== null && srcItem?.overview !== null) {
-      const isDuplicate = mediaArray?.some(({ id }) => id === srcItem?.id);
-      if (!isDuplicate) {
-        // Find item in media list
-        const mediaListItem = profileMediaListArray?.find(
-          ({ id }) => id === srcItem?.id
-        );
-        // Find item in liked media list
-        const likedMediaItem = profileLikedMediaArray?.find(
-          ({ id }) => id === srcItem?.id
-        );
-        // Find item in disliked media list
-        const dislikedMediaItem = profileDislikedMediaArray?.find(
-          ({ id }) => id === srcItem?.id
-        );
-        mediaArray.push({
-          ...srcItem,
-          media_type: mediaType || srcItem?.media_type,
-          in_media_list: !!mediaListItem?.media_list_id,
-          media_list_id: mediaListItem?.media_list_id || null,
-          is_liked: !!likedMediaItem?.liked_media_id,
-          liked_media_id: likedMediaItem?.liked_media_id || null,
-          is_disliked: !!dislikedMediaItem?.disliked_media_id,
-          disliked_media_id: dislikedMediaItem?.disliked_media_id || null,
-        });
-      }
+  srcArray.map((item) => {
+    if (
+      item.overview &&
+      item.backdrop_path &&
+      !mediaArray?.some(({ id }) => id === item.id)
+    ) {
+      // Find item in media list
+      const mediaListItem = profileMediaListArray?.find(
+        ({ id }) => id === item.id
+      );
+      // Find item in liked media list
+      const likedMediaItem = profileLikedMediaArray?.find(
+        ({ id }) => id === item.id
+      );
+      // Find item in disliked media list
+      const dislikedMediaItem = profileDislikedMediaArray?.find(
+        ({ id }) => id === item.id
+      );
+      mediaArray.push({
+        ...item,
+        media_type: mediaType || item?.media_type,
+        in_media_list: !!mediaListItem?.media_list_id,
+        media_list_id: mediaListItem?.media_list_id || null,
+        is_liked: !!likedMediaItem?.liked_media_id,
+        liked_media_id: likedMediaItem?.liked_media_id || null,
+        is_disliked: !!dislikedMediaItem?.disliked_media_id,
+        disliked_media_id: dislikedMediaItem?.disliked_media_id || null,
+      });
+      return mediaArray;
     }
   });
-  // Using Set(), an instance of unique values will be created removing any duplicates
-  mediaArray = new Set(mediaArray);
-  // Convert the instance into a new array
-  mediaArray = [...mediaArray];
-  return mediaArray.length ? mediaArray : null;
+  return mediaArray.length ? mediaArray : [];
 }
 
 /**
