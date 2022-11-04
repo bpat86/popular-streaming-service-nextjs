@@ -7,7 +7,6 @@ import AuthContext from "@/context/AuthContext";
 import Logo from "./Logo";
 
 export const HomeNavigation = (props) => {
-  // Destructure the props
   const { isLoggedIn, user } = props;
 
   // Bring in `logout` from the auth context

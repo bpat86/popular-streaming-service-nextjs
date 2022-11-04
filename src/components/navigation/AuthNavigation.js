@@ -5,9 +5,7 @@ import AuthContext from "@/context/AuthContext";
 
 import Logo from "./Logo";
 
-export const AuthNavigation = (props) => {
-  // Destructure the props
-  const { isLoggedIn, isRegistered, user } = props;
+export const AuthNavigation = ({ isLoggedIn }) => {
   const { logout } = useContext(AuthContext);
   const [isOpen, setIsOpen] = useState(false);
   const headerRef = useRef();

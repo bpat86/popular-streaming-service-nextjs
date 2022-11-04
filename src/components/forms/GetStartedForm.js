@@ -13,7 +13,6 @@ const validationSchema = yup.object({
 });
 
 export const GetStartedForm = (props) => {
-  // Destructure the props
   const { formData, setFormData } = props;
   const { getStarted } = useContext(AuthContext);
 

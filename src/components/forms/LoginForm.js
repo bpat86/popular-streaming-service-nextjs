@@ -11,7 +11,6 @@ const validationSchema = yup.object({
 });
 
 export const LoginForm = (props) => {
-  // Destructure the props
   const { loading, formData, setFormData, login, strapiError } = props;
   return (
     <>

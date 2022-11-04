@@ -9,7 +9,6 @@ import { NEXT_URL } from "@/config/index";
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 export const PaymentsForm = (props) => {
-  // Destructure the props
   const { userData, stripeCustomerId, registrationStepFive } = props;
 
   // Set initial state

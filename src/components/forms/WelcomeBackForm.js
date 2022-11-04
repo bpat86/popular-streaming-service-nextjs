@@ -6,7 +6,6 @@ import AuthContext from "@/context/AuthContext";
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 export const WelcomeBackForm = (props) => {
-  // Destructure the props
   const { user } = props;
   const { redirectUser } = useContext(AuthContext);
   return (

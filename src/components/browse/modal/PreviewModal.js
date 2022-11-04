@@ -127,6 +127,16 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
    */
   const updateRoute = useCallback(
     ({ id, mediaType } = {}) => {
+      // Next.js router
+      router.push(
+        {
+          pathname: router.pathname,
+          query: { ...router.query, jbv: id, type: mediaType },
+        },
+        undefined,
+        { shallow: true, scroll: false }
+      );
+      // Doesn't trigger mass re-renders, but isn't ideal :(
       // window.history.replaceState(
       //   {
       //     ...window.history.state,
@@ -136,14 +146,6 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
       //   "",
       //   `?jbv=${id}&type=${mediaType}`
       // );
-      router.push(
-        {
-          pathname: router.pathname,
-          query: { ...router.query, jbv: id, type: mediaType },
-        },
-        undefined,
-        { shallow: true, scroll: false }
-      );
     },
     [router]
   );
@@ -153,6 +155,16 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
    */
   const resetRoute = useCallback(() => {
     if (isWatchModeEnabled()) return;
+    // Next.js router
+    router.push(
+      {
+        pathname: null,
+        query: null,
+      },
+      undefined,
+      { scroll: false }
+    );
+    // Doesn't trigger mass re-renders, but isn't ideal :(
     // window.history.replaceState(
     //   {
     //     ...window.history.state,
@@ -162,14 +174,6 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
     //   "",
     //   ""
     // );
-    router.push(
-      {
-        pathname: null,
-        query: null,
-      },
-      undefined,
-      { scroll: false }
-    );
   }, [isWatchModeEnabled, router]);
 
   /**
@@ -727,17 +731,17 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
         disableTooltips();
       },
       onAnimationComplete: () => {
-        if (animationState === animationStateActions.MOUNT_DETAIL_MODAL)
-          return (
-            window.scrollTo(0, 0),
-            flushSync(() =>
-              setAnimationState(animationStateActions.OPEN_DETAIL_MODAL)
-            ),
-            animationState === animationStateActions.OPEN_DETAIL_MODAL &&
-              setResponsiveDetailModalWidth()
-          );
-        setIsDetailAnimating(false);
-        enableTooltips();
+        flushSync(() => {
+          if (animationState === animationStateActions.MOUNT_DETAIL_MODAL)
+            return (
+              window.scrollTo(0, 0),
+              setAnimationState(animationStateActions.OPEN_DETAIL_MODAL),
+              animationState === animationStateActions.OPEN_DETAIL_MODAL &&
+                setResponsiveDetailModalWidth()
+            );
+          setIsDetailAnimating(false);
+          enableTooltips();
+        });
       },
       variants: detailModalVariants,
     };

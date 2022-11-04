@@ -8,7 +8,6 @@ import AuthNavigation from "@/components/navigation/AuthNavigation";
 import Footer from "../registration/Footer";
 
 const RegistrationLayout = (props) => {
-  // Destructure the props
   const { title, children } = props;
 
   // const stripePromise = loadStripe(`${process.env.NEXT_PUBLIC_STRIPE_PK}`);

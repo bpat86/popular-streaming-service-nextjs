@@ -3,7 +3,6 @@ import { Form, Formik } from "formik";
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 export const SignUpForm = (props) => {
-  // Destructure the props
   const { registrationStepOne } = props;
   return (
     <>

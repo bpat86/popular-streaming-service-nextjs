@@ -13,7 +13,6 @@ const validationSchema = yup.object({
 });
 
 export const RegisterForm = (props) => {
-  // Destructure the props
   const { loading, formData, setFormData, registrationStepTwo, strapiError } =
     props;
   return (

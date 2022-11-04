@@ -1,5 +1,4 @@
-import { useElements, useStripe } from "@stripe/react-stripe-js";
-import { CardElement } from "@stripe/react-stripe-js";
+import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import axios from "axios";
 import { Form, Formik } from "formik";
 import Link from "next/link";
@@ -20,7 +19,6 @@ const validationSchema = yup.object({
 });
 
 export const CreditOptionForm = (props) => {
-  // Destructure the props
   const {
     loading,
     userData,

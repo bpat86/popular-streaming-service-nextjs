@@ -6,8 +6,7 @@ import ProfilesDropdown from "@/components/navigation/ProfilesDropdown";
 import Logo from "./Logo";
 
 export const AccountNavigation = (props) => {
-  // Destructure the props
-  const { isLoggedIn, isActive, isRegistered, user, activeProfile } = props;
+  const { isLoggedIn, isActive } = props;
 
   return (
     <motion.div
