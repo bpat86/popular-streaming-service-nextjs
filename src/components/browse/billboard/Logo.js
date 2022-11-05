@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 const Logo = ({ logos, title }) => {
   /**
    * Show the best fitted logo
@@ -24,26 +22,15 @@ const Logo = ({ logos, title }) => {
     <>
       <span className="sr-only">{title} logo</span>
       {logos?.length ? (
-        // <picture>
-        //   <img
-        //     className={`title-logo ${
-        //       getLogoAspectRatio(logos) === "wide" ? "wide" : "tall"
-        //     }`}
-        //     src={`https://image.tmdb.org/t/p/w500${getLogoPath(logos)}`}
-        //     alt={title}
-        //   />
-        // </picture>
-        <Image
-          priority
-          layout="fill"
-          objectFit="contain"
-          objectPosition="left"
-          className={`title-logo ${
-            getLogoAspectRatio(logos) === "wide" ? "wide" : "tall"
-          }`}
-          src={`https://image.tmdb.org/t/p/w500${getLogoPath(logos)}`}
-          alt={title}
-        />
+        <picture className="flex">
+          <img
+            className={`title-logo ${
+              getLogoAspectRatio(logos) === "wide" ? "wide" : "tall"
+            }`}
+            src={`https://image.tmdb.org/t/p/w500${getLogoPath(logos)}`}
+            alt={title}
+          />
+        </picture>
       ) : (
         <div className="title-logo mt-auto origin-bottom-left text-3xl font-black leading-6 text-white lg:text-7xl">
           {title}
