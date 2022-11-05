@@ -9,9 +9,8 @@ import Footer from "../registration/Footer";
 
 const RegistrationLayout = (props) => {
   const { title, children } = props;
-
-  // const stripePromise = loadStripe(`${process.env.NEXT_PUBLIC_STRIPE_PK}`);
-  const [stripePromise, setStripePromise] = useState(() =>
+  // eslint-disable-next-line no-unused-vars
+  const [stripePromise, _setStripePromise] = useState(() =>
     loadStripe(`${process.env.NEXT_PUBLIC_STRIPE_PK}`)
   );
 

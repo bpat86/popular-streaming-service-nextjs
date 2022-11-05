@@ -17,7 +17,7 @@ export default withSessionRoute(async (req, res) => {
 
       // Destructure the body params from `request.body`
       const {
-        email,
+        // email,
         subscriptionId,
         customerId,
         monthlyPrice,

@@ -8,11 +8,11 @@ import { NEXT_URL } from "@/config/index";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-export const PaymentsForm = (props) => {
-  const { userData, stripeCustomerId, registrationStepFive } = props;
-
-  // Set initial state
-  const [error, setError] = useState(null);
+export const PaymentsForm = ({
+  userData,
+  stripeCustomerId,
+  registrationStepFive,
+}) => {
   const [stripeLoading, setStripeLoading] = useState(null);
 
   // Initialize Stripe
@@ -110,14 +110,12 @@ export const PaymentsForm = (props) => {
         subscriptionId,
       };
 
-      // console.log("updateUserParams: ", updateUserParams);
-
       // Update the user information in Strapi and progress to the next step of registration
       registrationStepFive(updateUserParams);
     } catch (error) {
       setStripeLoading(false);
       // Set any errors that may occur for user feedback in the UI
-      setError(error.message);
+      throw new Error(error);
     } finally {
       setStripeLoading(false);
     }

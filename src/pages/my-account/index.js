@@ -30,7 +30,8 @@ const Index = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const [stripePromise, setStripePromise] = useState(() =>
+  // eslint-disable-next-line no-unused-vars
+  const [stripePromise, _setStripePromise] = useState(() =>
     loadStripe(`${process.env.NEXT_PUBLIC_STRIPE_PK}`)
   );
 

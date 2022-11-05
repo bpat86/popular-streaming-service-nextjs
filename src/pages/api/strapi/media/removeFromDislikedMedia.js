@@ -18,14 +18,8 @@ export default withSessionRoute(async (req, res) => {
       // Destructure the body params from `request.body`
       const { strapiID } = req.body;
 
-      console.log("headers: ", {
-        Authorization: `Bearer ${user?.strapiToken}`,
-      });
-
       // Define Strapi backend API url
       const removeFromDislikedMediaURL = `${API_URL}/api/disliked-medias/${strapiID}`;
-
-      console.log(`------ disliked-medias/${strapiID}`);
 
       // Make our "DELETE" request
       const removeFromDislikedMediaResponse = await axios.delete(

@@ -19,7 +19,6 @@ export const AuthProvider = ({ children }) => {
   });
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
-  const [response, setResponse] = useState(false);
 
   const router = useRouter();
 
@@ -277,54 +276,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  /**
-   *
-   * @param {any} email
-   */
-  const cancelSubscription = async (props) => {
-    setLoading(true);
-
-    try {
-      const { subscriptionId } = props;
-      // Define the Stripe api url
-      const cancelSubscriptionUrl = `${NEXT_URL}/api/stripe/cancelSubscription`;
-
-      // Define the API url
-      const updateUserUrl = `${NEXT_URL}/api/strapi/users/updateUser`;
-
-      // Create a customer in Stripe
-      const stripeResponse = await axios.post(cancelSubscriptionUrl, {
-        email,
-      });
-
-      // Stripe JSON response
-      const customerData = await stripeResponse.data;
-
-      // Update the user's / customer's data in Strapi
-      const strapiResponse = await axios.put(updateUserUrl, {
-        registrationStep: 3,
-        stripeCustomerId: "",
-      });
-
-      // Strapi JSON response
-      const userData = await strapiResponse.data;
-
-      // If successful, update the `user` state and redirect to the next step
-      if (strapiResponse.status === 200) {
-        setLoading(false);
-        setUser(userData.user);
-        setFormDataContext(userData.user);
-        redirectUser(userData.user);
-      }
-    } catch (error) {
-      setLoading(false);
-      // Send error repsonses to the frontend for user feedback
-      setError(error.response.data.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const createOrder = async (props) => {
     const {
       email,
@@ -359,20 +310,6 @@ export const AuthProvider = ({ children }) => {
     return data;
   };
 
-  const updateOrder = async (props) => {
-    // Define the create order api url
-    const createOrderUrl = `${NEXT_URL}/api/strapi/orders/updateOrder`;
-
-    // Create an `incomplete` order in Strapi
-    const createOrderResponse = await axios.put(
-      createOrderUrl,
-      createOrderBodyParams
-    );
-
-    // Get back the user's / customer's order data
-    return createOrderResponse.data;
-  };
-
   /**
    *
    * Direct user to where they need to go
@@ -383,8 +320,6 @@ export const AuthProvider = ({ children }) => {
       router.push("/");
       return;
     }
-
-    console.log("user: : : : ", user);
 
     if (user.registrationStep < 2) {
       router.push("/signup/plans");
@@ -465,15 +400,13 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
         router.push("/");
         // Remove active profile from session storage and force a page refresh
-        Cookies.remove("activeProfile");
         window.sessionStorage.removeItem("activeProfile");
         window.location.reload();
       }
     } catch (error) {
       setLoading(false);
       // Send error repsonses to the frontend for user feedback
-      console.log(error);
-      // setError(error.response.data.message);
+      setError(error.response.data.message);
     } finally {
       setLoading(false);
     }
@@ -522,7 +455,6 @@ export const AuthProvider = ({ children }) => {
         error,
         setError,
         resetErrors,
-        response,
         redirectUser,
         getStarted,
         registrationStepOne,
@@ -531,11 +463,9 @@ export const AuthProvider = ({ children }) => {
         registrationStepFour,
         registrationStepFive,
         registrationCompleted,
-        // updateAccountEmail,
         login,
         logout,
         createOrder,
-        updateOrder,
         isLoggedIn,
       }}
     >

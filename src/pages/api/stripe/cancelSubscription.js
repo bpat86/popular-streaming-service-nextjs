@@ -5,7 +5,7 @@ import { withSessionRoute } from "@/middleware/withSession";
 export default withSessionRoute(async (req, res) => {
   if (req.method === "POST") {
     // Destructure the body params from `request.body`
-    const { priceId, customerId } = req.body;
+    // const { priceId, customerId } = req.body;
 
     // Initialize Stripe
     // const stripe = new Stripe(`${process.env.STRIPE_SK}`);

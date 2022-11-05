@@ -16,8 +16,6 @@ const WatchMediaPage = () => {
   const { disableWatchMode } = useContext(InteractionContext);
   // State
   const [player, setPlayer] = useState(null);
-  const [videoPlaybackError, setVideoPlaybackError] = useState(false);
-  const [videoCanPlayThrough, setVideoCanPlayThrough] = useState(false);
   const [videoCompleted, setVideoCompleted] = useState(false);
   const [videoHasPlayedAtLeastOnce, setVideoHasPlayedAtLeastOnce] =
     useState(false);
@@ -117,39 +115,12 @@ const WatchMediaPage = () => {
   };
 
   /**
-   * Disable audio globally
-   */
-  // const disableAudio = () => {
-  //   setAudioEnabled(false);
-  // };
-
-  /**
    * Return if audio is enabled globally
    * @returns {Boolean}
    */
   const audioIsEnabled = () => {
     return audioEnabled;
   };
-
-  /**
-   * The video can play through if the video hasn't completed and the video has no playback errors
-   */
-  useEffect(() => {
-    if (videoPlaybackError ?? videoCompleted) {
-      setVideoCanPlayThrough(false);
-    }
-  }, [videoPlaybackError, videoCompleted]);
-
-  /**
-   * Mute the player
-   */
-  // const mute = () => {
-  //   if (player) {
-  //     player.setVolume(0);
-  //     player.mute();
-  //     disableAudio();
-  //   }
-  // };
 
   /**
    * UnMute the player
@@ -161,22 +132,6 @@ const WatchMediaPage = () => {
       enableAudio();
     }
   };
-
-  /**
-   * Toggle audio on / off
-   */
-  // const toggleAudio = () => {
-  //   audioIsEnabled() ? mute() : unMute();
-  // };
-
-  /**
-   * Reset animations and state before replaying the video
-   */
-  // const replayVideo = () => {
-  //   setVideoCompleted(false);
-  //   setVideoCanPlayThrough(true);
-  //   unMute();
-  // };
 
   /**
    * Handle when the video ends
@@ -205,10 +160,6 @@ const WatchMediaPage = () => {
    */
   const onPlayerStateChange = (e) => {
     if (!e) return;
-    if (e.data) {
-      setVideoPlaybackError(false);
-      setVideoCanPlayThrough(true);
-    }
     e.data === 1 && audioIsEnabled() && unMute();
   };
 
@@ -217,23 +168,6 @@ const WatchMediaPage = () => {
    */
   const onPlayerEnd = () => {
     !videoCompleted && handleVideoCompleted();
-  };
-
-  /**
-   * Set error if YouTube video returns an error
-   * @param {obj} e
-   */
-  const onPlayerError = (e) => {
-    if (
-      e.data === 2 ??
-      e.data === 150 ??
-      e.data === 100 ??
-      e.data === 101 ??
-      e === null
-    ) {
-      setVideoPlaybackError(true);
-      setVideoCanPlayThrough(false);
-    }
   };
 
   /**
@@ -283,7 +217,6 @@ const WatchMediaPage = () => {
             onReady={onPlayerReady}
             onStateChange={onPlayerStateChange}
             onEnd={onPlayerEnd}
-            onError={onPlayerError}
           />
         </div>
       </div>

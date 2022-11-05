@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
+import Image from "next/image";
 import { useState } from "react";
 
 const ProfilesAccordion = ({ id, avatar, name, maturity, children }) => {
@@ -12,11 +13,15 @@ const ProfilesAccordion = ({ id, avatar, name, maturity, children }) => {
         onClick={() => (expanded ? setExpanded(false) : setExpanded(true))}
       >
         <div className="flex-shrink-0">
-          <img
-            className="h-16 w-16 rounded-md"
-            src={`/images/profiles/avatars/${avatar}.png`}
-            alt=""
-          />
+          <div className="relative h-16 w-16">
+            <Image
+              layout="fill"
+              objectFit="cover"
+              className="rounded-md"
+              src={`/images/profiles/avatars/${avatar}.png`}
+              alt=""
+            />
+          </div>
         </div>
         <div className="min-w-0 flex-1">
           <span className="absolute inset-0" aria-hidden="true" />

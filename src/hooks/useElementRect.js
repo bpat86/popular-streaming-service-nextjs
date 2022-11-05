@@ -22,7 +22,8 @@ export const useElementRect = (props) => {
             : {},
           []
         );
-  }, [textChange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [passedInRef, textChange]);
 
   /**
    * Return the element's bounding rect. Condition must be present

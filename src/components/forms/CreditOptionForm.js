@@ -1,5 +1,4 @@
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
-import axios from "axios";
 import { Form, Formik } from "formik";
 import Link from "next/link";
 import PropTypes from "prop-types";
@@ -8,8 +7,6 @@ import * as yup from "yup";
 
 import Card from "@/components/fields/Card";
 import InputLight from "@/components/fields/InputLight";
-
-import { NEXT_URL } from "@/config/index";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -39,8 +36,6 @@ export const CreditOptionForm = (props) => {
   const stripe = useStripe();
   const elements = useElements();
   const cardRef = useRef();
-
-  console.log("userData: ", userData);
 
   const getBillingDetails = (values) => {
     return {
@@ -80,11 +75,11 @@ export const CreditOptionForm = (props) => {
     setCardComplete(true);
 
     // Complete the order in Strapi
-    const completeOrderParams = {
-      orderId: userData?.order?.id,
-      // monthlyPrice: userData?.plan?.monthlyPrice,
-      status: "Complete",
-    };
+    // const completeOrderParams = {
+    //   orderId: userData?.order?.id,
+    //   // monthlyPrice: userData?.plan?.monthlyPrice,
+    //   status: "Complete",
+    // };
 
     // Update the user's registration progress to completed
     const updateUserParams = {
@@ -93,13 +88,13 @@ export const CreditOptionForm = (props) => {
     };
 
     // Define the create order api url
-    const updateOrderUrl = `${NEXT_URL}/api/strapi/orders/updateOrder`;
+    // const updateOrderUrl = `${NEXT_URL}/api/strapi/orders/updateOrder`;
 
     // Create an `incomplete` order in Strapi
-    const updateOrderResponse = await axios.put(
-      updateOrderUrl,
-      completeOrderParams
-    );
+    // const updateOrderResponse = await axios.put(
+    //   updateOrderUrl,
+    //   completeOrderParams
+    // );
 
     // Get back the user's / customer's order data
     // const updateOrderData = updateOrderResponse.data;
@@ -107,8 +102,6 @@ export const CreditOptionForm = (props) => {
     // const { amount, id } = paymentIntent;
     // Redirect to success page
     registrationCompleted(updateUserParams);
-
-    // router.push(`/success?amount=${amount}&id=${id}`);
   };
 
   const handleStripeSubmit = async (values) => {

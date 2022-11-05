@@ -18,12 +18,9 @@ export const useHover = (delay = 0) => {
   /**
    * If the user hovers for the full duration of the `delay` value
    */
-  const handleMouseEnter = useCallback(
-    debounce(() => {
-      setIntendedHover(true);
-    }, delay || 0),
-    []
-  );
+  const handleMouseEnter = debounce(() => {
+    setIntendedHover(true);
+  }, delay || 0);
 
   /**
    * Cancel the pending debounce function invokation if the user
@@ -32,7 +29,7 @@ export const useHover = (delay = 0) => {
   const handleMouseLeave = useCallback(() => {
     handleMouseEnter.cancel();
     setIntendedHover(false);
-  }, []);
+  }, [handleMouseEnter]);
 
   useEffect(() => {
     const element = elementRef.current;
@@ -44,7 +41,7 @@ export const useHover = (delay = 0) => {
         element.removeEventListener("mouseleave", handleMouseLeave);
       };
     }
-  }, [elementRef.current, handleMouseEnter, handleMouseLeave, delay]);
+  }, [elementRef, handleMouseEnter, handleMouseLeave, delay]);
 
   return [elementRef, elementRect, hovered];
 };

@@ -5,7 +5,7 @@ import { withSessionRoute } from "@/middleware/withSession";
 export default withSessionRoute(async (req, res) => {
   if (req.method === "GET") {
     // Destructure the body params from `request.body`
-    const { priceId, customerId } = req.body;
+    // const { priceId, customerId } = req.body;
 
     // Get the authenticated user's token from the session
     const user = req.session.user;

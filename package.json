@@ -7,7 +7,7 @@
     "build": "next build -p 3000",
     "start": "next start",
     "lint": "next lint",
-    "lint:fix": "eslint src --fix && docker-compose run --rm npm run format",
+    "lint:fix": "eslint src --fix && prettier -w .",
     "lint:strict": "eslint --max-warnings=0 src",
     "format": "prettier -w .",
     "format:check": "prettier -c .",

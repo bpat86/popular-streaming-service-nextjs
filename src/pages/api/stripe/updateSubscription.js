@@ -8,7 +8,7 @@ export default withSessionRoute(async (req, res) => {
     const { subscriptionId } = req.body;
 
     // Get the authenticated user's token from the session
-    const user = req.session.user;
+    // const user = req.session.user;
 
     // Initialize Stripe
     // const stripe = new Stripe(`${process.env.STRIPE_SK}`);
