@@ -1,12 +1,12 @@
 import PropTypes from "prop-types";
 
-import Profile from "@/components/layouts/ProfilesLayout";
+import ProfileGateLayout from "@/components/layouts/ProfileGateLayout";
 import { withSessionSsr } from "@/middleware/withSession";
 
 const WhosWatchingPage = (props) => {
   return (
     <>
-      <Profile {...props} title="Who's Watching?">
+      <ProfileGateLayout {...props} title="Who's Watching?">
         <div className="fade-in flex flex-col items-center">
           <h1 className="block text-4xl font-semibold text-white sm:text-6xl">
             Who's watching?
@@ -101,7 +101,7 @@ const WhosWatchingPage = (props) => {
             </a>
           </span>
         </div>
-      </Profile>
+      </ProfileGateLayout>
     </>
   );
 };

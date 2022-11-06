@@ -1,10 +1,10 @@
-import BrowseLayoutContainer from "@/components/layouts/swr-containers/BrowseLayoutContainer";
+import BrowseContainer from "@/components/layouts/containers/BrowseContainer";
 import { withSessionSsr } from "@/middleware/withSession";
 
 const BrowseShowsPage = () => {
   const pageAPI = "getShowsPage";
   const pageTitle = "TV Shows";
-  return <BrowseLayoutContainer pageAPI={pageAPI} pageTitle={pageTitle} />;
+  return <BrowseContainer pageAPI={pageAPI} pageTitle={pageTitle} />;
 };
 
 export default BrowseShowsPage;

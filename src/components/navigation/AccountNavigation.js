@@ -1,5 +1,6 @@
-import { motion } from "framer-motion";
 import Link from "next/link";
+
+import MotionDivWrapper from "@/lib/MotionDivWrapper";
 
 import ProfilesDropdown from "@/components/navigation/ProfilesDropdown";
 
@@ -9,7 +10,7 @@ export const AccountNavigation = (props) => {
   const { isLoggedIn, isActive } = props;
 
   return (
-    <motion.div
+    <MotionDivWrapper
       className="pinned-navigation"
       initial={{ opacity: 1 }}
       exit={{
@@ -125,7 +126,7 @@ export const AccountNavigation = (props) => {
           </div>
         </header>
       </div>
-    </motion.div>
+    </MotionDivWrapper>
   );
 };
 

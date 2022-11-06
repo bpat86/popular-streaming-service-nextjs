@@ -1,20 +1,18 @@
-import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import YouTube from "react-youtube";
 
+import MotionDivWrapper from "@/lib/MotionDivWrapper";
+
 import InteractionContext from "@/context/InteractionContext";
 import useTitle from "@/middleware/useTitle";
-// Helpers
 import { getVideoKey } from "@/utils/getVideoKey";
 
-// Store
 import usePreviewModalStore from "@/stores/PreviewModalStore";
 
 const WatchMediaPage = () => {
-  // Context
   const { disableWatchMode } = useContext(InteractionContext);
-  // State
+
   const [player, setPlayer] = useState(null);
   const [videoCompleted, setVideoCompleted] = useState(false);
   const [videoHasPlayedAtLeastOnce, setVideoHasPlayedAtLeastOnce] =
@@ -224,7 +222,7 @@ const WatchMediaPage = () => {
   };
 
   return (
-    <motion.div
+    <MotionDivWrapper
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -232,7 +230,7 @@ const WatchMediaPage = () => {
       className="watch-video"
     >
       {!fetchingTitle && titleData?.data && renderVideoPlayer()}
-    </motion.div>
+    </MotionDivWrapper>
   );
 };
 

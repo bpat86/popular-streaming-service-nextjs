@@ -3,7 +3,6 @@ import { createContext, useState } from "react";
 const InteractionContext = createContext();
 
 export const InteractionProvider = ({ children }) => {
-  // State
   const [watchModeEnabled, setWatchModeEnabled] = useState(false);
   const [tooltipsEnabled, setTooltipsEnabled] = useState(false);
   const [audioEnabled, setAudioEnabled] = useState(false);

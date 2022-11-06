@@ -1,10 +1,10 @@
-import { motion } from "framer-motion";
+import MotionDivWrapper from "@/lib/MotionDivWrapper";
 
-import { transitions } from "../motion/transitions";
+import { transitions } from "@/actions/Actions";
 
 const PageTransitions = ({ children, variants }) => {
   return (
-    <motion.div
+    <MotionDivWrapper
       key="transitions"
       variants={variants || transitions.simpleFadeIn}
       initial="initial"
@@ -12,7 +12,7 @@ const PageTransitions = ({ children, variants }) => {
       exit="exit"
     >
       {children}
-    </motion.div>
+    </MotionDivWrapper>
   );
 };
 

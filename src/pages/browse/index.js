@@ -1,18 +1,15 @@
 // Middleware
-// Components
-import BrowseLayoutContainer from "@/components/layouts/swr-containers/BrowseLayoutContainer";
-import { withSessionSsr } from "@/middleware/withSession";
-// Utils
-import { parseCookies } from "@/utils/parseCookies";
 
-// Store
+import BrowseContainer from "@/components/layouts/containers/BrowseContainer";
+import { withSessionSsr } from "@/middleware/withSession";
+import { parseCookies } from "@/utils/parseCookies";
 
 const Index = ({ initialUser }) => {
   const pageAPI = "getBrowsePage";
   const pageTitle = "Home";
 
   return (
-    <BrowseLayoutContainer
+    <BrowseContainer
       pageAPI={pageAPI}
       pageTitle={pageTitle}
       initialUser={initialUser}

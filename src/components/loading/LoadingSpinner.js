@@ -3,7 +3,6 @@ import { useContext } from "react";
 
 import MotionDivWrapper from "@/lib/MotionDivWrapper";
 
-// Context
 import ProfileContext from "@/context/ProfileContext";
 
 const LoadingSpinner = () => {

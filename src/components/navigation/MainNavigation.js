@@ -3,7 +3,6 @@ import { useScrollPosition } from "@n8tb1t/use-scroll-position";
 import Link from "next/link";
 import { memo, useRef, useState } from "react";
 
-// Components
 import ProfilesDropdown from "@/components/navigation/ProfilesDropdown";
 
 import Logo from "./Logo";

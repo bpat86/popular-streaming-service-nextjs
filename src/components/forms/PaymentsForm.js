@@ -19,8 +19,6 @@ export const PaymentsForm = ({
   const stripe = useStripe();
   const elements = useElements();
 
-  // console.log("Form: ", userData);
-
   // Store `clientSecret` in a cookie so it's accessible in the next step
   const setCookie = (clientSecret) => {
     Cookies.remove("clientSecret");

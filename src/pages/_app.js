@@ -1,8 +1,5 @@
-// Contexts
-// Styles
 import "@/styles/globals.css";
 
-// Libs
 import { AnimatePresenceWrapper } from "@/lib/AnimatePresenceWrapper";
 
 import { AuthProvider } from "@/context/AuthContext";
@@ -11,9 +8,7 @@ import { InteractionProvider } from "@/context/InteractionContext";
 import { ProfileProvider } from "@/context/ProfileContext";
 
 export default function MyApp({ Component, pageProps, router }) {
-  /**
-   * Combine the multiple context files
-   */
+  // Combine the multiple context files
   const contextProviders = [AuthProvider, ProfileProvider, InteractionProvider];
 
   // Use the layout defined at the page level, if available

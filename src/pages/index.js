@@ -1,8 +1,8 @@
 import PropTypes from "prop-types";
 
-import Footer from "@/components/home/Footer";
-import IntroHero from "@/components/home/IntroHero";
-import PlatformFeatures from "@/components/home/PlatformFeatures";
+import Footer from "@/components/footers/HomeFooter";
+import IntroHero from "@/components/page-specific/home/IntroHero";
+import PlatformFeatures from "@/components/page-specific/home/PlatformFeatures";
 import { withSessionSsr } from "@/middleware/withSession";
 import { parseCookies } from "@/utils/parseCookies";
 
