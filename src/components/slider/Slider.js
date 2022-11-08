@@ -8,18 +8,21 @@ import {
 } from "react";
 import { flushSync } from "react-dom";
 
+// Lib
 import { AnimatePresenceWrapper } from "@/lib/AnimatePresenceWrapper";
 
-import { sliderActions } from "@/actions/Actions";
+// Components
 import Controls from "@/components/slider/Controls";
 import LoadingItem from "@/components/slider/LoadingItem";
 import PaginationIndicator from "@/components/slider/PaginationIndicator";
 import SliderItem from "@/components/slider/SliderItem";
+import TitleCardContainer from "@/components/slider/title-card/TitleCardContainer";
+// Actions
+import { sliderActions } from "@/actions/Actions";
 import { getVideoKey } from "@/utils/getVideoKey";
 
+//  Store
 import usePreviewModalStore from "@/stores/PreviewModalStore";
-
-import TitleCardContainer from "./title-card/TitleCardContainer";
 
 const Slider = (props) => {
   const {
@@ -51,7 +54,7 @@ const Slider = (props) => {
   // );
 
   const [isAnimating, setIsAnimating] = useState(false);
-  // Refs
+
   const sliderRef = useRef(null);
   const sliderItemRefs = useRef({});
   const wrappedSliderItems = useRef(new Set());

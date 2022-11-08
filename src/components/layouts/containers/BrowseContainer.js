@@ -19,9 +19,9 @@ const BrowseContainer = ({ initialUser, pageAPI, pageTitle }) => {
   });
   const { profiles, profileNames, loadingProfiles, mutateProfiles } =
     useProfiles({ user });
-  // Refs
+
   const layoutWrapperRef = useRef();
-  // Local vars
+  
   const activeProfileId =
     activeProfile?.id || initialUser?.activeProfile?.id || null;
   const isLoggedIn = user?.isLoggedIn || initialUser?.isLoggedIn || false;

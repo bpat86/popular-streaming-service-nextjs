@@ -17,7 +17,7 @@ const TitleTreatmentWrapper = (props) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isDelayed, setIsDelayed] = useState(true);
   const [mounted, setMounted] = useState(false);
-  // Refs
+
   const delayedTimeoutId = useRef(null);
   const timeoutId = useRef(null);
   const style =

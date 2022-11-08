@@ -18,7 +18,6 @@ const TitleCard = ({
   toggleExpandedInfoDensity,
   watchURL,
 }) => {
-  // Refs
   const titleCardRef = useRef();
   const watchLinkAnchorRef = useRef();
 

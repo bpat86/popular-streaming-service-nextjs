@@ -6,7 +6,6 @@ import BillboardContainer from "@/components/billboard/BillboardContainer";
 import LoadingSpinner from "@/components/loading/LoadingSpinner";
 import PreviewModalContainer from "@/components/modals/PreviewModalContainer";
 import Sliders from "@/components/slider/Sliders";
-// Middleware (SWR)
 import useMedia from "@/middleware/useMedia";
 import { getVideoKey } from "@/utils/getVideoKey";
 
@@ -16,7 +15,7 @@ const MediaContainer = forwardRef(({ pageAPI }, layoutWrapperRef) => {
   const { media, fetchingMedia, mutateMedia, mediaError } = useMedia({
     pageAPI,
   });
-  // Refs
+
   const timerIdRef = useRef(0);
   // Router
   const router = useRouter();

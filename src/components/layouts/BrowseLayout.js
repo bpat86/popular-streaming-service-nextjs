@@ -10,7 +10,7 @@ import InteractionContext from "@/context/InteractionContext";
 const BrowseLayout = forwardRef(
   ({ children, title, ...rest }, layoutWrapperRef) => {
     const { isWatchModeEnabled } = useContext(InteractionContext);
-    // Local vars
+    
     const pageTitle = title.split(" ").join("-").toLowerCase();
 
     // Scroll to top on page change

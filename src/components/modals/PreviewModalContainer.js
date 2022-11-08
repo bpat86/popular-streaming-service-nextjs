@@ -19,7 +19,6 @@ const PreviewModalContainer = forwardRef(
       shallow
     );
 
-    // Next Router
     const router = useRouter();
 
     /**

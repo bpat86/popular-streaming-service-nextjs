@@ -13,16 +13,20 @@ import {
 } from "react";
 import { flushSync } from "react-dom";
 
+// Lib
 import { MotionDivWrapper } from "@/lib/MotionDivWrapper";
 
+// Context
 import InteractionContext from "@/context/InteractionContext";
-
+// Actions
 import { animationStateActions, modalStateActions } from "@/actions/Actions";
-// Middleware (SWR)
+// Middleware
 import usePreviewModal from "@/middleware/usePreviewModal";
 
+// Store
 import usePreviewModalStore from "@/stores/PreviewModalStore";
 
+// Components
 import CloseButton from "./detail/CloseButton";
 import DetailInfo from "./detail/info/Info";
 import MiniInfo from "./mini/info/Info";
@@ -52,7 +56,7 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
       videoId,
     },
   } = props;
-  // Framer motion utility
+
   const [isPresent, safeToRemove] = usePresence();
 
   const [isAnimating, setIsAnimating] = useState(false);
@@ -63,13 +67,13 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
       : animationStateActions.MOUNT_DETAIL_MODAL
   );
   const [modalRect, setModalRect] = useState(undefined);
-  // Refs
+
   const modalRef = useRef();
   const modalInfoRef = useRef();
   const mediaButtonsRef = useRef();
   const animationFrameId = useRef(0);
   const willClose = useRef(false);
-  // Middleware (SWR)
+
   const {
     modalData,
     fetchingModalData,
@@ -79,14 +83,11 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
   } = usePreviewModal({
     initialData: previewModalState,
   });
-  // Next Router
+
   const router = useRouter();
-  // Local vars
+
   const scaleFactor = 1.5;
   const baseWidth = 850;
-
-  // console.log("PreviewModal ", router);
-  // console.log("PreviewModal ", modalData?.videoModel?.title);
 
   /**
    * Redirect to watch mode screen

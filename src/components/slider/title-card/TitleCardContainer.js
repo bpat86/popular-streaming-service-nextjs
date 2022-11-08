@@ -25,7 +25,6 @@ const TitleCardContainer = forwardRef(
     },
     sliderItemRef
   ) => {
-    // Refs
     const scopeRef = useRef({
       hasFetchedModalData: false,
       isHovering: false,

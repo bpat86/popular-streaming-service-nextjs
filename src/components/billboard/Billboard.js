@@ -27,11 +27,11 @@ const Billboard = forwardRef(
       (state) => state.isDetailModal,
       shallow
     );
-    // Refs
+
     // const requestRef = useRef(0);
     const playerRef = useRef();
     const infoRef = useRef();
-    // Next Router
+
     const router = useRouter();
 
     /**
@@ -46,7 +46,7 @@ const Billboard = forwardRef(
       useState(false);
     const [textIsAnimating, setTextIsAnimating] = useState(false);
     const [audioEnabled, setAudioEnabled] = useState(false);
-    // Local vars
+
     const maxVolume = 10;
 
     /**

@@ -21,7 +21,7 @@ const WatchMediaPage = () => {
   const router = useRouter();
   const { query } = router;
   const { id, mediaId, mediaType } = query; // mediaId: 'movie-648579'
-  // Local vars
+  
   const queryType = mediaId?.split("-")[0];
   const queryId = mediaId?.split("-")[1];
   const queryParams = {
