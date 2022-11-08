@@ -13,7 +13,7 @@ import {
 } from "react";
 import { flushSync } from "react-dom";
 
-import MotionDivWrapper from "@/lib/MotionDivWrapper";
+import { MotionDivWrapper } from "@/lib/MotionDivWrapper";
 
 import InteractionContext from "@/context/InteractionContext";
 // Actions

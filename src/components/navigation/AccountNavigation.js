@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import MotionDivWrapper from "@/lib/MotionDivWrapper";
+import { MotionDivWrapper } from "@/lib/MotionDivWrapper";
 
 import ProfilesDropdown from "@/components/navigation/ProfilesDropdown";
 

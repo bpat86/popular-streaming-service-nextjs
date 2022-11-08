@@ -148,10 +148,8 @@ const TitleCardContainer = forwardRef(
     const queuePreviewModalOpen = (ref) => {
       const { isHovering, isModalOpen } = scopeRef.current;
       // console.log(usePreviewModalStore.getState().wasOpen);
-      let delay;
       if (!hoverTimeoutIdRef.current && !isModalOpen && isHovering) {
-        (delay = rowHasPreviewModalOpen() ? 100 : 400),
-          (delay = usePreviewModalStore.getState().wasOpen ? 100 : 400);
+        const delay = usePreviewModalStore.getState().wasOpen ? 100 : 400;
         hoverTimeoutIdRef.current = setTimeout(() => {
           return openPreviewModal({
             titleCardNode: ref,

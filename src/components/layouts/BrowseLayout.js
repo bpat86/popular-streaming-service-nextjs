@@ -2,7 +2,7 @@ import Head from "next/head";
 import { forwardRef, useContext, useEffect } from "react";
 
 import Footer from "@/components/footers/MainFooter";
-import PageTransitions from "@/components/layouts/PageTransitions";
+import PageTransitionsLayout from "@/components/layouts/PageTransitionsLayout";
 import { transitions } from "@/components/motion/transitions";
 import MainNavigation from "@/components/navigation/MainNavigation";
 import InteractionContext from "@/context/InteractionContext";
@@ -24,7 +24,7 @@ const BrowseLayout = forwardRef(
           <title>{title} - Netflix</title>
           <link rel="shortcut icon" href="/netflix.ico" />
         </Head>
-        <PageTransitions
+        <PageTransitionsLayout
           variants={isWatchModeEnabled() && transitions.fadeOutZoomIn}
         >
           <div ref={layoutWrapperRef} className="bd">
@@ -42,7 +42,7 @@ const BrowseLayout = forwardRef(
             </div>
             <Footer />
           </div>
-        </PageTransitions>
+        </PageTransitionsLayout>
       </>
     );
   }

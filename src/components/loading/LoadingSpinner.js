@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { useContext } from "react";
 
-import MotionDivWrapper from "@/lib/MotionDivWrapper";
+import { MotionDivWrapper } from "@/lib/MotionDivWrapper";
 
 import ProfileContext from "@/context/ProfileContext";
 

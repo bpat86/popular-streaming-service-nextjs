@@ -173,27 +173,12 @@ const Billboard = forwardRef(
      * @returns
      */
     const onPlayerReady = (e) => {
-      if (e.target) {
-        setPlayer(e.target);
-      }
+      e.target.playVideo();
+      setPlayer(e.target);
+      setTextIsAnimating(true);
+      setVideoPlaybackError(false);
+      setTimeout(() => setVideoCanPlayThrough(true), 1000);
     };
-
-    /**
-     * Listen for when the video is ready to play
-     */
-    useLayoutEffect(() => {
-      let timerId;
-      if (player) {
-        player.playVideo();
-        setTextIsAnimating(true);
-        setVideoPlaybackError(false);
-        timerId = setTimeout(() => setVideoCanPlayThrough(true), 1000);
-      }
-      return () => {
-        player && player.destroy();
-        timerId && clearTimeout(timerId);
-      };
-    }, [player]);
 
     /**
      * YouTube API state change event
@@ -230,7 +215,6 @@ const Billboard = forwardRef(
     const getVideoPlayback = () => {
       if (!player || videoCompleted) return undefined;
       return {
-        // start: videoCompleted ? 0 : player?.getCurrentTime(),
         start: player?.getCurrentTime(),
         length: player?.getDuration(),
       };

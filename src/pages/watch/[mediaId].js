@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import YouTube from "react-youtube";
 
-import MotionDivWrapper from "@/lib/MotionDivWrapper";
+import { MotionDivWrapper } from "@/lib/MotionDivWrapper";
 
 import InteractionContext from "@/context/InteractionContext";
 import useTitle from "@/middleware/useTitle";

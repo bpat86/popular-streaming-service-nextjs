@@ -1,4 +1,4 @@
-import MotionDivWrapper from "@/lib/MotionDivWrapper";
+import { MotionDivWrapper } from "@/lib/MotionDivWrapper";
 
 const Logo = ({ logos, title }) => {
   /**

@@ -2,7 +2,7 @@ import Image from "next/image";
 import { forwardRef, useEffect, useState } from "react";
 import YouTube from "react-youtube";
 
-import MotionDivWrapper from "@/lib/MotionDivWrapper";
+import { MotionDivWrapper } from "@/lib/MotionDivWrapper";
 
 import Logo from "@/components/modals/Logo";
 
@@ -139,30 +139,18 @@ const PlayerContainer = forwardRef((props, buttonsRef) => {
    */
   const onPlayerReady = (e) => {
     if (e.target) {
+      e.target.playVideo();
       setPlayer(e.target);
-    }
-  };
-
-  /**
-   * Listen for when the video is ready to play
-   */
-  useEffect(() => {
-    if (player && player?.getPlayerState() === 1) {
-      player.mute();
-      player.playVideo();
       setVideoPlaybackError(false);
     }
-    return () => {
-      player && player.destroy();
-    };
-  }, [player]);
+  };
 
   /**
    * YouTube API state change event
    * @param {Object} e
    */
   const onPlayerStateChange = (e) => {
-    if (e.data) {
+    if (e.data === 5) {
       setVideoPlaybackError(false);
       setVideoCanPlayThrough(true);
     }
@@ -384,7 +372,7 @@ const PlayerContainer = forwardRef((props, buttonsRef) => {
               videoCanPlayThrough={videoCanPlayThrough}
               videoHasPlayedAtLeastOnce={videoHasPlayedAtLeastOnce}
             />
-          ) : showVideo ? (
+          ) : showVideo && videoPlaybackError ? (
             <PlaybackError
               isDetailModal={isDetailModal}
               errorText="Preview Unavailable"
@@ -438,7 +426,7 @@ const PlayerContainer = forwardRef((props, buttonsRef) => {
               videoCanPlayThrough={videoCanPlayThrough}
               videoHasPlayedAtLeastOnce={videoHasPlayedAtLeastOnce}
             />
-          ) : showVideo ? (
+          ) : showVideo && videoPlaybackError ? (
             <PlaybackError
               isDetailModal={isDetailModal}
               errorText="Preview Unavailable"
@@ -452,5 +440,4 @@ const PlayerContainer = forwardRef((props, buttonsRef) => {
   );
 });
 
-PlayerContainer.displayName = "PlayerContainer";
 export default PlayerContainer;

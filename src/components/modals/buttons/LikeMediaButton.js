@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 
-import MotionDivWrapper from "@/lib/MotionDivWrapper";
+import { MotionDivWrapper } from "@/lib/MotionDivWrapper";
 
 import ProfileContext from "@/context/ProfileContext";
 

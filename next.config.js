@@ -2,7 +2,7 @@ module.exports = {
   eslint: {
     dirs: ["src"],
   },
-  // reactStrictMode: true,
+  reactStrictMode: true,
   swcMinify: true,
   serverRuntimeConfig: {
     // Will only be available on the server side

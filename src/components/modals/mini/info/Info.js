@@ -1,6 +1,6 @@
 import { forwardRef, memo } from "react";
 
-import MotionDivWrapper from "@/lib/MotionDivWrapper";
+import { MotionDivWrapper } from "@/lib/MotionDivWrapper";
 
 import ButtonControls from "./ButtonControls";
 import Genres from "./Genres";

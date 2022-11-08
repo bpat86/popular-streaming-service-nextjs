@@ -1,8 +1,8 @@
 import Image from "next/image";
 import { useState } from "react";
 
-import AnimatePresenceWrapper from "@/lib/AnimatePresenceWrapper";
-import MotionDivWrapper from "@/lib/MotionDivWrapper";
+import { AnimatePresenceWrapper } from "@/lib/AnimatePresenceWrapper";
+import { MotionDivWrapper } from "@/lib/MotionDivWrapper";
 
 const ProfilesAccordion = ({ id, avatar, name, maturity, children }) => {
   const [expanded, setExpanded] = useState(false);

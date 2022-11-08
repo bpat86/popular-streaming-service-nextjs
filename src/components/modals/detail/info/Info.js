@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
 
-import MotionDivWrapper from "@/lib/MotionDivWrapper";
+import { MotionDivWrapper } from "@/lib/MotionDivWrapper";
 
 import Cast from "./Cast";
 import Genres from "./Genres";
