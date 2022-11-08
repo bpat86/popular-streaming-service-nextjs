@@ -10,13 +10,11 @@ import { flushSync } from "react-dom";
 
 import { AnimatePresenceWrapper } from "@/lib/AnimatePresenceWrapper";
 
+import { sliderActions } from "@/actions/Actions";
 import Controls from "@/components/slider/Controls";
 import LoadingItem from "@/components/slider/LoadingItem";
 import PaginationIndicator from "@/components/slider/PaginationIndicator";
 import SliderItem from "@/components/slider/SliderItem";
-// Actions
-import { sliderActions } from "@/actions/Actions";
-
 import { getVideoKey } from "@/utils/getVideoKey";
 
 import usePreviewModalStore from "@/stores/PreviewModalStore";

@@ -1,7 +1,6 @@
 import { InformationCircleIcon } from "@heroicons/react/outline";
 import Link from "next/link";
 
-// Actions
 import { modalStateActions } from "@/actions/Actions";
 
 import usePreviewModalStore from "@/stores/PreviewModalStore";
