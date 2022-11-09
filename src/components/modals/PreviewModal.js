@@ -1068,14 +1068,6 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
         }
       }
     }
-    // Cancel async requests
-    return () => {
-      // Cancel data fetch request
-      cancelRequest();
-      // Reset timeout id
-      animationFrameId.current &&
-        cancelAnimationFrame(animationFrameId.current);
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modalState]);
 
@@ -1086,13 +1078,16 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
   useEffect(() => {
     if (!isPresent) {
       setTimeout(() => {
-        // Remove preview modal from the react tree
+        // Remove from the react tree
         safeToRemove();
-        // Set `wasOpen` false
+        // Set preview modal `wasOpen` false
         usePreviewModalStore.getState().setPreviewModalWasOpen(false);
       }, 0);
-      // cleanup
+      // Cleanup
       return () => {
+        // Cancel pending data fetch request
+        cancelRequest();
+        // Remove detail modal parent styles
         modalState === modalStateActions.DETAIL_MODAL &&
           resetDetailModalParentStyles();
         // Disable watch mode
@@ -1168,6 +1163,7 @@ const PreviewModal = forwardRef((props, layoutWrapperRef) => {
             tabIndex="-1"
           >
             <PlayerContainer
+              key={isPresent}
               ref={mediaButtonsRef}
               className={`player-container ${
                 isDetailModal ? "detail-modal" : "mini-modal"

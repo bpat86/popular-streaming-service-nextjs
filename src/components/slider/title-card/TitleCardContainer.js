@@ -39,9 +39,9 @@ const TitleCardContainer = forwardRef(
      * @returns {Boolean}
      */
     const isPreviewModalOpen = () => {
-      const previewModalStateById =
-        usePreviewModalStore.getState().previewModalStateById;
-      return Object.values(previewModalStateById).some(({ isOpen }) => isOpen);
+      return Object.values(
+        usePreviewModalStore.getState().previewModalStateById
+      ).some(({ isOpen }) => isOpen);
     };
 
     /**

@@ -173,11 +173,13 @@ const Billboard = forwardRef(
      * @returns
      */
     const onPlayerReady = (e) => {
-      e.target.playVideo();
-      setPlayer(e.target);
-      setTextIsAnimating(true);
-      setVideoPlaybackError(false);
-      setTimeout(() => setVideoCanPlayThrough(true), 1000);
+      if (e.target) {
+        e.target.playVideo();
+        setPlayer(e.target);
+        setTextIsAnimating(true);
+        setVideoPlaybackError(false);
+        setTimeout(() => setVideoCanPlayThrough(true), 1000);
+      }
     };
 
     /**
@@ -185,11 +187,11 @@ const Billboard = forwardRef(
      * @param {Object} e
      */
     const onPlayerStateChange = (e) => {
-      if (!e?.data) {
+      if (!e.data) {
         setVideoPlaybackError(true);
         setVideoCanPlayThrough(false);
       }
-      if (e?.data === 1) audioIsEnabled() && unMute();
+      if (e.data === 1) audioIsEnabled() && unMute();
     };
 
     /**
@@ -258,6 +260,7 @@ const Billboard = forwardRef(
             title={null}
             id={videoKey}
             videoId={videoKey}
+            loading="lazy"
             opts={defaultOpts}
             onEnd={onPlayerEnd}
             onReady={onPlayerReady}
