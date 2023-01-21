@@ -1,4 +1,4 @@
-import { ChevronUpIcon } from "@heroicons/react/outline";
+import { ChevronUpIcon } from "@heroicons/react/24/outline";
 import { forwardRef, memo } from "react";
 
 import Tooltip from "@/components/tooltips/Tooltip";

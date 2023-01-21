@@ -128,7 +128,7 @@ export const LoginForm = (props) => {
                 </div>
 
                 <div className="text-sm">
-                  <Link href="/">
+                  <Link href="/" legacyBehavior>
                     <a className="font-medium text-gray-500 hover:underline focus:outline-none">
                       Need Help?
                     </a>

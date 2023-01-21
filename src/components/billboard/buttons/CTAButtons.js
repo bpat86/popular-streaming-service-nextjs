@@ -1,4 +1,4 @@
-import { InformationCircleIcon } from "@heroicons/react/outline";
+import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 
 import { modalStateActions } from "@/actions/Actions";

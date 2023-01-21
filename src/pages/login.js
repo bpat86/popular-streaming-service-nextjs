@@ -28,7 +28,7 @@ const Login = (props) => {
     <>
       {!isLoggedIn ? (
         <HomeLayout title="Sign in to Netflix">
-          <div className="mx-auto w-full rounded bg-black bg-opacity-75 p-16 md:max-w-md">
+          <div className="mx-auto w-full rounded bg-black bg-opacity-75 p-16 backdrop-blur-sm md:max-w-md">
             <h2 className="mb-6 block text-2xl font-bold text-gray-50 sm:text-3xl xl:text-4xl">
               Sign In
             </h2>
@@ -47,7 +47,7 @@ const Login = (props) => {
                 <div className="relative flex justify-start text-base">
                   <span className="text-gray-500">
                     New to Netflix?{" "}
-                    <Link href="/">
+                    <Link href="/" legacyBehavior>
                       <a className="ml-1 font-semibold text-white hover:underline">
                         Sign up now
                       </a>

@@ -8,21 +8,19 @@ import {
 } from "react";
 import { flushSync } from "react-dom";
 
-// Lib
-import { AnimatePresenceWrapper } from "@/lib/AnimatePresenceWrapper";
-
+// Actions
+import { sliderActions } from "@/actions/Actions";
 // Components
 import Controls from "@/components/slider/Controls";
 import LoadingItem from "@/components/slider/LoadingItem";
 import PaginationIndicator from "@/components/slider/PaginationIndicator";
 import SliderItem from "@/components/slider/SliderItem";
 import TitleCardContainer from "@/components/slider/title-card/TitleCardContainer";
-// Actions
-import { sliderActions } from "@/actions/Actions";
-import { getVideoKey } from "@/utils/getVideoKey";
-
-//  Store
+// Lib
+import { AnimatePresenceWrapper } from "@/lib/AnimatePresenceWrapper";
+// Store
 import usePreviewModalStore from "@/stores/PreviewModalStore";
+import { getVideoKey } from "@/utils/getVideoKey";
 
 const Slider = (props) => {
   const {
@@ -218,8 +216,8 @@ const Slider = (props) => {
   const getSliderItemContents = () => {
     let lowestIndex = lowestVisibleItemIndex - getLowestIndex(),
       totalItemCount = getTotalItemCount(),
-      sliderContentIndex = new Array(),
-      viewportIndex = new Array(),
+      sliderContentIndex = [],
+      viewportIndex = [],
       itemRange = 0;
 
     /**
@@ -488,7 +486,7 @@ const Slider = (props) => {
    * @returns
    */
   const getSliderItems = (visibleItems) => {
-    const visibleItemsArray = new Array();
+    const visibleItemsArray = [];
     visibleItems.forEach(({ uid }) => {
       sliderItemRefs.current[uid] &&
         visibleItemsArray.push(sliderItemRefs.current[uid]);

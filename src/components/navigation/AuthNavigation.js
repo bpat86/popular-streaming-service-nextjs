@@ -108,7 +108,7 @@ export const AuthNavigation = ({ isLoggedIn }) => {
               {/* Container */}
               <div className="max-w-screen-3xl mx-auto flex items-center justify-between px-6 py-2 sm:px-12 md:justify-start md:space-x-10">
                 <div className="flex justify-start lg:w-0 lg:flex-1">
-                  <Link href="/">
+                  <Link href="/" legacyBehavior>
                     <a>
                       <Logo className="h-12 w-auto text-netflix-red sm:h-12" />
                     </a>
@@ -152,7 +152,7 @@ export const AuthNavigation = ({ isLoggedIn }) => {
                     </>
                   ) : (
                     <>
-                      <Link href="/login">
+                      <Link href="/login" legacyBehavior>
                         <a className="ml-8 inline-flex items-center justify-center whitespace-nowrap rounded border border-transparent px-5 py-1 text-lg font-semibold text-gray-800  transition duration-700 ease-out focus:outline-none">
                           Sign In
                         </a>

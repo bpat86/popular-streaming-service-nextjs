@@ -1,11 +1,10 @@
 import "@/styles/globals.css";
 
-import { AnimatePresenceWrapper } from "@/lib/AnimatePresenceWrapper";
-
 import { AuthProvider } from "@/context/AuthContext";
 import CombineContexts from "@/context/CombineContexts";
 import { InteractionProvider } from "@/context/InteractionContext";
 import { ProfileProvider } from "@/context/ProfileContext";
+import { AnimatePresenceWrapper } from "@/lib/AnimatePresenceWrapper";
 
 export default function MyApp({ Component, pageProps, router }) {
   // Combine the multiple context files
