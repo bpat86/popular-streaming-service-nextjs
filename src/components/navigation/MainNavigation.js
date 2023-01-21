@@ -49,7 +49,12 @@ export const MainNavigation = memo(({ isLoggedIn, ...rest }) => {
                   <div className="mr-auto">
                     <ul className="flex list-none items-center space-x-6">
                       <li>
-                        <Link href="/browse" scroll={false} legacyBehavior>
+                        <Link
+                          href="/browse"
+                          scroll={false}
+                          legacyBehavior={true}
+                          prefetch={false}
+                        >
                           <a className="cursor-pointer text-sm text-white transition duration-700 ease-out hover:text-gray-300">
                             Home
                           </a>
@@ -59,7 +64,8 @@ export const MainNavigation = memo(({ isLoggedIn, ...rest }) => {
                         <Link
                           href="/browse/genre/tv"
                           scroll={false}
-                          legacyBehavior
+                          legacyBehavior={true}
+                          prefetch={false}
                         >
                           <a className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-gray-300">
                             TV Shows
@@ -70,7 +76,8 @@ export const MainNavigation = memo(({ isLoggedIn, ...rest }) => {
                         <Link
                           href="/browse/genre/movies"
                           scroll={false}
-                          legacyBehavior
+                          legacyBehavior={true}
+                          prefetch={false}
                         >
                           <a className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-gray-300">
                             Movies
@@ -81,7 +88,8 @@ export const MainNavigation = memo(({ isLoggedIn, ...rest }) => {
                         <Link
                           href="/browse/latest"
                           scroll={false}
-                          legacyBehavior
+                          legacyBehavior={true}
+                          prefetch={false}
                         >
                           <a className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-gray-300">
                             New & Popular
@@ -92,7 +100,8 @@ export const MainNavigation = memo(({ isLoggedIn, ...rest }) => {
                         <Link
                           href="/browse/my-list"
                           scroll={false}
-                          legacyBehavior
+                          legacyBehavior={true}
+                          prefetch={false}
                         >
                           <a className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-gray-300">
                             My List

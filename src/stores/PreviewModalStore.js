@@ -40,18 +40,18 @@ const actions = {
     type: previewModalActions.SET_PREVIEW_MODAL_WILL_OPEN,
     payload,
   }),
-  // setPreviewModalOpen: (payload) => ({
-  //   type: previewModalActions.SET_PREVIEW_MODAL_OPEN,
-  //   payload,
-  // }),
+  setPreviewModalOpen: (payload) => ({
+    type: previewModalActions.SET_PREVIEW_MODAL_OPEN,
+    payload,
+  }),
   setPreviewModalWasOpen: (payload) => ({
     type: previewModalActions.SET_PREVIEW_MODAL_WAS_OPEN,
     payload,
   }),
-  // setPreviewModalClose: (payload) => ({
-  //   type: previewModalActions.SET_PREVIEW_MODAL_CLOSE,
-  //   payload,
-  // }),
+  setPreviewModalClose: (payload) => ({
+    type: previewModalActions.SET_PREVIEW_MODAL_CLOSE,
+    payload,
+  }),
   updatePreviewModalState: (payload) => ({
     type: previewModalActions.UPDATE_PREVIEW_MODAL_STATE,
     payload,
@@ -296,39 +296,39 @@ const usePreviewModalStore = create((set, get) => ({
         return isOpen && modalState === modalStateActions.DETAIL_MODAL;
       }
     ),
-  setPreviewModalWasOpen: (payload) => {
-    set((state) => {
-      return immerReducer({
-        state,
-        action: {
-          type: previewModalActions.SET_PREVIEW_MODAL_WAS_OPEN,
-          payload,
-        },
-      });
-    });
-  },
-  setPreviewModalOpen: (payload) => {
-    set((state) => {
-      return immerReducer({
-        state,
-        action: {
-          type: previewModalActions.SET_PREVIEW_MODAL_OPEN,
-          payload,
-        },
-      });
-    });
-  },
-  setPreviewModalClose: (payload) => {
-    set((state) => {
-      return immerReducer({
-        state,
-        action: {
-          type: previewModalActions.SET_PREVIEW_MODAL_CLOSE,
-          payload,
-        },
-      });
-    });
-  },
+  // setPreviewModalWasOpen: (payload) => {
+  //   set((state) => {
+  //     return immerReducer({
+  //       state,
+  //       action: {
+  //         type: previewModalActions.SET_PREVIEW_MODAL_WAS_OPEN,
+  //         payload,
+  //       },
+  //     });
+  //   });
+  // },
+  // setPreviewModalOpen: (payload) => {
+  //   set((state) => {
+  //     return immerReducer({
+  //       state,
+  //       action: {
+  //         type: previewModalActions.SET_PREVIEW_MODAL_OPEN,
+  //         payload,
+  //       },
+  //     });
+  //   });
+  // },
+  // setPreviewModalClose: (payload) => {
+  //   set((state) => {
+  //     return immerReducer({
+  //       state,
+  //       action: {
+  //         type: previewModalActions.SET_PREVIEW_MODAL_CLOSE,
+  //         payload,
+  //       },
+  //     });
+  //   });
+  // },
 }));
 
 export default usePreviewModalStore;

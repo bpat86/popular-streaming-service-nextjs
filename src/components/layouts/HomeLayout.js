@@ -20,6 +20,7 @@ const Splash = (props) => {
         <div className="absolute inset-0">
           <Image
             layout="fill"
+            priority={true}
             objectFit="cover"
             className="h-full w-full object-cover"
             src="https://popular-streaming-service.s3.us-west-1.amazonaws.com/movie_splash_lrg_2_ce06dc0192.jpg"

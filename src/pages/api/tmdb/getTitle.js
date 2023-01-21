@@ -25,11 +25,11 @@ async function getProfileMediaList(user) {
   const getMediaListResponse = await axios.get(getMediaListURL, config);
   const mediaListResponse = await getMediaListResponse.data.data;
   if (getMediaListResponse.status === 200) {
-    let mediaListArray = [];
+    const mediaArray = new Array();
     // Only take the items that belond to the active profile
     mediaListResponse.map(({ id, attributes }) => {
       if (attributes.profileID === activeProfileID) {
-        mediaListArray.push({
+        mediaArray.push({
           ...attributes.mediaItem,
           media_type: attributes.mediaItem.media_type,
           timestamp: attributes.timestamp,
@@ -39,12 +39,8 @@ async function getProfileMediaList(user) {
       }
       return;
     });
-    // Using Set(), an instance of unique values will be created removing any duplicates
-    mediaListArray = new Set(mediaListArray);
-    // Convert the instance into a new array
-    mediaListArray = [...mediaListArray];
     return {
-      data: mediaListArray.length ? mediaListArray : null,
+      data: mediaArray.length ? mediaArray : null,
     };
   }
 }
@@ -66,11 +62,11 @@ async function getProfileLikedItems(user) {
   const getLikedMediaResponse = await axios.get(getLikedMediaURL, config);
   const likedMediaResponse = await getLikedMediaResponse.data.data;
   if (getLikedMediaResponse.status === 200) {
-    let likedMediaArray = [];
+    const likedMedia = new Array();
     // Only take the items that belond to the active profile
     likedMediaResponse.map(({ id, attributes }) => {
       if (attributes.profileID === activeProfileID) {
-        likedMediaArray.push({
+        likedMedia.push({
           ...attributes.mediaItem,
           media_type: attributes.mediaItem.media_type,
           timestamp: attributes.timestamp,
@@ -80,12 +76,8 @@ async function getProfileLikedItems(user) {
       }
       return;
     });
-    // Using Set(), an instance of unique values will be created removing any duplicates
-    likedMediaArray = new Set(likedMediaArray);
-    // Convert the instance into a new array
-    likedMediaArray = [...likedMediaArray];
     return {
-      data: likedMediaArray.length ? likedMediaArray : null,
+      data: likedMedia.length ? likedMedia : null,
     };
   }
 }
@@ -107,11 +99,11 @@ async function getProfileDislikedItems(user) {
   const getDislikedMediaResponse = await axios.get(getDislikedMediaURL, config);
   const dislikedMediaResponse = await getDislikedMediaResponse.data.data;
   if (getDislikedMediaResponse.status === 200) {
-    let dislikedMediaArray = [];
+    const dislikedMedia = new Array();
     // Only take the items that belond to the active profile
     dislikedMediaResponse.map(({ id, attributes }) => {
       if (attributes.profileID === activeProfileID) {
-        dislikedMediaArray.push({
+        dislikedMedia.push({
           ...attributes.mediaItem,
           media_type: attributes.mediaItem.media_type,
           timestamp: attributes.timestamp,
@@ -121,12 +113,8 @@ async function getProfileDislikedItems(user) {
       }
       return;
     });
-    // Using Set(), an instance of unique values will be created removing any duplicates
-    dislikedMediaArray = new Set(dislikedMediaArray);
-    // Convert the instance into a new array
-    dislikedMediaArray = [...dislikedMediaArray];
     return {
-      data: dislikedMediaArray.length ? dislikedMediaArray : null,
+      data: dislikedMedia.length ? dislikedMedia : null,
     };
   }
 }

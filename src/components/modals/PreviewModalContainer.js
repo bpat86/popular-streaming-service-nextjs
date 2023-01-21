@@ -8,7 +8,7 @@ import { modalStateActions } from "@/actions/Actions";
 
 import usePreviewModalStore from "@/stores/PreviewModalStore";
 
-import PreviewModal from "./PreviewModal";
+import PreviewModal from "./NewPreviewModal";
 
 const PreviewModalContainer = forwardRef(
   ({ children, mutateSliderData }, layoutWrapperRef) => {

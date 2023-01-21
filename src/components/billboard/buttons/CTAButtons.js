@@ -33,11 +33,15 @@ const CTAButtons = ({ videoPlayback, handleWatchNow, model }) => {
     <div className="billboard-links button-layer">
       <Link
         href={{
-          pathname: `/watch/[mediaId]`,
+          pathname: `/watch/${encodeURIComponent(
+            model?.videoModel?.identifiers?.id
+          )}`,
           query: {
             mediaId: `${model?.videoModel?.identifiers?.mediaType}-${model?.videoModel?.identifiers?.id}`,
           },
         }}
+        legacyBehavior={true}
+        prefetch={false}
       >
         <a
           className="focus:focus-outline flex items-center justify-center rounded-md"

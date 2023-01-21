@@ -51,7 +51,7 @@ const ButtonControls = memo(
         <WatchLink
           className="mr-1 flex items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-900"
           href={{
-            pathname: "/watch/[mediaId]",
+            pathname: `/watch/${encodeURIComponent(identifiers?.id)}`,
             query: {
               mediaId: `${identifiers?.mediaType}-${identifiers?.id}`,
             },

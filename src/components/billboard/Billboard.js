@@ -4,7 +4,7 @@ import {
   forwardRef,
   useCallback,
   useContext,
-  useLayoutEffect,
+  useEffect,
   useRef,
   useState,
 } from "react";
@@ -37,7 +37,7 @@ const Billboard = forwardRef(
     /**
      * Player state
      */
-    const [player, setPlayer] = useState(null);
+    const [player, setPlayer] = useState(undefined);
     // const [maxVolume, setMaxVolume] = useState(50);
     const [videoPlaybackError, setVideoPlaybackError] = useState(false);
     const [videoCanPlayThrough, setVideoCanPlayThrough] = useState(false);
@@ -131,8 +131,8 @@ const Billboard = forwardRef(
      * Handle the play event
      */
     const playVideo = useCallback(() => {
-      if (player) {
-        player.playVideo();
+      if (player?.getPlayerState() === 2) {
+        player?.playVideo();
         audioIsEnabled() && unMute();
       }
     }, [player, audioIsEnabled, unMute]);
@@ -141,8 +141,8 @@ const Billboard = forwardRef(
      * Handle the pause event
      */
     const pauseVideo = useCallback(() => {
-      if (player) {
-        player.pauseVideo();
+      if (player?.getPlayerState() === 1) {
+        player?.pauseVideo();
         audioIsEnabled() && mute();
       }
     }, [player, audioIsEnabled, mute]);
@@ -163,7 +163,7 @@ const Billboard = forwardRef(
       !videoHasPlayedAtLeastOnce && setVideoHasPlayedAtLeastOnce(true);
       setTextIsAnimating(false);
       setVideoCompleted(true);
-      setPlayer(null);
+      setPlayer(undefined);
     };
 
     /**
@@ -172,32 +172,28 @@ const Billboard = forwardRef(
      * @param {Object} e
      * @returns
      */
-    const onPlayerReady = (e) => {
-      if (e.target) {
-        e.target.playVideo();
-        setPlayer(e.target);
-        setTextIsAnimating(true);
-        setVideoPlaybackError(false);
-        setTimeout(() => setVideoCanPlayThrough(true), 1000);
-      }
+    const onReady = (e) => {
+      e.target.playVideo();
+      setPlayer(e.target);
     };
 
     /**
      * YouTube API state change event
      * @param {Object} e
      */
-    const onPlayerStateChange = (e) => {
-      if (!e.data) {
-        setVideoPlaybackError(true);
-        setVideoCanPlayThrough(false);
+    const onStateChange = (e) => {
+      if (e.data === 1) {
+        setVideoPlaybackError(false);
+        setTextIsAnimating(true);
+        setTimeout(() => setVideoCanPlayThrough(true), 1000);
+        audioIsEnabled() && unMute();
       }
-      if (e.data === 1) audioIsEnabled() && unMute();
     };
 
     /**
      * YouTube API event for when the video ends
      */
-    const onPlayerEnd = () => {
+    const onEnd = () => {
       !videoCompleted && handleVideoCompleted();
     };
 
@@ -205,8 +201,9 @@ const Billboard = forwardRef(
      * Set error if YouTube video returns an error
      * @param {obj} e
      */
-    const onPlayerError = (e) => {
+    const onError = (e) => {
       if (e.data === 150 || e.data === 100 || e.data === 101 || e === null) {
+        setVideoCanPlayThrough(false);
         setVideoPlaybackError(true);
       }
     };
@@ -225,53 +222,30 @@ const Billboard = forwardRef(
     /**
      * Listen for when the video finishes
      */
-    useLayoutEffect(() => {
+    useEffect(() => {
       videoCompleted && setVideoCanPlayThrough(false);
     }, [videoCompleted]);
 
     /**
      * Autoplay billbaord video on mount and play/pause when in and out of view
      */
-    useLayoutEffect(() => {
-      if (!videoCanPlayThrough || videoPlaybackError) return;
-      if (inView && !shouldFreeze) {
+    useEffect(() => {
+      if (!player || !videoCanPlayThrough || videoPlaybackError) return;
+      if (inView && !shouldFreeze && !videoCompleted) {
         playVideo();
       } else {
         pauseVideo();
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
       inView,
       pauseVideo,
       playVideo,
       shouldFreeze,
       videoCanPlayThrough,
+      videoCompleted,
       videoPlaybackError,
     ]);
-
-    /**
-     * YouTube Player Component
-     * @returns {JSX.Element}
-     */
-    const renderVideoPlayer = () => {
-      const videoKey = model?.videoModel?.videoKey;
-      if (videoKey) {
-        return (
-          <YouTube
-            title={null}
-            id={videoKey}
-            videoId={videoKey}
-            loading="lazy"
-            opts={defaultOpts}
-            onEnd={onPlayerEnd}
-            onReady={onPlayerReady}
-            onError={onPlayerError}
-            onStateChange={onPlayerStateChange}
-            className="relative h-full w-full overflow-hidden"
-          />
-        );
-      }
-      return <></>;
-    };
 
     /**
      * YouTube config
@@ -295,6 +269,31 @@ const Billboard = forwardRef(
         playsinline: 1,
         // end: 9,
       },
+    };
+
+    /**
+     * YouTube Player Component
+     * @returns {JSX.Element}
+     */
+    const renderVideoPlayer = () => {
+      const videoKey = model?.videoModel?.videoKey;
+      // Render the YouTube player
+      if (videoKey)
+        return (
+          <YouTube
+            className="relative h-full w-full overflow-hidden"
+            id={videoKey}
+            loading="lazy"
+            onEnd={onEnd}
+            onError={onError}
+            onReady={onReady}
+            onStateChange={onStateChange}
+            opts={defaultOpts}
+            title={null}
+            videoId={videoKey}
+          />
+        );
+      return <></>;
     };
 
     return (

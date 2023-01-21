@@ -8,7 +8,7 @@ export const WatchLink = ({
   tabIndex,
 }) => {
   return (
-    <Link href={href}>
+    <Link href={href} legacyBehavior={true} prefetch={false}>
       <a
         className={className}
         onClick={onClick}

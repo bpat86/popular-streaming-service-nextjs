@@ -4,7 +4,7 @@ import { forwardRef } from "react";
 const TitleCardLink = forwardRef(
   ({ children, className, href, itemTabbable }, ref) => {
     return (
-      <Link href={href} legacyBehavior>
+      <Link href={href} legacyBehavior={true} prefetch={false}>
         <a
           ref={ref}
           className={className}

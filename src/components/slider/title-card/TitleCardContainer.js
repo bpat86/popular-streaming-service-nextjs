@@ -90,7 +90,7 @@ const TitleCardContainer = forwardRef(
       scopeRef.current.isHovering = true;
       if (!hasFetchedModalData) {
         scopeRef.current.hasFetchedModalData = true;
-        return queuePreviewModalOpen(titleCardRef);
+        return void queuePreviewModalOpen(titleCardRef);
       }
       queuePreviewModalOpen(titleCardRef);
     };
@@ -185,7 +185,7 @@ const TitleCardContainer = forwardRef(
                 videoId,
               });
             }),
-          queuePreviewModalOpen(titleCardNode)
+          void queuePreviewModalOpen(titleCardNode)
         );
       }
       // Open this titleCard as a preview modal

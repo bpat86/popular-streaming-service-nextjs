@@ -656,7 +656,7 @@ export default withSessionRoute(async (req, res) => {
       // Send error repsonses to the frontend for user feedback
       res.status(500).send(`Internal Server Error: ${error} .`);
       // res.status(error.response.status).json({
-      //   message: "boo",
+      //   message: `Internal Server Error: ${error} .`,
       // });
     }
   } else {
