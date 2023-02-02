@@ -21,7 +21,7 @@ type TitleCardProps = {
   onFocus: (e: FocusEvent<HTMLDivElement>) => void;
   onMouseEnter: (
     e: MouseEvent<HTMLDivElement>,
-    ref: MutableRefObject<HTMLDivElement>
+    ref: MutableRefObject<HTMLDivElement | null>
   ) => void;
   onMouseLeave: (
     e: MouseEvent<HTMLDivElement> & {
@@ -30,21 +30,21 @@ type TitleCardProps = {
           location: Location;
         };
     },
-    ref: MutableRefObject<HTMLDivElement>
+    ref: MutableRefObject<HTMLDivElement | null>
   ) => void;
   onMouseMove: (
     e: MouseEvent<HTMLDivElement>,
-    ref: MutableRefObject<HTMLDivElement>
+    ref: MutableRefObject<HTMLDivElement | null>
   ) => void;
   onKeyDown: (
     e: KeyboardEvent<HTMLDivElement>,
-    ref: MutableRefObject<HTMLDivElement>
+    ref: MutableRefObject<HTMLDivElement | null>
   ) => void;
   onClick: (
     e:
       | MouseEvent<HTMLDivElement | HTMLAnchorElement>
       | KeyboardEvent<HTMLDivElement | HTMLAnchorElement>,
-    ref: MutableRefObject<HTMLDivElement>
+    ref: MutableRefObject<HTMLDivElement | null>
   ) => void;
   toggleExpandedInfoDensity: (arg0: boolean) => void;
   watchURL: string;
@@ -92,8 +92,7 @@ const TitleCard = ({
    */
   const handleOnMouseEnter = (e: MouseEvent<HTMLDivElement>) => {
     const mouseEnter = onMouseEnter;
-    mouseEnter &&
-      mouseEnter(e, titleCardRef as MutableRefObject<HTMLDivElement>);
+    mouseEnter && mouseEnter(e, titleCardRef);
     toggleExpandedInfoDensity && toggleExpandedInfoDensity(true);
   };
 
@@ -101,8 +100,7 @@ const TitleCard = ({
    * Handle the onMouseMove event for the title card.
    */
   const handleOnMouseMove = (e: MouseEvent<HTMLDivElement>) => {
-    onMouseMove &&
-      onMouseMove(e, titleCardRef as MutableRefObject<HTMLDivElement>);
+    onMouseMove && onMouseMove(e, titleCardRef);
   };
 
   /**
@@ -116,8 +114,7 @@ const TitleCard = ({
         };
     }
   ) => {
-    onMouseLeave &&
-      onMouseLeave(e, titleCardRef as MutableRefObject<HTMLDivElement>);
+    onMouseLeave && onMouseLeave(e, titleCardRef);
     toggleExpandedInfoDensity && toggleExpandedInfoDensity(false);
   };
 
@@ -125,7 +122,7 @@ const TitleCard = ({
    * Handle the onKeyDown event for the title card.
    */
   const handleOnKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    onKeyDown && onKeyDown(e, titleCardRef as MutableRefObject<HTMLDivElement>);
+    onKeyDown && onKeyDown(e, titleCardRef);
   };
 
   /**
@@ -137,10 +134,7 @@ const TitleCard = ({
       | KeyboardEvent<HTMLDivElement | HTMLAnchorElement>
   ) => {
     const click = onClick;
-    click &&
-      (e.stopPropagation(),
-      e.preventDefault(),
-      click(e, titleCardRef as MutableRefObject<HTMLDivElement>));
+    click && (e.stopPropagation(), e.preventDefault(), click(e, titleCardRef));
   };
 
   return (

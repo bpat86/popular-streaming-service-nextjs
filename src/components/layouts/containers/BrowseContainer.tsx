@@ -33,7 +33,7 @@ const BrowseContainer = ({
   });
   const { profiles, profileNames, loadingProfiles, mutateProfiles } =
     useProfiles({ user });
-  const layoutWrapperRef = useRef<HTMLDivElement>(null);
+  const layoutWrapperRef = useRef<HTMLDivElement | null>(null);
   const activeProfileId = activeProfile?.id ?? null; // initialUser?.activeProfile?.id
   const isLoggedIn = user?.isLoggedIn || initialUser?.isLoggedIn || false;
   // User data

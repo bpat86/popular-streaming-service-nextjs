@@ -468,7 +468,7 @@ export default withSessionRoute(
             {},
             getUserMe.status === 200
               ? getUserMe.data.profiles?.find(
-                  (profile: any) => profile.id == activeProfile
+                  (profile: any) => profile.id.toString() === activeProfile
                 )
               : {}
           ),
@@ -478,7 +478,7 @@ export default withSessionRoute(
             {},
             getUserMe.status === 200
               ? getUserMe.data.profiles?.find(
-                  (profile: any) => profile.id == activeProfile
+                  (profile: any) => profile.id.toString() === activeProfile
                 )
               : {}
           ),

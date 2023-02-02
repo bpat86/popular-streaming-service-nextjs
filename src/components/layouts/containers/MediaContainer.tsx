@@ -15,7 +15,7 @@ type MediaContainerProps = {
 };
 
 const MediaContainer = forwardRef(({ pageAPI }: MediaContainerProps, ref) => {
-  const layoutWrapperRef = ref as MutableRefObject<HTMLDivElement>;
+  const layoutWrapperRef = ref as MutableRefObject<HTMLDivElement | null>;
   const { fetchingMedia, media, mutateMedia, mediaError } = useMedia({
     pageAPI,
   });
@@ -158,4 +158,5 @@ const MediaContainer = forwardRef(({ pageAPI }: MediaContainerProps, ref) => {
   );
 });
 
+MediaContainer.displayName = "MediaContainer";
 export default MediaContainer;

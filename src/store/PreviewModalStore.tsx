@@ -95,12 +95,12 @@ const immerReducer = ({ state, action }: ImmerReducerProps) =>
             individualState: { videoId = undefined } = {},
           },
         } = action;
-        const modal = individualState === undefined ? {} : individualState;
+        const individual = individualState === undefined ? {} : individualState;
         if (!videoId || !previewModalStateById || !draft.previewModalStateById)
           return;
         draft.previewModalStateById[videoId] = {
           ...previewModalStateById[videoId],
-          ...modal,
+          ...individual,
         };
         draft = { ...draft, ...payload };
         break;

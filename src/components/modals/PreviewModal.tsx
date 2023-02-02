@@ -61,7 +61,7 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
     },
     ref
   ) => {
-    const layoutWrapperRef = ref as MutableRefObject<HTMLDivElement>;
+    const layoutWrapperRef = ref as MutableRefObject<HTMLDivElement | null>;
     const {
       isWatchModeEnabled,
       enableWatchMode,

@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import {
   cloneElement,
   forwardRef,
-  RefObject,
+  MutableRefObject,
   useCallback,
   useLayoutEffect,
 } from "react";
@@ -23,14 +23,13 @@ type PreviewModalContainerProps = {
 
 const PreviewModalContainer = forwardRef(
   ({ children, mutateSliderData }: PreviewModalContainerProps, ref) => {
-    const layoutWrapperRef = ref as RefObject<HTMLDivElement>;
+    const layoutWrapperRef = ref as MutableRefObject<HTMLDivElement | null>;
     const { previewModalStateById } = usePreviewModalStore(
       (state) => ({
         previewModalStateById: state.previewModalStateById,
       }),
       shallow
     );
-
     const router = useRouter();
 
     /**

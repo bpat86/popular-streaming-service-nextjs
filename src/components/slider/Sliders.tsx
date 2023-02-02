@@ -16,7 +16,7 @@ const Sliders = ({ model }: SlidersProps) => {
         if (slider.data.length > 0) {
           return (
             <Row
-              key={`${slider.id}-${idx}`}
+              key={`${slider.id}_${idx}`}
               model={slider.data}
               enablePeek={true}
               enableLooping={true}
@@ -25,9 +25,9 @@ const Sliders = ({ model }: SlidersProps) => {
               mediaType={slider.type}
               myListRowItemsLength={slider.isMyListRow ? slider.data.length : 0}
               previewModalEnabled={true}
-              rowNum={slider?.id}
+              rowNum={slider.id}
               sliderNum={idx}
-              title={slider?.name}
+              title={slider.name}
             />
           );
         }
@@ -45,7 +45,7 @@ const Sliders = ({ model }: SlidersProps) => {
   /**
    * Render the slider component
    */
-  return handleSliders();
+  return <>{handleSliders()}</>;
 };
 
 export default Sliders;

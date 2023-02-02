@@ -103,7 +103,7 @@ const SliderRow = ({
    * https://reactjs.org/docs/react-api.html#reactchildren
    */
   const renderSliderItems = () => {
-    // console.log(`Slider ${sliderNum} items ${data}`);
+    // console.log("model: ", model);
     return hasMovedOnce
       ? model.map(({ id }, idx) => (
           <SliderItem key={`title_${id}_${rowNum}`} model={model[idx]} />

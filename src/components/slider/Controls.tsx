@@ -7,7 +7,6 @@ type SliderControlsProps = {
   enablePeek: boolean;
   isAnimating: boolean;
   onClick: (e: MouseEvent<HTMLSpanElement>) => void;
-  modalOpen: boolean;
   moveDirection: string;
   hasMovedOnce: boolean;
 };
@@ -16,7 +15,6 @@ const SliderControls = ({
   enablePeek,
   isAnimating,
   onClick,
-  modalOpen,
   moveDirection,
   hasMovedOnce,
 }: SliderControlsProps) => {
@@ -55,35 +53,33 @@ const SliderControls = ({
           ]
         )}
       >
-        {moveDirection === sliderActions.MOVE_DIRECTION_PREV
-          ? !modalOpen && (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-7 w-7 scale-100 transform transition duration-75 ease-out hover:scale-150 xl:h-10 xl:w-10"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            )
-          : !modalOpen && (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-7 w-7 scale-100 transform transition duration-75 ease-out hover:scale-150 xl:h-10 xl:w-10"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            )}
+        {moveDirection === sliderActions.MOVE_DIRECTION_PREV ? (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-7 w-7 scale-100 transform transition duration-75 ease-out hover:scale-150 xl:h-10 xl:w-10"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+              clipRule="evenodd"
+            />
+          </svg>
+        ) : (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-7 w-7 scale-100 transform transition duration-75 ease-out hover:scale-150 xl:h-10 xl:w-10"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+              clipRule="evenodd"
+            />
+          </svg>
+        )}
       </div>
     </span>
   );

@@ -61,7 +61,7 @@ export interface IVideoModel {
   tagline?: string;
   title?: string;
   titleCardId?: string;
-  titleCardRef?: MutableRefObject<HTMLDivElement> | undefined;
+  titleCardRef?: MutableRefObject<HTMLDivElement | null> | undefined;
   videoId?: string;
   videoKey?: string;
   videos?: Array<{
@@ -91,7 +91,7 @@ export interface IModel {
   rowNum?: number;
   scrollPosition?: number;
   sliderName?: string;
-  titleCardRef?: MutableRefObject<HTMLDivElement> | undefined;
+  titleCardRef?: MutableRefObject<HTMLDivElement | null> | undefined;
   imageKey?: string;
   videoId?: string;
   videoKey?: string;
@@ -117,7 +117,7 @@ export interface IPreviewModal {
     sliderRow?: number;
     titleCardId?: string | undefined;
     titleCardRect?: DOMRect | undefined;
-    titleCardRef?: MutableRefObject<HTMLDivElement> | undefined;
+    titleCardRef?: MutableRefObject<HTMLDivElement | null> | undefined;
     videoId?: string | undefined;
     videoKey?: string | undefined;
     videoModel?: IVideoModel | undefined;
@@ -136,7 +136,7 @@ export interface IPreviewModal {
   scrollPosition?: number | undefined;
   sliderRow?: number;
   titleCardId?: string | undefined;
-  titleCardRef?: MutableRefObject<HTMLDivElement> | undefined;
+  titleCardRef?: MutableRefObject<HTMLDivElement | null> | undefined;
   titleCardRect?: DOMRect | undefined;
   videoId?: string | undefined;
   videoKey?: string | undefined;

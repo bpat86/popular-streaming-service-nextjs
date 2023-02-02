@@ -681,8 +681,7 @@ input.input-profile:-webkit-autofill::first-line {
 }
 
 .js-focus-visible :focus:not([data-focus-visible-added]) {
-  outline: 0;
-  /* outline: 2px solid white; */
+  outline: 2px solid white;
 }
 .slider-row.title-card.expanded {
   /* pointer-events: none; */
