@@ -73,8 +73,8 @@ const Card = forwardRef((props, inputRef) => {
         <div
           className={`${
             showErrorBorder
-              ? "flex h-14 w-full items-center rounded-sm border border-netflix-red bg-white py-6 px-3 text-gray-800 duration-150 ease-out focus:border-gray-400 focus:outline-none focus:ring-0 focus:ring-inset focus:ring-gray-400 sm:text-base"
-              : "flex h-14 w-full items-center rounded-sm border border-gray-300 bg-white py-6 px-3 text-gray-800 duration-150 ease-out focus:border-gray-400 focus:outline-none focus:ring-0 focus:ring-inset focus:ring-gray-400 sm:text-base"
+              ? "flex h-14 w-full items-center rounded-sm border border-netflix-red bg-white py-6 px-3 text-zinc-800 duration-150 ease-out focus:border-zinc-400 focus:outline-none focus:ring-0 focus:ring-inset focus:ring-zinc-400 sm:text-base"
+              : "flex h-14 w-full items-center rounded-sm border border-zinc-300 bg-white py-6 px-3 text-zinc-800 duration-150 ease-out focus:border-zinc-400 focus:outline-none focus:ring-0 focus:ring-inset focus:ring-zinc-400 sm:text-base"
           }`}
         >
           <CardElement

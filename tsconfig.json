@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2015",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -25,10 +25,11 @@
     "**/*.ts",
     "**/*.tsx",
     "src/pages/api/auth/[...nextauth.ts]",
-    "src/components/slider/title-card/TitleCardContainer.js",
-    "src/components/slider/title-card/TitleCard.js",
-    "src/components/slider/Slider.js",
-    "src/pages/_app.js"
+    "src/components/slider/title-card/TitleCardContainer.tsx",
+    "src/components/slider/title-card/TitleCard.tsx",
+    "src/components/slider/Slider.tsx",
+    "src/pages/_app.tsx",
+    "src/middleware/withSession.ts"
   ],
   "exclude": ["node_modules"],
   "moduleResolution": ["node_modules", ".next", "node"]

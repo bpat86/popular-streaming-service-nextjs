@@ -26,7 +26,7 @@ const RegistrationLayout = (props) => {
           <main className="item-center relative z-0 flex min-h-screen w-full flex-col justify-center overflow-hidden">
             <div className="header-container z-10 flex w-full flex-col">
               <div className="flex h-full flex-wrap items-center justify-center">
-                <div className="text-shadow mx-auto my-32 flex w-full max-w-screen-xl flex-col items-center justify-start px-6 text-base font-normal text-gray-100 sm:text-lg md:justify-center md:text-2xl">
+                <div className="text-shadow mx-auto my-32 flex w-full max-w-screen-xl flex-col items-center justify-start px-6 text-base font-normal text-zinc-100 sm:text-lg md:justify-center md:text-2xl">
                   {children}
                 </div>
               </div>

@@ -21,7 +21,7 @@ const WhosWatchingPage = (props) => {
               ></div>
               <dl className="mt-4 flex flex-grow flex-col justify-between">
                 <dt className="sr-only">Profile name: Stephanie</dt>
-                <dd className="text-2xl text-gray-400 group-hover:text-white">
+                <dd className="text-2xl text-zinc-400 group-hover:text-white">
                   Stephanie
                 </dd>
               </dl>
@@ -35,7 +35,7 @@ const WhosWatchingPage = (props) => {
               ></div>
               <dl className="mt-4 flex flex-grow flex-col justify-between">
                 <dt className="sr-only">Profile name: Georgie</dt>
-                <dd className="text-2xl text-gray-400 group-hover:text-white">
+                <dd className="text-2xl text-zinc-400 group-hover:text-white">
                   Georgie
                 </dd>
               </dl>
@@ -49,7 +49,7 @@ const WhosWatchingPage = (props) => {
               ></div>
               <dl className="mt-4 flex flex-grow flex-col justify-between">
                 <dt className="sr-only">Profile name: Bobby</dt>
-                <dd className="text-2xl text-gray-400 group-hover:text-white">
+                <dd className="text-2xl text-zinc-400 group-hover:text-white">
                   Bobby
                 </dd>
               </dl>
@@ -63,7 +63,7 @@ const WhosWatchingPage = (props) => {
               ></div>
               <dl className="mt-4 flex flex-grow flex-col justify-between">
                 <dt className="sr-only">Profile name: Kids</dt>
-                <dd className="text-2xl text-gray-400 group-hover:text-white">
+                <dd className="text-2xl text-zinc-400 group-hover:text-white">
                   Kids
                 </dd>
               </dl>
@@ -72,7 +72,7 @@ const WhosWatchingPage = (props) => {
               <div className="profile-avatar mx-auto flex h-32 w-32 flex-col items-center justify-center rounded-md	group-hover:bg-white md:h-44 md:w-44">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-32 w-32 text-gray-400"
+                  className="h-32 w-32 text-zinc-400"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
@@ -85,7 +85,7 @@ const WhosWatchingPage = (props) => {
               </div>
               <dl className="mt-4 flex flex-grow flex-col justify-between">
                 <dt className="sr-only">Add Profile</dt>
-                <dd className="text-2xl text-gray-400 group-hover:text-white">
+                <dd className="text-2xl text-zinc-400 group-hover:text-white">
                   Add Profile
                 </dd>
               </dl>
@@ -94,7 +94,7 @@ const WhosWatchingPage = (props) => {
           <span>
             <a
               aria-label="Manage Profiles"
-              className="border border-gray-400 px-8 py-3 text-xl font-semibold uppercase tracking-widest text-gray-400 hover:border-white hover:text-white"
+              className="border border-zinc-400 px-8 py-3 text-xl font-semibold uppercase tracking-widest text-zinc-400 hover:border-white hover:text-white"
               href="#"
             >
               Manage Profiles

@@ -15,7 +15,7 @@ const CardExpiry = ({ values, stripeError, errors, touched }) => {
   return (
     <>
       <div
-        className={`h-14 w-full rounded-sm border border-gray-200 bg-white px-3 py-5 text-gray-800 focus:border-gray-300 focus:outline-none focus:ring-0 focus:ring-inset focus:ring-gray-300 sm:text-base ${
+        className={`h-14 w-full rounded-sm border border-zinc-200 bg-white px-3 py-5 text-zinc-800 focus:border-zinc-300 focus:outline-none focus:ring-0 focus:ring-inset focus:ring-zinc-300 sm:text-base ${
           (errors.cardNumber && touched.cardNumber && errors.cardNumber) ||
           stripeError
             ? "border-netflix-red"

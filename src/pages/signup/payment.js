@@ -5,11 +5,10 @@ import Stripe from "stripe";
 
 import { PaymentsForm } from "@/components/forms/PaymentsForm";
 import RegistrationLayout from "@/components/layouts/RegistrationLayout";
+import { API_URL } from "@/config/index";
 import AuthContext from "@/context/AuthContext";
 import { withSessionSsr } from "@/middleware/withSession";
 import { parseCookies } from "@/utils/parseCookies";
-
-import { API_URL } from "@/config/index";
 
 const Payment = (props) => {
   // Destructure the page props
@@ -23,25 +22,19 @@ const Payment = (props) => {
       <RegistrationLayout title="Sign up for Netflix" {...props}>
         <div className="slide-in mx-auto flex w-full flex-col items-center md:max-w-xl">
           <div className="relative mx-auto mb-10 h-14 w-full">
-            <Image
-              priority
-              layout="fill"
-              objectFit="contain"
-              src="/images/auth/lock.png"
-              alt="Devices"
-            />
+            <Image fill priority src="/images/auth/lock.png" alt="Devices" />
           </div>
-          <h2 className="pb-1 text-center text-sm font-normal uppercase tracking-wide text-gray-800">
+          <h2 className="pb-1 text-center text-sm font-normal uppercase tracking-wide text-zinc-800">
             Step <span className="font-bold">3</span> of{" "}
             <span className="font-bold">3</span>
           </h2>
-          <p className="block text-center text-2xl font-bold tracking-wide text-gray-800 sm:text-2xl">
+          <p className="block text-center text-2xl font-bold tracking-wide text-zinc-800 sm:text-2xl">
             Set up your payment
           </p>
-          <p className="block w-full py-6 px-10 text-center text-lg leading-snug text-gray-800 sm:max-w-sm">
+          <p className="block w-full py-6 px-10 text-center text-lg leading-snug text-zinc-800 sm:max-w-sm">
             Your membership starts as soon as you set up payment.
           </p>
-          <p className="mb-5 flex flex-col py-2 px-10 text-center text-lg leading-snug text-gray-800">
+          <p className="mb-5 flex flex-col py-2 px-10 text-center text-lg leading-snug text-zinc-800">
             <span className="font-bold">No commitments.</span>
             <span className="font-bold">Cancel online anytime.</span>
           </p>

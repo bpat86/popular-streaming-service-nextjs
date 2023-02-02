@@ -27,14 +27,14 @@ const Register = (props) => {
     <>
       <RegistrationLayout title="Sign up for Netflix" {...props}>
         <div className="slide-in mx-auto flex w-full flex-col items-start md:max-w-md">
-          <h2 className="pb-1 text-sm font-normal uppercase tracking-wide text-gray-800">
+          <h2 className="pb-1 text-sm font-normal uppercase tracking-wide text-zinc-800">
             Step <span className="font-bold">1</span> of{" "}
             <span className="font-bold">3</span>
           </h2>
-          <p className="block text-xl font-bold tracking-wide text-gray-800 sm:text-2xl">
+          <p className="block text-xl font-bold tracking-wide text-zinc-800 sm:text-2xl">
             Create a password to start your membership
           </p>
-          <p className="block pt-3 pb-4 text-lg leading-snug text-gray-800">
+          <p className="block pt-3 pb-4 text-lg leading-snug text-zinc-800">
             Just a few more steps and you're done! We hate paperwork, too.
           </p>
           <RegisterForm

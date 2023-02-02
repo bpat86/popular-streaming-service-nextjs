@@ -30,13 +30,13 @@ const BasicInputLight = ({
             onChange={handleChange}
             onBlur={handleBlur}
             value={value}
-            className={`input-light block h-14 w-full appearance-none rounded-sm border border-gray-200 bg-white px-3 pt-6 text-base text-gray-800 focus:border-gray-300 focus:outline-none focus:ring-0 focus:ring-inset focus:ring-gray-300 ${
+            className={`input-light block h-14 w-full appearance-none rounded-sm border border-zinc-200 bg-white px-3 pt-6 text-base text-zinc-800 focus:border-zinc-300 focus:outline-none focus:ring-0 focus:ring-inset focus:ring-zinc-300 ${
               errors && touched && errors ? "border-netflix-red" : ""
             }`}
           />
           <label
             htmlFor={name}
-            className="pointer-events-none absolute top-0 bottom-0 flex h-14 origin-0 select-none items-center px-3 py-4 text-base font-medium text-gray-500 duration-200"
+            className="pointer-events-none absolute top-0 bottom-0 flex h-14 origin-0 select-none items-center px-3 py-4 text-base font-medium text-zinc-500 duration-200"
           >
             {label}
           </label>

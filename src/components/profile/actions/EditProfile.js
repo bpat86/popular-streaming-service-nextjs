@@ -228,7 +228,7 @@ const EditProfile = ({ loadingProfiles, profiles, profileNames, user }) => {
                     <h1 className="my-3 block text-3xl font-semibold text-white sm:my-6 sm:text-6xl">
                       Edit Profile
                     </h1>
-                    <div className="my-5 flex w-full border-t border-b border-gray-700 py-4">
+                    <div className="my-5 flex w-full border-t border-b border-zinc-700 py-4">
                       <div className="my-3 flex w-full cursor-pointer items-center text-center">
                         <div
                           className="group relative"
@@ -284,7 +284,7 @@ const EditProfile = ({ loadingProfiles, profiles, profileNames, user }) => {
                               name="kid"
                               type="checkbox"
                               onChange={handleChange}
-                              className="h-6 w-6 cursor-pointer border border-gray-700 bg-gray-900 text-gray-900 outline-none ring-1 ring-gray-500 focus:ring-0 sm:h-8 sm:w-8"
+                              className="h-6 w-6 cursor-pointer border border-zinc-700 bg-zinc-900 text-zinc-900 outline-none ring-1 ring-zinc-500 focus:ring-0 sm:h-8 sm:w-8"
                             />
                             <label
                               htmlFor="kid"
@@ -294,7 +294,7 @@ const EditProfile = ({ loadingProfiles, profiles, profileNames, user }) => {
                             </label>
                           </div>
                           <div className="tooltip absolute bottom-0 mb-10 ml-8 hidden w-72 scale-95 transform flex-col items-end justify-end opacity-0 transition duration-150 ease-out group-hover:scale-100 group-hover:opacity-100 sm:flex md:items-center">
-                            <span className="whitespace-no-wrap relative z-10 bg-white px-4 py-3 text-lg font-medium leading-none text-gray-900">
+                            <span className="whitespace-no-wrap relative z-10 bg-white px-4 py-3 text-lg font-medium leading-none text-zinc-900">
                               If selected, this profile will only see TV shows
                               and movies rated for ages 12 and under.
                             </span>
@@ -304,8 +304,8 @@ const EditProfile = ({ loadingProfiles, profiles, profileNames, user }) => {
                       </div>
                     </div>
 
-                    <div className="flex w-full flex-col border-b border-gray-700 sm:pb-4">
-                      <h2 className="mb-1 text-2xl text-gray-400">
+                    <div className="flex w-full flex-col border-b border-zinc-700 sm:pb-4">
+                      <h2 className="mb-1 text-2xl text-zinc-400">
                         Autoplay controls
                       </h2>
                       <div className="group my-3 flex w-full cursor-pointer flex-col items-start text-center">
@@ -317,7 +317,7 @@ const EditProfile = ({ loadingProfiles, profiles, profileNames, user }) => {
                               name="autoPlayNextEpisode"
                               type="checkbox"
                               onChange={handleChange}
-                              className="h-6 w-6 cursor-pointer border border-gray-700 bg-gray-900 text-gray-900 outline-none ring-1 ring-gray-500 focus:ring-0 sm:h-8 sm:w-8"
+                              className="h-6 w-6 cursor-pointer border border-zinc-700 bg-zinc-900 text-zinc-900 outline-none ring-1 ring-zinc-500 focus:ring-0 sm:h-8 sm:w-8"
                             />
                             <label
                               htmlFor="autoPlayNextEpisode"
@@ -336,7 +336,7 @@ const EditProfile = ({ loadingProfiles, profiles, profileNames, user }) => {
                                 name="autoPlayPreviews"
                                 type="checkbox"
                                 onChange={handleChange}
-                                className="h-6 w-6 cursor-pointer border border-gray-700 bg-gray-900 text-gray-900 outline-none ring-1 ring-gray-500 focus:ring-0 sm:h-8 sm:w-8"
+                                className="h-6 w-6 cursor-pointer border border-zinc-700 bg-zinc-900 text-zinc-900 outline-none ring-1 ring-zinc-500 focus:ring-0 sm:h-8 sm:w-8"
                               />
                               <label
                                 htmlFor="autoPlayPreviews"
@@ -354,7 +354,7 @@ const EditProfile = ({ loadingProfiles, profiles, profileNames, user }) => {
                       <button
                         disabled={isSubmitting}
                         type="submit"
-                        className="flex items-center bg-white px-3 py-2 text-xs font-bold uppercase tracking-widest text-gray-900 hover:bg-netflix-red hover:text-white focus:bg-netflix-red focus:text-white focus:outline-none sm:px-6 sm:text-2xl"
+                        className="flex items-center bg-white px-3 py-2 text-xs font-bold uppercase tracking-widest text-zinc-900 hover:bg-netflix-red hover:text-white focus:bg-netflix-red focus:text-white focus:outline-none sm:px-6 sm:text-2xl"
                       >
                         {isSubmitting ? (
                           <>
@@ -386,13 +386,13 @@ const EditProfile = ({ loadingProfiles, profiles, profileNames, user }) => {
                       </button>
                       <button
                         type="reset"
-                        className="border border-gray-400 bg-transparent px-3 py-2 text-xs font-bold uppercase tracking-widest text-gray-400 hover:border-white hover:text-white focus:border-white focus:text-white focus:outline-none sm:px-6 sm:text-2xl"
+                        className="border border-zinc-400 bg-transparent px-3 py-2 text-xs font-bold uppercase tracking-widest text-zinc-400 hover:border-white hover:text-white focus:border-white focus:text-white focus:outline-none sm:px-6 sm:text-2xl"
                       >
                         Cancel
                       </button>
                       <button
                         type="button"
-                        className="border border-gray-400 bg-transparent px-3 py-2 text-xs font-bold uppercase tracking-widest text-gray-400 hover:border-white hover:text-white focus:border-white focus:text-white focus:outline-none sm:w-full sm:px-6 sm:text-2xl"
+                        className="border border-zinc-400 bg-transparent px-3 py-2 text-xs font-bold uppercase tracking-widest text-zinc-400 hover:border-white hover:text-white focus:border-white focus:text-white focus:outline-none sm:w-full sm:px-6 sm:text-2xl"
                         onClick={() => openDeleteProfilePrompt()}
                       >
                         Delete

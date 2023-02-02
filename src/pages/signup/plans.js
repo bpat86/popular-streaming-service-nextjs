@@ -18,18 +18,17 @@ const Plans = (props) => {
         <div className="slide-in mx-auto flex w-full flex-col items-center px-4 md:max-w-md">
           <div className="relative mx-auto mb-5 h-14 w-full">
             <Image
+              fill
               priority
-              layout="fill"
-              objectFit="contain"
               src="/images/auth/checkmark.png"
               alt="Devices"
             />
           </div>
-          <h2 className="pb-1 text-center text-sm font-normal uppercase tracking-wide text-gray-800">
+          <h2 className="pb-1 text-center text-sm font-normal uppercase tracking-wide text-zinc-800">
             Step <span className="font-bold">2</span> of{" "}
             <span className="font-bold">3</span>
           </h2>
-          <p className="block text-center text-2xl font-bold tracking-wide text-gray-800 sm:text-2xl">
+          <p className="block text-center text-2xl font-bold tracking-wide text-zinc-800 sm:text-2xl">
             Choose your plan.
           </p>
           <div className="flex flex-col items-center px-0 sm:px-4">
@@ -52,7 +51,7 @@ const Plans = (props) => {
                     />
                   </svg>
                 </dt>
-                <dd className="ml-10 text-lg text-gray-700">
+                <dd className="ml-10 text-lg text-zinc-700">
                   No commitments, cancel anytime.
                 </dd>
               </div>
@@ -74,7 +73,7 @@ const Plans = (props) => {
                     />
                   </svg>
                 </dt>
-                <dd className="ml-10 text-lg text-gray-700">
+                <dd className="ml-10 text-lg text-zinc-700">
                   Everything on Netflix for one low price.
                 </dd>
               </div>
@@ -96,7 +95,7 @@ const Plans = (props) => {
                     />
                   </svg>
                 </dt>
-                <dd className="ml-10 text-lg text-gray-700">
+                <dd className="ml-10 text-lg text-zinc-700">
                   Unlimited viewing on all your devices.
                 </dd>
               </div>

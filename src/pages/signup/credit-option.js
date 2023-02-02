@@ -5,11 +5,10 @@ import Stripe from "stripe";
 
 import { CreditOptionForm } from "@/components/forms/CreditOptionForm";
 import RegistrationLayout from "@/components/layouts/RegistrationLayout";
+import { API_URL } from "@/config/index";
 import AuthContext from "@/context/AuthContext";
 import { withSessionSsr } from "@/middleware/withSession";
 import { parseCookies } from "@/utils/parseCookies";
-
-import { API_URL } from "@/config/index";
 
 const CreditOption = (props) => {
   // Destructure the page props
@@ -33,37 +32,22 @@ const CreditOption = (props) => {
     <>
       <RegistrationLayout title="Sign up for Netflix" {...props}>
         <div className="slide-in mx-auto flex w-full flex-col items-start md:max-w-lg">
-          <h2 className="pb-2 text-center text-sm font-normal uppercase tracking-wide text-gray-800">
+          <h2 className="pb-2 text-center text-sm font-normal uppercase tracking-wide text-zinc-800">
             Step <span className="font-bold">3</span> of{" "}
             <span className="font-bold">3</span>
           </h2>
-          <p className="block text-center text-2xl font-bold tracking-wide text-gray-800 sm:text-2xl">
+          <p className="block text-center text-2xl font-bold tracking-wide text-zinc-800 sm:text-2xl">
             Set up your credit or debit card
           </p>
           <span className="relative my-3 flex h-5 w-full flex-row space-x-2 sm:h-6">
             <span className="relative h-5 w-10 sm:h-6">
-              <Image
-                layout="fill"
-                objectFit="contain"
-                src="/images/auth/visa.svg"
-                alt="Visa"
-              />
+              <Image fill src="/images/auth/visa.svg" alt="Visa" />
             </span>
             <span className="relative ml-2 h-5 w-10 sm:h-6">
-              <Image
-                layout="fill"
-                objectFit="contain"
-                src="/images/auth/mastercard.svg"
-                alt="Visa"
-              />
+              <Image fill src="/images/auth/mastercard.svg" alt="Visa" />
             </span>
             <span className="relative ml-2 h-5 w-10 sm:h-6">
-              <Image
-                layout="fill"
-                objectFit="contain"
-                src="/images/auth/amex.svg"
-                alt="Visa"
-              />
+              <Image fill src="/images/auth/amex.svg" alt="Visa" />
             </span>
           </span>
           <CreditOptionForm

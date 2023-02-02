@@ -164,7 +164,7 @@ const Index = (props) => {
     const plan = user?.plan?.planName;
     if (plan && plan === "Premium") {
       return (
-        <span className="flex flex-row items-center space-x-1 text-base text-gray-700">
+        <span className="flex flex-row items-center space-x-1 text-base text-zinc-700">
           <span>{plan}</span>
           <span>
             <svg className="ml-3 h-5" viewBox="0 0 4770 960">
@@ -191,11 +191,10 @@ const Index = (props) => {
       <div className="flex flex-col space-y-1">
         {user?.paymentMethods?.data?.map((method) => (
           <div key={method.id} className="group flex items-center">
-            <span className="flex w-full cursor-pointer flex-row items-center space-x-2 rounded-lg px-3 py-3 text-gray-700 hover:bg-gray-50">
+            <span className="flex w-full cursor-pointer flex-row items-center space-x-2 rounded-lg px-3 py-3 text-zinc-700 hover:bg-zinc-50">
               <span className="relative h-5 w-10 sm:h-6">
                 <Image
-                  layout="fill"
-                  objectFit="contain"
+                  fill
                   src={`/images/auth/${method.card.brand}.svg`}
                   alt={`${method.card.brand}`}
                 />
@@ -208,7 +207,7 @@ const Index = (props) => {
             <div className="ml-1 flex-shrink-0">
               <button
                 type="button"
-                className="inline-flex items-center rounded-full border border-transparent p-1 text-gray-800 duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 group-hover:bg-gray-200"
+                className="inline-flex items-center rounded-full border border-transparent p-1 text-zinc-800 duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:ring-offset-2 group-hover:bg-zinc-200"
               >
                 <span className="flex items-center">
                   <span className="sr-only">Delete</span>
@@ -237,7 +236,7 @@ const Index = (props) => {
     <Elements stripe={stripePromise}>
       <AccountLayout {...data}>
         <div className="flex items-center">
-          <h2 className="text-4xl leading-6 tracking-wide text-gray-800">
+          <h2 className="text-4xl leading-6 tracking-wide text-zinc-800">
             Account
           </h2>
           <div className="account member-since ml-4 flex items-center text-sm font-semibold tracking-wide">
@@ -268,11 +267,11 @@ const Index = (props) => {
             )}`}</span>
           </div>
         </div>
-        <div className="mt-5 border-t-2 border-gray-200">
-          <div className="divide-y-2 divide-gray-200 text-sm text-gray-500 sm:text-base">
+        <div className="mt-5 border-t-2 border-zinc-200">
+          <div className="divide-y-2 divide-zinc-200 text-sm text-zinc-500 sm:text-base">
             <section className="mt-6 w-full">
               <div className="flex items-center">
-                <span className="text-lg tracking-wide text-gray-600 sm:text-xl">
+                <span className="text-lg tracking-wide text-zinc-600 sm:text-xl">
                   Membership & Billing
                 </span>
                 {isActive ? (
@@ -285,10 +284,10 @@ const Index = (props) => {
                   </span>
                 )}
               </div>
-              <div className="divide-y divide-gray-200">
+              <div className="divide-y divide-zinc-200">
                 <section className="grid gap-6 py-6 sm:py-8 lg:grid-cols-3 lg:gap-8">
                   <div className="space-y-1 sm:space-y-2">
-                    <h2 className="text-base font-semibold text-gray-600 sm:text-lg">
+                    <h2 className="text-base font-semibold text-zinc-600 sm:text-lg">
                       Email address
                     </h2>
                     <p className="text-sm leading-snug sm:text-base sm:leading-tight">
@@ -304,7 +303,7 @@ const Index = (props) => {
                 </section>
                 <section className="grid gap-6 py-6 sm:py-8 lg:grid-cols-3 lg:gap-8">
                   <div className="space-y-1 sm:space-y-2">
-                    <h2 className="text-base font-semibold text-gray-600 sm:text-lg">
+                    <h2 className="text-base font-semibold text-zinc-600 sm:text-lg">
                       Phone number
                     </h2>
                     <p className="text-sm leading-snug sm:text-base sm:leading-tight">
@@ -320,7 +319,7 @@ const Index = (props) => {
                 </section>
                 <section className="grid gap-6 py-6 sm:py-8 lg:grid-cols-3 lg:gap-8">
                   <div className="space-y-1 sm:space-y-2">
-                    <h2 className="text-base font-semibold text-gray-600 sm:text-lg">
+                    <h2 className="text-base font-semibold text-zinc-600 sm:text-lg">
                       Password
                     </h2>
                     <p className="text-sm leading-snug sm:text-base sm:leading-tight">
@@ -333,7 +332,7 @@ const Index = (props) => {
                 </section>
                 <section className="grid gap-6 py-6 sm:py-8 lg:grid-cols-3 lg:gap-8">
                   <div className="space-y-1 sm:space-y-2">
-                    <h2 className="text-base font-semibold text-gray-600 sm:text-lg">
+                    <h2 className="text-base font-semibold text-zinc-600 sm:text-lg">
                       Payment methods
                     </h2>
                     <p className="text-sm leading-snug sm:text-base sm:leading-tight">
@@ -344,7 +343,7 @@ const Index = (props) => {
                     <PaymentMethodsList />
                   </div>
                   <div className="space-y-1 sm:space-y-2">
-                    <h2 className="text-base font-semibold text-gray-600 sm:text-lg">
+                    <h2 className="text-base font-semibold text-zinc-600 sm:text-lg">
                       Update payment method
                     </h2>
                     <p className="text-sm leading-snug sm:text-base sm:leading-tight">
@@ -363,7 +362,7 @@ const Index = (props) => {
               </div>
             </section>
             <section className="grid gap-6 py-6 sm:py-8 lg:grid-cols-3 lg:gap-8">
-              <span className="text-lg tracking-wide text-gray-600 sm:text-xl">
+              <span className="text-lg tracking-wide text-zinc-600 sm:text-xl">
                 Plan Details
               </span>
               <div className="flex sm:col-span-2">
@@ -381,10 +380,10 @@ const Index = (props) => {
               </div>
             </section>
             <section className="grid gap-6 py-6 sm:py-8 lg:grid-cols-3 lg:gap-8">
-              <span className="text-lg tracking-wide text-gray-600 sm:text-xl">
+              <span className="text-lg tracking-wide text-zinc-600 sm:text-xl">
                 Profile & Parental Controls
               </span>
-              <div className="col-span-2 flex w-full flex-col text-gray-700">
+              <div className="col-span-2 flex w-full flex-col text-zinc-700">
                 {profiles?.map((profile, idx) => (
                   <ProfilesAccordion
                     key={idx}
@@ -396,7 +395,7 @@ const Index = (props) => {
                     <div className="my-4 ml-20 sm:grid sm:grid-cols-2 sm:gap-4">
                       <div className="flex items-center sm:col-span-2">
                         <span className="account-plan flex w-full flex-grow flex-col">
-                          <span className="text-gray-800">
+                          <span className="text-zinc-800">
                             Playback settings
                           </span>
                           <span className="mt-1  text-sm">

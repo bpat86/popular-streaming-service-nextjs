@@ -26,7 +26,7 @@ const Intro = (props) => {
               Welcome Back!
             </span>
             <h2>
-              <span className="block text-5xl font-extrabold text-gray-50 sm:text-6xl">
+              <span className="block text-5xl font-extrabold text-zinc-50 sm:text-6xl">
                 Unlimited movies, TV shows, and more.
               </span>
               <span className="mt-4 block text-xl font-semibold text-white sm:text-2xl">
@@ -38,7 +38,7 @@ const Intro = (props) => {
         ) : (
           <>
             <h2>
-              <span className="block text-5xl font-extrabold text-gray-50 sm:text-6xl">
+              <span className="block text-5xl font-extrabold text-zinc-50 sm:text-6xl">
                 Unlimited movies, TV shows, and more.
               </span>
               <span className="mt-4 block text-xl font-semibold text-white sm:text-2xl">

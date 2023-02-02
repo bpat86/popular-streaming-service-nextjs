@@ -206,7 +206,7 @@ input.input-profile:-webkit-autofill::first-line {
 }
 
 .get-started-input input:focus-within ~ label {
-  @apply text-gray-500;
+  @apply text-zinc-500;
 }
 
 .focus-input input:focus-within ~ label,
@@ -215,7 +215,7 @@ input.input-profile:-webkit-autofill::first-line {
 }
 
 .focus-input input:focus-within ~ label {
-  @apply text-gray-400;
+  @apply text-zinc-400;
 }
 
 .auth-focus-input input:focus-within ~ label,
@@ -224,13 +224,13 @@ input.input-profile:-webkit-autofill::first-line {
 }
 
 .stripe-input {
-  @apply block h-14 w-full rounded-sm border border-gray-200 bg-white px-3 pt-5 text-gray-800 focus:border-gray-300 focus:outline-none focus:ring-0 focus:ring-inset focus:ring-gray-300 sm:text-base;
+  @apply block h-14 w-full rounded-sm border border-zinc-200 bg-white px-3 pt-5 text-zinc-800 focus:border-zinc-300 focus:outline-none focus:ring-0 focus:ring-inset focus:ring-zinc-300 sm:text-base;
 }
 .stripe-input-label {
-  @apply -translate-y-4 scale-75 transform px-4 text-gray-500;
+  @apply -translate-y-4 scale-75 transform px-4 text-zinc-500;
 }
 .auth-focus-input input:focus-within ~ label {
-  @apply text-gray-500;
+  @apply text-zinc-500;
 }
 .selected-plan {
   @apply text-netflix-red;
@@ -898,7 +898,7 @@ input.input-profile:-webkit-autofill::first-line {
 }
 
 .slider:hover .handle svg {
-  @apply text-gray-300 opacity-100;
+  @apply text-zinc-300 opacity-100;
 }
 .slider:hover .handle .left svg,
 .slider:hover .handle .right svg {
@@ -907,7 +907,7 @@ input.input-profile:-webkit-autofill::first-line {
 
 .slider:hover .handle .left:hover svg,
 .slider:hover .handle .right:hover svg {
-  @apply scale-125 transform text-gray-100 transition duration-200 ease-out;
+  @apply scale-125 transform text-zinc-100 transition duration-200 ease-out;
 }
 
 .trailer-vignette {

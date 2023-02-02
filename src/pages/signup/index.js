@@ -16,21 +16,16 @@ export const SignUp = (props) => {
       <RegistrationLayout title="Sign up for Netflix" {...props}>
         <div className="slide-in mx-auto flex w-full flex-col items-center px-4 md:max-w-md">
           <div className="relative mx-auto mb-10 h-16 w-full">
-            <Image
-              layout="fill"
-              objectFit="contain"
-              src="/images/auth/devices.png"
-              alt="Devices"
-            />
+            <Image fill src="/images/auth/devices.png" alt="Devices" />
           </div>
-          <h2 className="pb-1 text-center text-sm font-normal uppercase tracking-wide text-gray-800">
+          <h2 className="pb-1 text-center text-sm font-normal uppercase tracking-wide text-zinc-800">
             Step <span className="font-bold">1</span> of{" "}
             <span className="font-bold">3</span>
           </h2>
-          <p className="block text-center text-2xl font-bold tracking-wide text-gray-800 sm:text-2xl">
+          <p className="block text-center text-2xl font-bold tracking-wide text-zinc-800 sm:text-2xl">
             Finish setting up your account.
           </p>
-          <p className="block px-10 pt-3 pb-2 text-center text-lg leading-snug text-gray-800">
+          <p className="block px-10 pt-3 pb-2 text-center text-lg leading-snug text-zinc-800">
             Netflix is personalized for you. Create a password to watch Netflix
             on any device at any time.
           </p>

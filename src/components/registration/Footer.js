@@ -8,7 +8,7 @@ const Footer = () => {
       </h2>
       <div className="mx-auto w-full max-w-screen-xl px-6 py-10">
         <div className="flex space-x-6 py-2">
-          <a href="#" className="text-gray-200 hover:text-gray-500">
+          <a href="#" className="text-zinc-200 hover:text-zinc-500">
             <span className="sr-only">Facebook</span>
             <svg
               className="h-7 w-7"
@@ -24,7 +24,7 @@ const Footer = () => {
             </svg>
           </a>
 
-          <a href="#" className="text-gray-200 hover:text-gray-500">
+          <a href="#" className="text-zinc-200 hover:text-zinc-500">
             <span className="sr-only">Instagram</span>
             <svg
               className="h-7 w-7"
@@ -40,7 +40,7 @@ const Footer = () => {
             </svg>
           </a>
 
-          <a href="#" className="text-gray-200 hover:text-gray-500">
+          <a href="#" className="text-zinc-200 hover:text-zinc-500">
             <span className="sr-only">Twitter</span>
             <svg
               className="h-7 w-7"
@@ -52,7 +52,7 @@ const Footer = () => {
             </svg>
           </a>
 
-          <a href="#" className="text-gray-200 hover:text-gray-500">
+          <a href="#" className="text-zinc-200 hover:text-zinc-500">
             <span className="sr-only">GitHub</span>
             <svg
               className="h-7 w-7"
@@ -76,7 +76,7 @@ const Footer = () => {
                   <li>
                     <a
                       href="#"
-                      className="text-sm text-gray-500 hover:text-white"
+                      className="text-sm text-zinc-500 hover:text-white"
                     >
                       Audio and Subtitles
                     </a>
@@ -85,7 +85,7 @@ const Footer = () => {
                   <li>
                     <a
                       href="#"
-                      className="text-sm text-gray-500 hover:text-white"
+                      className="text-sm text-zinc-500 hover:text-white"
                     >
                       Media Center
                     </a>
@@ -94,7 +94,7 @@ const Footer = () => {
                   <li>
                     <a
                       href="#"
-                      className="text-sm text-gray-500 hover:text-white"
+                      className="text-sm text-zinc-500 hover:text-white"
                     >
                       Privacy
                     </a>
@@ -103,7 +103,7 @@ const Footer = () => {
                   <li>
                     <a
                       href="#"
-                      className="text-sm text-gray-500 hover:text-white"
+                      className="text-sm text-zinc-500 hover:text-white"
                     >
                       Contact Us
                     </a>
@@ -115,7 +115,7 @@ const Footer = () => {
                   <li>
                     <a
                       href="#"
-                      className="text-sm text-gray-500 hover:text-white"
+                      className="text-sm text-zinc-500 hover:text-white"
                     >
                       Audio Description
                     </a>
@@ -124,7 +124,7 @@ const Footer = () => {
                   <li>
                     <a
                       href="#"
-                      className="text-sm text-gray-500 hover:text-white"
+                      className="text-sm text-zinc-500 hover:text-white"
                     >
                       Investor Relations
                     </a>
@@ -133,7 +133,7 @@ const Footer = () => {
                   <li>
                     <a
                       href="#"
-                      className="text-sm text-gray-500 hover:text-white"
+                      className="text-sm text-zinc-500 hover:text-white"
                     >
                       Legal Notices
                     </a>
@@ -147,7 +147,7 @@ const Footer = () => {
                   <li>
                     <a
                       href="#"
-                      className="text-sm text-gray-500 hover:text-white"
+                      className="text-sm text-zinc-500 hover:text-white"
                     >
                       Help Center
                     </a>
@@ -156,7 +156,7 @@ const Footer = () => {
                   <li>
                     <a
                       href="#"
-                      className="text-sm text-gray-500 hover:text-white"
+                      className="text-sm text-zinc-500 hover:text-white"
                     >
                       Jobs
                     </a>
@@ -165,7 +165,7 @@ const Footer = () => {
                   <li>
                     <a
                       href="#"
-                      className="text-sm text-gray-500 hover:text-white"
+                      className="text-sm text-zinc-500 hover:text-white"
                     >
                       Cookie Preferences
                     </a>
@@ -177,7 +177,7 @@ const Footer = () => {
                   <li>
                     <a
                       href="#"
-                      className="text-sm text-gray-500 hover:text-white"
+                      className="text-sm text-zinc-500 hover:text-white"
                     >
                       Gift Cards
                     </a>
@@ -186,7 +186,7 @@ const Footer = () => {
                   <li>
                     <a
                       href="#"
-                      className="text-sm text-gray-500 hover:text-white"
+                      className="text-sm text-zinc-500 hover:text-white"
                     >
                       Terms of Use
                     </a>
@@ -195,7 +195,7 @@ const Footer = () => {
                   <li>
                     <a
                       href="#"
-                      className="text-sm text-gray-500 hover:text-white"
+                      className="text-sm text-zinc-500 hover:text-white"
                     >
                       Corporate Information
                     </a>
@@ -206,7 +206,7 @@ const Footer = () => {
           </div>
         </div>
         <div className="mt-8 md:flex md:items-center md:justify-between">
-          <p className="mt-8 text-sm text-gray-500 md:order-1 md:mt-0">
+          <p className="mt-8 text-sm text-zinc-500 md:order-1 md:mt-0">
             &copy; 1997-2022 Netflix, Inc.
           </p>
         </div>

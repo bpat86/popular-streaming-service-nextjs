@@ -209,14 +209,14 @@ export const CreditOptionForm = (props) => {
               />
             </div>
             {/* Selected plan */}
-            <div className="rounded-md bg-gray-100 p-4">
+            <div className="rounded-md bg-zinc-100 p-4">
               <div className="flex">
                 <div className="flex-1 md:flex md:justify-between">
-                  <div className="flex flex-col text-sm tracking-wide text-gray-900">
+                  <div className="flex flex-col text-sm tracking-wide text-zinc-900">
                     <span className="font-bold">
                       {`${userData.plan.monthlyPrice}/month`}
                     </span>
-                    <span className="text-gray-600">
+                    <span className="text-zinc-600">
                       {`${userData.plan.planName} Plan`}
                     </span>
                   </div>
@@ -231,7 +231,7 @@ export const CreditOptionForm = (props) => {
               </div>
             </div>
             <div className="space-y-5">
-              <div className="text-xs text-gray-700">
+              <div className="text-xs text-zinc-700">
                 By clicking the "Start Membership" button below, you agree to
                 our Terms of Use, Privacy Statement, that you are over 18, and
                 that{" "}

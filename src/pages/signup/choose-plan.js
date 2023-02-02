@@ -56,11 +56,11 @@ const ChoosePlan = (props) => {
       <RegistrationLayout title="Sign up for Netflix" {...props}>
         <div className="slide-in mx-auto max-w-4xl">
           <div className="mx-auto flex max-w-4xl flex-col items-start">
-            <h2 className="pb-1 text-center text-sm font-normal uppercase tracking-wide text-gray-800">
+            <h2 className="pb-1 text-center text-sm font-normal uppercase tracking-wide text-zinc-800">
               Step <span className="font-bold">2</span> of{" "}
               <span className="font-bold">3</span>
             </h2>
-            <p className="block text-center text-2xl font-bold tracking-wide text-gray-800 sm:text-3xl">
+            <p className="block text-center text-2xl font-bold tracking-wide text-zinc-800 sm:text-3xl">
               Choose your plan
             </p>
             <div className="flex flex-col items-start">
@@ -83,7 +83,7 @@ const ChoosePlan = (props) => {
                       />
                     </svg>
                   </dt>
-                  <dd className="ml-10 text-lg text-gray-700">
+                  <dd className="ml-10 text-lg text-zinc-700">
                     Watch all you want. Ad-free.
                   </dd>
                 </div>
@@ -105,7 +105,7 @@ const ChoosePlan = (props) => {
                       />
                     </svg>
                   </dt>
-                  <dd className="ml-10 text-lg text-gray-700">
+                  <dd className="ml-10 text-lg text-zinc-700">
                     Recommendations just for you.
                   </dd>
                 </div>
@@ -127,7 +127,7 @@ const ChoosePlan = (props) => {
                       />
                     </svg>
                   </dt>
-                  <dd className="ml-10 text-lg text-gray-700">
+                  <dd className="ml-10 text-lg text-zinc-700">
                     Change or cancel your plan anytime.
                   </dd>
                 </div>
@@ -139,11 +139,11 @@ const ChoosePlan = (props) => {
           <div className="mx-auto mt-16 block max-w-2xl space-y-16 sm:hidden lg:hidden">
             <section className="group">
               <div className="mb-8 px-4">
-                <h2 className="text-lg font-medium leading-6 text-gray-900">
+                <h2 className="text-lg font-medium leading-6 text-zinc-900">
                   Basic
                 </h2>
                 <p className="mt-4">
-                  <span className="text-base font-bold text-gray-900 group-hover:text-netflix-red">
+                  <span className="text-base font-bold text-zinc-900 group-hover:text-netflix-red">
                     $8.99
                   </span>
                 </p>
@@ -160,45 +160,45 @@ const ChoosePlan = (props) => {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
-                  <tr className="border-t border-gray-200">
+                <tbody className="divide-y divide-zinc-200">
+                  <tr className="border-t border-zinc-200">
                     <th
-                      className="py-5 px-4 text-left text-base font-medium text-gray-900"
+                      className="py-5 px-4 text-left text-base font-medium text-zinc-900"
                       scope="row"
                     >
                       Video quality
                     </th>
                     <td className="py-5 pr-4">
-                      <span className="block text-right text-base font-bold text-gray-700 group-hover:text-netflix-red">
+                      <span className="block text-right text-base font-bold text-zinc-700 group-hover:text-netflix-red">
                         Good
                       </span>
                     </td>
                   </tr>
 
-                  <tr className="border-t border-gray-200">
+                  <tr className="border-t border-zinc-200">
                     <th
-                      className="py-5 px-4 text-left text-base font-medium text-gray-900"
+                      className="py-5 px-4 text-left text-base font-medium text-zinc-900"
                       scope="row"
                     >
                       Resolution
                     </th>
                     <td className="py-5 pr-4">
-                      <span className="block text-right text-base font-bold text-gray-700 group-hover:text-netflix-red">
+                      <span className="block text-right text-base font-bold text-zinc-700 group-hover:text-netflix-red">
                         480p
                       </span>
                     </td>
                   </tr>
 
-                  <tr className="border-t border-gray-200">
+                  <tr className="border-t border-zinc-200">
                     <th
-                      className="py-5 px-4 text-left text-base font-medium text-gray-900"
+                      className="py-5 px-4 text-left text-base font-medium text-zinc-900"
                       scope="row"
                     >
                       Watch on your TV, computer, mobile phone and tablet
                     </th>
                     <td className="py-5 pr-4">
                       <svg
-                        className="ml-auto h-7 w-7 text-gray-700 group-hover:text-netflix-red"
+                        className="ml-auto h-7 w-7 text-zinc-700 group-hover:text-netflix-red"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 20 20"
                         fill="currentColor"
@@ -216,7 +216,7 @@ const ChoosePlan = (props) => {
                 </tbody>
               </table>
 
-              <div className="border-t border-gray-200 px-4 pt-5">
+              <div className="border-t border-zinc-200 px-4 pt-5">
                 <a
                   href="#"
                   className="block w-full rounded-sm border border-netflix-red bg-netflix-red py-3 text-center text-base font-medium tracking-wider text-white hover:bg-netflix-red-light"
@@ -228,11 +228,11 @@ const ChoosePlan = (props) => {
 
             <section className="group">
               <div className="mb-8 px-4">
-                <h2 className="text-lg font-medium leading-6 text-gray-900">
+                <h2 className="text-lg font-medium leading-6 text-zinc-900">
                   Standard
                 </h2>
                 <p className="mt-4">
-                  <span className="text-base font-bold text-gray-900 group-hover:text-netflix-red">
+                  <span className="text-base font-bold text-zinc-900 group-hover:text-netflix-red">
                     $13.99
                   </span>
                 </p>
@@ -249,45 +249,45 @@ const ChoosePlan = (props) => {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
-                  <tr className="border-t border-gray-200">
+                <tbody className="divide-y divide-zinc-200">
+                  <tr className="border-t border-zinc-200">
                     <th
-                      className="py-5 px-4 text-left text-base font-medium text-gray-900"
+                      className="py-5 px-4 text-left text-base font-medium text-zinc-900"
                       scope="row"
                     >
                       Video quality
                     </th>
                     <td className="py-5 pr-4">
-                      <span className="block text-right text-base font-bold text-gray-700 group-hover:text-netflix-red">
+                      <span className="block text-right text-base font-bold text-zinc-700 group-hover:text-netflix-red">
                         Better
                       </span>
                     </td>
                   </tr>
 
-                  <tr className="border-t border-gray-200">
+                  <tr className="border-t border-zinc-200">
                     <th
-                      className="py-5 px-4 text-left text-base font-medium text-gray-900"
+                      className="py-5 px-4 text-left text-base font-medium text-zinc-900"
                       scope="row"
                     >
                       Resolution
                     </th>
                     <td className="py-5 pr-4">
-                      <span className="block text-right text-base font-bold text-gray-700 group-hover:text-netflix-red">
+                      <span className="block text-right text-base font-bold text-zinc-700 group-hover:text-netflix-red">
                         1080p
                       </span>
                     </td>
                   </tr>
 
-                  <tr className="border-t border-gray-200">
+                  <tr className="border-t border-zinc-200">
                     <th
-                      className="py-5 px-4 text-left text-base font-medium text-gray-900"
+                      className="py-5 px-4 text-left text-base font-medium text-zinc-900"
                       scope="row"
                     >
                       Watch on your TV, computer, mobile phone and tablet
                     </th>
                     <td className="py-5 pr-4">
                       <svg
-                        className="ml-auto h-7 w-7 text-gray-700 group-hover:text-netflix-red"
+                        className="ml-auto h-7 w-7 text-zinc-700 group-hover:text-netflix-red"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 20 20"
                         fill="currentColor"
@@ -305,7 +305,7 @@ const ChoosePlan = (props) => {
                 </tbody>
               </table>
 
-              <div className="border-t border-gray-200 px-4 pt-5">
+              <div className="border-t border-zinc-200 px-4 pt-5">
                 <a
                   href="#"
                   className="block w-full rounded-sm border border-netflix-red bg-netflix-red py-3 text-center text-base font-medium tracking-wider text-white hover:bg-netflix-red-light"
@@ -317,11 +317,11 @@ const ChoosePlan = (props) => {
 
             <section className="group">
               <div className="mb-8 px-4">
-                <h2 className="text-lg font-medium leading-6 text-gray-900">
+                <h2 className="text-lg font-medium leading-6 text-zinc-900">
                   Premium
                 </h2>
                 <p className="mt-4">
-                  <span className="text-base font-bold text-gray-900 group-hover:text-netflix-red">
+                  <span className="text-base font-bold text-zinc-900 group-hover:text-netflix-red">
                     $17.99
                   </span>
                 </p>
@@ -338,45 +338,45 @@ const ChoosePlan = (props) => {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
-                  <tr className="border-t border-gray-200">
+                <tbody className="divide-y divide-zinc-200">
+                  <tr className="border-t border-zinc-200">
                     <th
-                      className="py-5 px-4 text-left text-base font-medium text-gray-900"
+                      className="py-5 px-4 text-left text-base font-medium text-zinc-900"
                       scope="row"
                     >
                       Video quality
                     </th>
                     <td className="py-5 pr-4">
-                      <span className="block text-right text-base font-bold text-gray-700 group-hover:text-netflix-red">
+                      <span className="block text-right text-base font-bold text-zinc-700 group-hover:text-netflix-red">
                         Best
                       </span>
                     </td>
                   </tr>
 
-                  <tr className="border-t border-gray-200">
+                  <tr className="border-t border-zinc-200">
                     <th
-                      className="py-5 px-4 text-left text-base font-medium text-gray-900"
+                      className="py-5 px-4 text-left text-base font-medium text-zinc-900"
                       scope="row"
                     >
                       Resolution
                     </th>
                     <td className="py-5 pr-4">
-                      <span className="block text-right text-base font-bold text-gray-700 group-hover:text-netflix-red">
+                      <span className="block text-right text-base font-bold text-zinc-700 group-hover:text-netflix-red">
                         4K+HDR
                       </span>
                     </td>
                   </tr>
 
-                  <tr className="border-t border-gray-200">
+                  <tr className="border-t border-zinc-200">
                     <th
-                      className="py-5 px-4 text-left text-base font-medium text-gray-900"
+                      className="py-5 px-4 text-left text-base font-medium text-zinc-900"
                       scope="row"
                     >
                       Watch on your TV, computer, mobile phone and tablet
                     </th>
                     <td className="py-5 pr-4">
                       <svg
-                        className="ml-auto h-7 w-7 text-gray-700 group-hover:text-netflix-red"
+                        className="ml-auto h-7 w-7 text-zinc-700 group-hover:text-netflix-red"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 20 20"
                         fill="currentColor"
@@ -394,7 +394,7 @@ const ChoosePlan = (props) => {
                 </tbody>
               </table>
 
-              <div className="border-t border-gray-200 px-4 pt-5">
+              <div className="border-t border-zinc-200 px-4 pt-5">
                 <a
                   href="#"
                   className="block w-full rounded-sm border border-netflix-red bg-netflix-red py-3 text-center text-base font-medium tracking-wider text-white hover:bg-netflix-red-light"
@@ -412,7 +412,7 @@ const ChoosePlan = (props) => {
               <thead>
                 <tr className="relative">
                   <th
-                    className="px-6 pb-4 text-left text-base font-medium text-gray-900"
+                    className="px-6 pb-4 text-left text-base font-medium text-zinc-900"
                     scope="col"
                   >
                     <span className="sr-only">Plans</span>
@@ -467,10 +467,10 @@ const ChoosePlan = (props) => {
                     ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-zinc-200">
                 <tr className="relative">
                   <th
-                    className="w-full py-8 px-6 text-left text-base font-medium text-gray-900"
+                    className="w-full py-8 px-6 text-left text-base font-medium text-zinc-900"
                     scope="row"
                   >
                     Monthly price
@@ -497,7 +497,7 @@ const ChoosePlan = (props) => {
                                 getStrapiSubscriptionPlanId(plan.id) ===
                                 formData.id
                                   ? "selected-plan"
-                                  : "text-gray-500"
+                                  : "text-zinc-500"
                               }`}
                             >
                               {formatPrice(plan.unit_amount)}
@@ -510,7 +510,7 @@ const ChoosePlan = (props) => {
 
                 <tr className="relative">
                   <th
-                    className="py-5 px-6 text-left text-base font-medium text-gray-900"
+                    className="py-5 px-6 text-left text-base font-medium text-zinc-900"
                     scope="row"
                   >
                     Video quality
@@ -535,7 +535,7 @@ const ChoosePlan = (props) => {
                           className={`block text-base font-bold ${
                             getStrapiSubscriptionPlanId(plan.id) === formData.id
                               ? "selected-plan"
-                              : "text-gray-500"
+                              : "text-zinc-500"
                           }`}
                         >
                           {plan.product.metadata.video_quality}
@@ -546,7 +546,7 @@ const ChoosePlan = (props) => {
 
                 <tr className="relative">
                   <th
-                    className="py-5 px-6 text-left text-base font-medium text-gray-900"
+                    className="py-5 px-6 text-left text-base font-medium text-zinc-900"
                     scope="row"
                   >
                     Resolution
@@ -571,7 +571,7 @@ const ChoosePlan = (props) => {
                           className={`block text-base font-bold ${
                             getStrapiSubscriptionPlanId(plan.id) === formData.id
                               ? "selected-plan"
-                              : "text-gray-500"
+                              : "text-zinc-500"
                           }`}
                         >
                           {plan.product.metadata.resolution}
@@ -582,7 +582,7 @@ const ChoosePlan = (props) => {
 
                 <tr className="relative">
                   <th
-                    className="py-5 px-6 text-left text-base font-medium text-gray-900"
+                    className="py-5 px-6 text-left text-base font-medium text-zinc-900"
                     scope="row"
                   >
                     Watch on your TV, computer, mobile phone and tablet
@@ -607,7 +607,7 @@ const ChoosePlan = (props) => {
                           className={`mx-auto h-7 w-7 ${
                             getStrapiSubscriptionPlanId(plan.id) === formData.id
                               ? "selected-plan"
-                              : "text-gray-500"
+                              : "text-zinc-500"
                           }`}
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 20 20"
@@ -628,13 +628,13 @@ const ChoosePlan = (props) => {
             </table>
           </div>
           <div className="mt-10 w-full px-6 sm:w-5/6 lg:-mx-5">
-            <span className="block w-full text-sm leading-snug text-gray-500">
+            <span className="block w-full text-sm leading-snug text-zinc-500">
               HD (720p), Full HD (1080p), Ultra HD (4K) and HDR availability
               subject to your internet service and device capabilities. Not all
               content is available in all resolutions. See our Terms of Use for
               more details.
             </span>
-            <span className="mt-4 block w-full text-sm leading-snug text-gray-500">
+            <span className="mt-4 block w-full text-sm leading-snug text-zinc-500">
               Only people who live with you may use your account. Watch on 4
               different devices at the same time with Premium, 2 with Standard
               and 1 with Basic.

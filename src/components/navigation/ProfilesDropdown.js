@@ -22,7 +22,7 @@ const UserDropdown = (props) => {
   return isActive ? (
     <Menu as="div" className="relative inline-block bg-transparent text-left">
       <div className="flex items-center">
-        <div className="group mr-4 flex cursor-pointer items-center justify-center rounded-full bg-transparent text-gray-100 hover:text-gray-200 focus:outline-none">
+        <div className="group mr-4 flex cursor-pointer items-center justify-center rounded-full bg-transparent text-zinc-100 hover:text-zinc-200 focus:outline-none">
           <span className="sr-only">Search</span>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -37,7 +37,7 @@ const UserDropdown = (props) => {
             />
           </svg>
         </div>
-        <Menu.Button className="group ml-2 flex cursor-pointer items-center justify-center rounded-full bg-transparent text-gray-100 hover:text-gray-200 focus:outline-none">
+        <Menu.Button className="group ml-2 flex cursor-pointer items-center justify-center rounded-full bg-transparent text-zinc-100 hover:text-zinc-200 focus:outline-none">
           {({ open }) => (
             <>
               <span className="sr-only">Open profile menu</span>
@@ -55,7 +55,7 @@ const UserDropdown = (props) => {
                 width="8"
                 height="6"
                 fill="none"
-                className={`ml-1.5 transform text-gray-300 transition duration-300 ease-out ${
+                className={`ml-1.5 transform text-zinc-300 transition duration-300 ease-out ${
                   open ? "rotate-0" : "-rotate-180"
                 }`}
               >
@@ -82,7 +82,7 @@ const UserDropdown = (props) => {
       >
         <Menu.Items
           as="div"
-          className="absolute right-0 mt-2 w-56 origin-top-right rounded-sm bg-black bg-opacity-95 text-gray-100 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+          className="absolute right-0 mt-2 w-56 origin-top-right rounded-sm bg-black bg-opacity-95 text-zinc-100 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
           static
         >
           <div className="relative py-4">
@@ -130,7 +130,7 @@ const UserDropdown = (props) => {
                     className={classNames(
                       active
                         ? "text-sm font-semibold hover:underline"
-                        : "text-gray-100",
+                        : "text-zinc-100",
                       "flex w-full items-center text-left text-sm font-semibold focus:outline-none"
                     )}
                     onClick={() => manageProfilesHandler()}
@@ -141,7 +141,7 @@ const UserDropdown = (props) => {
                       height="20"
                       fill="none"
                       xmlns="http://www.w3.org/2000/svg"
-                      className="mr-3 flex-none text-gray-300"
+                      className="mr-3 flex-none text-zinc-300"
                     >
                       <rect
                         x="4.75"
@@ -175,13 +175,13 @@ const UserDropdown = (props) => {
                 )}
               </Menu.Item>
             </div>
-            <div className="mt-4 space-y-3 border-t border-gray-800 px-3 pt-4">
+            <div className="mt-4 space-y-3 border-t border-zinc-800 px-3 pt-4">
               <Menu.Item>
                 {({ active }) => (
                   <Link
                     href="/my-account"
                     className={classNames(
-                      active ? "text-sm hover:underline" : "text-gray-100",
+                      active ? "text-sm hover:underline" : "text-zinc-100",
                       "flex w-full items-center text-left text-sm font-bold focus:outline-none"
                     )}
                     legacyBehavior={false}
@@ -194,7 +194,7 @@ const UserDropdown = (props) => {
                         fill="none"
                         stroke="currentColor"
                         strokeWidth="1.5"
-                        className="mr-3 flex-none text-gray-300"
+                        className="mr-3 flex-none text-zinc-300"
                       >
                         <rect
                           x="7.75"
@@ -222,7 +222,7 @@ const UserDropdown = (props) => {
                   <button
                     type="submit"
                     className={classNames(
-                      active ? "text-sm hover:underline" : "text-gray-100",
+                      active ? "text-sm hover:underline" : "text-zinc-100",
                       "flex w-full items-center text-left text-sm font-bold focus:outline-none"
                     )}
                     onClick={() => logout()}
@@ -232,7 +232,7 @@ const UserDropdown = (props) => {
                       width="20"
                       height="20"
                       fill="none"
-                      className="mr-3 flex-none text-gray-300"
+                      className="mr-3 flex-none text-zinc-300"
                     >
                       <path
                         d="M10.25 3.75H9A6.25 6.25 0 002.75 10v0A6.25 6.25 0 009 16.25h1.25M10.75 10h6.5M14.75 12.25l2.5-2.25-2.5-2.25"
@@ -255,7 +255,7 @@ const UserDropdown = (props) => {
     <>
       <button
         type="submit"
-        className="flex w-full items-center text-left text-sm font-bold text-gray-100 focus:outline-none"
+        className="flex w-full items-center text-left text-sm font-bold text-zinc-100 focus:outline-none"
         onClick={() => logout()}
       >
         <svg
@@ -263,7 +263,7 @@ const UserDropdown = (props) => {
           width="20"
           height="20"
           fill="none"
-          className="mr-3 flex-none text-gray-300"
+          className="mr-3 flex-none text-zinc-300"
         >
           <path
             d="M10.25 3.75H9A6.25 6.25 0 002.75 10v0A6.25 6.25 0 009 16.25h1.25M10.75 10h6.5M14.75 12.25l2.5-2.25-2.5-2.25"

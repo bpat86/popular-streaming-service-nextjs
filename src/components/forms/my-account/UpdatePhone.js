@@ -5,9 +5,8 @@ import { useContext, useState } from "react";
 import * as yup from "yup";
 
 import InputLight from "@/components/fields/InputLight";
-import AuthContext from "@/context/AuthContext";
-
 import { NEXT_URL } from "@/config/index";
+import AuthContext from "@/context/AuthContext";
 
 const phoneRegExp =
   /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
@@ -132,9 +131,9 @@ export const UpdatePhone = (props) => {
             {/* Submit button */}
             <div className="mt-6 sm:flex sm:items-center sm:space-x-4 sm:space-x-reverse">
               {status?.success ? (
-                <div className="order-1 -mt-3 mb-6 flex items-center space-x-2 text-base font-semibold text-gray-800 sm:my-0">
+                <div className="order-1 -mt-3 mb-6 flex items-center space-x-2 text-base font-semibold text-zinc-800 sm:my-0">
                   <svg
-                    className="h-5 w-5 flex-shrink-0 text-gray-500"
+                    className="h-5 w-5 flex-shrink-0 text-zinc-500"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 20 20"
                     fill="currentColor"

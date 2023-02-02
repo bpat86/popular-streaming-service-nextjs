@@ -204,7 +204,7 @@ const WhosWatching = ({
                     </div>
                     <dl className="mt-4 flex flex-grow flex-col justify-between">
                       <dt className="sr-only">Profile name: Stephanie</dt>
-                      <dd className="text-2xl text-gray-400 group-hover:text-white">
+                      <dd className="text-2xl text-zinc-400 group-hover:text-white">
                         {profile.attributes.name}
                       </dd>
                     </dl>
@@ -215,18 +215,18 @@ const WhosWatching = ({
                 <>
                   <li className="my-3 flex animate-pulse flex-col items-center justify-center text-center">
                     <div className="relative">
-                      <div className="profile-avatar-loading mx-auto flex h-32 w-32 flex-col rounded-md bg-gray-800 md:h-44 md:w-44"></div>
+                      <div className="profile-avatar-loading mx-auto flex h-32 w-32 flex-col rounded-md bg-zinc-800 md:h-44 md:w-44"></div>
                     </div>
                     <dl className="mt-3 flex flex-grow flex-col items-center justify-center">
-                      <dd className="h-6 w-24 rounded-xl bg-gray-800"></dd>
+                      <dd className="h-6 w-24 rounded-xl bg-zinc-800"></dd>
                     </dl>
                   </li>
                   <li className="my-3 flex animate-pulse flex-col items-center justify-center text-center">
                     <div className="relative">
-                      <div className="profile-avatar-loading mx-auto flex h-32 w-32 flex-col rounded-md bg-gray-800 md:h-44 md:w-44"></div>
+                      <div className="profile-avatar-loading mx-auto flex h-32 w-32 flex-col rounded-md bg-zinc-800 md:h-44 md:w-44"></div>
                     </div>
                     <dl className="mt-3 flex flex-grow flex-col items-center justify-center">
-                      <dd className="h-6 w-24 rounded-xl bg-gray-800"></dd>
+                      <dd className="h-6 w-24 rounded-xl bg-zinc-800"></dd>
                     </dl>
                   </li>
                 </>
@@ -241,7 +241,7 @@ const WhosWatching = ({
                   <div className="profile-avatar mx-auto flex h-32 w-32 flex-col items-center justify-center rounded-md	transition duration-200 ease-out group-hover:bg-white md:h-44 md:w-44">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className="h-32 w-32 text-gray-400"
+                      className="h-32 w-32 text-zinc-400"
                       viewBox="0 0 20 20"
                       fill="currentColor"
                     >
@@ -254,7 +254,7 @@ const WhosWatching = ({
                   </div>
                   <dl className="mt-4 flex flex-grow flex-col justify-between">
                     <dt className="sr-only">Add Profile</dt>
-                    <dd className="text-2xl text-gray-400 group-hover:text-white">
+                    <dd className="text-2xl text-zinc-400 group-hover:text-white">
                       Add Profile
                     </dd>
                   </dl>
@@ -266,10 +266,10 @@ const WhosWatching = ({
                   className="my-3 flex animate-pulse flex-col items-center justify-center text-center"
                 >
                   <div className="relative">
-                    <div className="profile-avatar-loading mx-auto flex h-32 w-32 flex-col rounded-md bg-gray-800 md:h-44 md:w-44"></div>
+                    <div className="profile-avatar-loading mx-auto flex h-32 w-32 flex-col rounded-md bg-zinc-800 md:h-44 md:w-44"></div>
                   </div>
                   <dl className="mt-3 flex flex-grow flex-col items-center justify-center">
-                    <dd className="h-6 w-24 rounded-xl bg-gray-800"></dd>
+                    <dd className="h-6 w-24 rounded-xl bg-zinc-800"></dd>
                   </dl>
                 </button>
               )}
@@ -280,7 +280,7 @@ const WhosWatching = ({
                   <button
                     type="button"
                     aria-label="Manage Profiles"
-                    className="border border-transparent bg-white px-8 py-3 text-xl font-medium  tracking-widest text-gray-900 hover:bg-netflix-red hover:text-white focus:bg-netflix-red focus:text-white focus:outline-none"
+                    className="border border-transparent bg-white px-8 py-3 text-xl font-medium  tracking-widest text-zinc-900 hover:bg-netflix-red hover:text-white focus:bg-netflix-red focus:text-white focus:outline-none"
                     onClick={() => manageProfilesHandler()}
                   >
                     Done
@@ -289,7 +289,7 @@ const WhosWatching = ({
                   <button
                     type="button"
                     aria-label="Manage Profiles"
-                    className="border border-gray-400 px-8 py-3 text-xl font-medium tracking-widest text-gray-400 hover:border-white hover:text-white focus:outline-none"
+                    className="border border-zinc-400 px-8 py-3 text-xl font-medium tracking-widest text-zinc-400 hover:border-white hover:text-white focus:outline-none"
                     onClick={() => manageProfilesHandler()}
                   >
                     Manage Profiles
@@ -301,7 +301,7 @@ const WhosWatching = ({
                 <button
                   type="button"
                   aria-label="Manage Profiles"
-                  className="mt-2 animate-pulse border border-gray-400 px-8 py-3 text-xl font-medium tracking-widest text-gray-400 focus:outline-none"
+                  className="mt-2 animate-pulse border border-zinc-400 px-8 py-3 text-xl font-medium tracking-widest text-zinc-400 focus:outline-none"
                 >
                   Loading Profiles...
                 </button>

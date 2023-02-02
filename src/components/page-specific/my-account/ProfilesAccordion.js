@@ -11,14 +11,13 @@ const ProfilesAccordion = ({ id, avatar, name, maturity, children }) => {
     <>
       <MotionDivWrapper
         key={id}
-        className="relative flex w-full items-center space-x-4 border-t-2 border-gray-100 bg-white py-5 first-of-type:border-none focus-within:ring-2 focus-within:ring-gray-500 focus-within:ring-offset-2"
+        className="relative flex w-full items-center space-x-4 border-t-2 border-zinc-100 bg-white py-5 first-of-type:border-none focus-within:ring-2 focus-within:ring-zinc-500 focus-within:ring-offset-2"
         onClick={() => (expanded ? setExpanded(false) : setExpanded(true))}
       >
         <div className="flex-shrink-0">
           <div className="relative h-16 w-16">
             <Image
-              layout="fill"
-              objectFit="cover"
+              fill
               className="rounded-md"
               src={`/images/profiles/avatars/${avatar}.png`}
               alt=""
@@ -27,12 +26,12 @@ const ProfilesAccordion = ({ id, avatar, name, maturity, children }) => {
         </div>
         <div className="min-w-0 flex-1">
           <span className="absolute inset-0" aria-hidden="true" />
-          <p className="text-base font-bold text-gray-700">{name}</p>
-          <p className="truncate text-sm text-gray-500">
+          <p className="text-base font-bold text-zinc-700">{name}</p>
+          <p className="truncate text-sm text-zinc-500">
             {maturity ? "TV-PG PG and below" : "All Maturity Ratings"}
           </p>
         </div>
-        <span className="px-1 text-gray-500">
+        <span className="px-1 text-zinc-500">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className={`h-5 w-5 ${
@@ -68,7 +67,7 @@ const ProfilesAccordion = ({ id, avatar, name, maturity, children }) => {
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 4 }}
-              className="text-gray-500"
+              className="text-zinc-500"
             >
               {children}
             </MotionDivWrapper>

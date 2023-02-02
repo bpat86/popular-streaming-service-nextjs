@@ -104,7 +104,7 @@ export const AuthNavigation = ({ isLoggedIn }) => {
             ref={headerRef}
             className="navigation-content absolute z-10 w-full overflow-hidden"
           >
-            <div className="navbar relative z-20 border-b border-gray-200 bg-white bg-opacity-90 py-4 backdrop-blur-sm backdrop-filter">
+            <div className="navbar relative z-20 border-b border-zinc-200 bg-white bg-opacity-90 py-4 backdrop-blur-sm backdrop-filter">
               {/* Container */}
               <div className="max-w-screen-3xl mx-auto flex items-center justify-between px-6 py-2 sm:px-12 md:justify-start md:space-x-10">
                 <div className="flex justify-start lg:w-0 lg:flex-1">
@@ -117,7 +117,7 @@ export const AuthNavigation = ({ isLoggedIn }) => {
                 <div className="-my-2 -mr-2 md:hidden">
                   <button
                     type="button"
-                    className="focus:ring-netflix inline-flex items-center justify-center rounded-md bg-white p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset"
+                    className="focus:ring-netflix inline-flex items-center justify-center rounded-md bg-white p-2 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-inset"
                     onClick={() => setIsOpen(!isOpen)}
                   >
                     <span className="sr-only">Open menu</span>
@@ -145,7 +145,7 @@ export const AuthNavigation = ({ isLoggedIn }) => {
                       <button
                         type="submit"
                         onClick={() => logout()}
-                        className="ml-8 inline-flex items-center justify-center whitespace-nowrap rounded border border-transparent px-5 py-1 text-lg font-semibold text-gray-800 transition duration-700 ease-out focus:outline-none"
+                        className="ml-8 inline-flex items-center justify-center whitespace-nowrap rounded border border-transparent px-5 py-1 text-lg font-semibold text-zinc-800 transition duration-700 ease-out focus:outline-none"
                       >
                         Sign Out
                       </button>
@@ -153,7 +153,7 @@ export const AuthNavigation = ({ isLoggedIn }) => {
                   ) : (
                     <>
                       <Link href="/login" legacyBehavior>
-                        <a className="ml-8 inline-flex items-center justify-center whitespace-nowrap rounded border border-transparent px-5 py-1 text-lg font-semibold text-gray-800  transition duration-700 ease-out focus:outline-none">
+                        <a className="ml-8 inline-flex items-center justify-center whitespace-nowrap rounded border border-transparent px-5 py-1 text-lg font-semibold text-zinc-800  transition duration-700 ease-out focus:outline-none">
                           Sign In
                         </a>
                       </Link>

@@ -5,9 +5,8 @@ import { useContext, useState } from "react";
 import * as yup from "yup";
 
 import InputLight from "@/components/fields/InputLight";
-import AuthContext from "@/context/AuthContext";
-
 import { NEXT_URL } from "@/config/index";
+import AuthContext from "@/context/AuthContext";
 
 const validationSchema = yup.object({
   email: yup.string().email("Invalid email").required("Email is required"),
@@ -120,15 +119,15 @@ export const UpdateEmail = (props) => {
                 errors={errors.email || (!status?.success && status?.message)}
                 touched={touched.email}
                 label="Email address"
-                // classes={`input-light block w-full h-14 px-3 pt-6 appearance-none bg-gray-100 border border-gray-300 focus:border-gray-300 focus:ring-gray-300 focus:outline-none focus:ring-0 focus:ring-inset text-base text-gray-800 rounded-md`}
+                // classes={`input-light block w-full h-14 px-3 pt-6 appearance-none bg-zinc-100 border border-zinc-300 focus:border-zinc-300 focus:ring-zinc-300 focus:outline-none focus:ring-0 focus:ring-inset text-base text-zinc-800 rounded-md`}
               />
             </div>
             {/* Submit button */}
             <div className="mt-6 sm:flex sm:items-center sm:space-x-4 sm:space-x-reverse">
               {status?.success ? (
-                <div className="order-1 -mt-3 mb-6 flex items-center space-x-2 text-base font-semibold text-gray-800 sm:my-0">
+                <div className="order-1 -mt-3 mb-6 flex items-center space-x-2 text-base font-semibold text-zinc-800 sm:my-0">
                   <svg
-                    className="h-5 w-5 flex-shrink-0 text-gray-500"
+                    className="h-5 w-5 flex-shrink-0 text-zinc-500"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 20 20"
                     fill="currentColor"

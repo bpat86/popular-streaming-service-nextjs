@@ -15,7 +15,7 @@ const ProfileGateLayout = (props) => {
       <ProfileNavigation {...props} />
       <div className="flex h-full flex-col items-center justify-center">
         <main
-          className={`profile item-center flex w-full flex-col justify-center bg-gray-900 ${height} relative z-0 overflow-hidden`}
+          className={`profile item-center flex w-full flex-col justify-center bg-zinc-900 ${height} relative z-0 overflow-hidden`}
         >
           <div className="absolute inset-0">
             <div
@@ -25,7 +25,7 @@ const ProfileGateLayout = (props) => {
           </div>
           <div className="header-container z-10 flex w-full flex-col">
             <div className="flex h-full flex-wrap items-center justify-center">
-              <div className="text-shadow mx-auto flex w-full max-w-screen-xl flex-col items-center justify-start px-6 text-base font-normal text-gray-100 sm:text-lg md:justify-center md:text-2xl">
+              <div className="text-shadow mx-auto flex w-full max-w-screen-xl flex-col items-center justify-start px-6 text-base font-normal text-zinc-100 sm:text-lg md:justify-center md:text-2xl">
                 {children}
               </div>
             </div>

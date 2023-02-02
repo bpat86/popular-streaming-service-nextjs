@@ -85,7 +85,7 @@ const SelectAvatar = (props) => {
         <Profile {...props}>
           <div className="fixed inset-0">
             <div className="fade-in fixed inset-0 flex w-full flex-col items-center justify-center">
-              <div className="fixed inset-0 bg-gray-900">
+              <div className="fixed inset-0 bg-zinc-900">
                 <div className="fade-in fixed inset-0 flex w-full flex-col items-center justify-center md:-ml-16">
                   <div className="mx-auto mt-44 block h-full min-h-screen w-full overflow-y-scroll px-6 md:w-2/3">
                     <div className="flex w-full items-center ">

@@ -232,10 +232,10 @@ const AddNewProfile = ({
                     <h1 className="my-3 block text-3xl font-semibold text-white sm:my-6 sm:text-6xl">
                       Add Profile
                     </h1>
-                    <h2 className="text-xl text-gray-400 sm:text-2xl">
+                    <h2 className="text-xl text-zinc-400 sm:text-2xl">
                       Add a profile for another person watching Netflix.
                     </h2>
-                    <div className="my-5 flex w-full border-t border-b border-gray-700 py-4">
+                    <div className="my-5 flex w-full border-t border-b border-zinc-700 py-4">
                       <div className="my-3 flex w-full cursor-pointer items-center text-center">
                         <div
                           className="group relative"
@@ -291,7 +291,7 @@ const AddNewProfile = ({
                               name="kid"
                               type="checkbox"
                               onChange={handleChange}
-                              className="h-6 w-6 cursor-pointer border border-gray-700 bg-gray-900 text-gray-900 outline-none ring-1 ring-gray-500 focus:ring-0 sm:h-8 sm:w-8"
+                              className="h-6 w-6 cursor-pointer border border-zinc-700 bg-zinc-900 text-zinc-900 outline-none ring-1 ring-zinc-500 focus:ring-0 sm:h-8 sm:w-8"
                             />
                             <label
                               htmlFor="kid"
@@ -301,7 +301,7 @@ const AddNewProfile = ({
                             </label>
                           </div>
                           <div className="tooltip absolute bottom-0 mb-10 ml-8 hidden w-72 scale-95 transform flex-col items-end justify-end opacity-0 transition duration-150 ease-out group-hover:scale-100 group-hover:opacity-100 sm:flex md:items-center">
-                            <span className="whitespace-no-wrap relative z-10 bg-white px-4 py-3 text-lg font-medium leading-none text-gray-900">
+                            <span className="whitespace-no-wrap relative z-10 bg-white px-4 py-3 text-lg font-medium leading-none text-zinc-900">
                               If selected, this profile will only see TV shows
                               and movies rated for ages 12 and under.
                             </span>
@@ -311,8 +311,8 @@ const AddNewProfile = ({
                       </div>
                     </div>
 
-                    <div className="flex w-full flex-col border-b border-gray-700 sm:pb-4">
-                      <h2 className="mb-1 text-2xl text-gray-400">
+                    <div className="flex w-full flex-col border-b border-zinc-700 sm:pb-4">
+                      <h2 className="mb-1 text-2xl text-zinc-400">
                         Autoplay controls
                       </h2>
                       <div className="group my-3 flex w-full cursor-pointer flex-col items-start text-center">
@@ -324,7 +324,7 @@ const AddNewProfile = ({
                               name="autoPlayNextEpisode"
                               type="checkbox"
                               onChange={handleChange}
-                              className="h-6 w-6 cursor-pointer border border-gray-700 bg-gray-900 text-gray-900 outline-none ring-1 ring-gray-500 focus:ring-0 sm:h-8 sm:w-8"
+                              className="h-6 w-6 cursor-pointer border border-zinc-700 bg-zinc-900 text-zinc-900 outline-none ring-1 ring-zinc-500 focus:ring-0 sm:h-8 sm:w-8"
                             />
                             <label
                               htmlFor="autoPlayNextEpisode"
@@ -343,7 +343,7 @@ const AddNewProfile = ({
                                 name="autoPlayPreviews"
                                 type="checkbox"
                                 onChange={handleChange}
-                                className="h-6 w-6 cursor-pointer border border-gray-700 bg-gray-900 text-gray-900 outline-none ring-1 ring-gray-500 focus:ring-0 sm:h-8 sm:w-8"
+                                className="h-6 w-6 cursor-pointer border border-zinc-700 bg-zinc-900 text-zinc-900 outline-none ring-1 ring-zinc-500 focus:ring-0 sm:h-8 sm:w-8"
                               />
                               <label
                                 htmlFor="autoPlayPreviews"
@@ -361,7 +361,7 @@ const AddNewProfile = ({
                       <button
                         disabled={isSubmitting}
                         type="submit"
-                        className="flex items-center bg-white px-6 py-2 text-sm font-bold uppercase tracking-widest text-gray-900 hover:bg-netflix-red hover:text-white focus:bg-netflix-red focus:text-white focus:outline-none sm:text-2xl"
+                        className="flex items-center bg-white px-6 py-2 text-sm font-bold uppercase tracking-widest text-zinc-900 hover:bg-netflix-red hover:text-white focus:bg-netflix-red focus:text-white focus:outline-none sm:text-2xl"
                       >
                         {isSubmitting ? (
                           <>
@@ -393,7 +393,7 @@ const AddNewProfile = ({
                       </button>
                       <button
                         type="reset"
-                        className="ml-6 border border-gray-400 bg-transparent px-6 py-2 text-sm font-bold uppercase tracking-widest text-gray-400 hover:border-white hover:text-white focus:border-white focus:text-white focus:outline-none sm:text-2xl"
+                        className="ml-6 border border-zinc-400 bg-transparent px-6 py-2 text-sm font-bold uppercase tracking-widest text-zinc-400 hover:border-white hover:text-white focus:border-white focus:text-white focus:outline-none sm:text-2xl"
                       >
                         Cancel
                       </button>

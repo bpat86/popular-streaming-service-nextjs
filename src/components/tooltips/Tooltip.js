@@ -1,13 +1,11 @@
 import { useContext, useMemo } from "react";
 
-import { useElementRect } from "@/hooks/useElementRect";
-import { useHover } from "@/hooks/useHover";
-
 import TooltipDialog from "@/components/tooltips/TooltipDialog";
 import TooltipWrapper from "@/components/tooltips/TooltipWrapper";
 import InteractionContext from "@/context/InteractionContext";
-
-import usePreviewModalStore from "@/stores/PreviewModalStore";
+import { useElementRect } from "@/hooks/useElementRect";
+import { useHover } from "@/hooks/useHover";
+import usePreviewModalStore from "@/store/PreviewModalStore";
 
 const Tooltip = (props) => {
   const { className, text, children } = props;
@@ -57,10 +55,10 @@ const Tooltip = (props) => {
       {hovered && isPreviewModalOpen() && (
         <TooltipDialog
           ref={tooltipRef}
-          className="tooltip pointer-events-none absolute flex select-none items-center justify-center whitespace-nowrap rounded bg-gray-100 px-5 py-2 text-[0.65rem] font-bold text-gray-900 shadow-lg sm:text-[1.1rem] xl:text-[1.15rem]"
+          className="tooltip pointer-events-none absolute flex select-none items-center justify-center whitespace-nowrap rounded bg-zinc-100 px-5 py-2 text-[0.65rem] font-bold text-zinc-900 shadow-lg sm:text-[1.1rem] xl:text-[1.15rem]"
           style={style}
         >
-          <div className="caret absolute -bottom-[7px] -z-1 h-5 w-5 rotate-45 bg-gray-100" />
+          <div className="caret absolute -bottom-[7px] -z-1 h-5 w-5 rotate-45 bg-zinc-100" />
           {text}
         </TooltipDialog>
       )}

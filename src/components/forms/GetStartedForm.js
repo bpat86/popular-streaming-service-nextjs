@@ -62,7 +62,7 @@ export const GetStartedForm = (props) => {
                 onChange={handleChange}
                 onBlur={handleBlur}
                 value={values.email}
-                className={`input-light block h-18 w-full appearance-none rounded-sm border-0 border-transparent bg-white px-3 pt-6 text-gray-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white sm:rounded-r-none sm:rounded-l-sm sm:text-base ${
+                className={`input-light block h-18 w-full appearance-none rounded-sm border-0 border-transparent bg-white px-3 pt-6 text-zinc-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white sm:rounded-r-none sm:rounded-l-sm sm:text-base ${
                   errors.email && touched.email && errors.email
                     ? "border-b-2 border-netflix-orange-light focus:border-netflix-orange-light"
                     : ""
@@ -70,7 +70,7 @@ export const GetStartedForm = (props) => {
               />
               <label
                 htmlFor="email"
-                className="pointer-events-none absolute top-0 bottom-0 flex h-18 origin-0 select-none items-center px-3 py-4 text-base font-medium text-gray-500 duration-200"
+                className="pointer-events-none absolute top-0 bottom-0 flex h-18 origin-0 select-none items-center px-3 py-4 text-base font-medium text-zinc-500 duration-200"
               >
                 Email
               </label>

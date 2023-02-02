@@ -67,7 +67,7 @@ const DeleteConfirm = (props) => {
                     <h1 className="block text-3xl font-semibold text-white sm:text-6xl">
                       Delete Profile?
                     </h1>
-                    <div className="my-5 flex w-full border-t border-b border-gray-700 py-4">
+                    <div className="my-5 flex w-full border-t border-b border-zinc-700 py-4">
                       <div className="my-3 flex w-full items-center text-center">
                         <div className="relative">
                           <div
@@ -78,7 +78,7 @@ const DeleteConfirm = (props) => {
                               }.png")`,
                             }}
                           ></div>
-                          <div className="mt-3 text-gray-400">
+                          <div className="mt-3 text-zinc-400">
                             {name || formDataContext.name}
                           </div>
                         </div>
@@ -96,7 +96,7 @@ const DeleteConfirm = (props) => {
                     <div className="my-4 mt-8 flex space-x-3 sm:mt-12 sm:space-x-6">
                       <button
                         type="button"
-                        className="bg-white px-6 py-2 text-sm font-bold uppercase tracking-widest text-gray-900 hover:bg-netflix-red hover:text-white focus:bg-netflix-red focus:text-white focus:outline-none sm:text-2xl"
+                        className="bg-white px-6 py-2 text-sm font-bold uppercase tracking-widest text-zinc-900 hover:bg-netflix-red hover:text-white focus:bg-netflix-red focus:text-white focus:outline-none sm:text-2xl"
                         onClick={() => cancelDelete()}
                       >
                         Keep Profile
@@ -104,7 +104,7 @@ const DeleteConfirm = (props) => {
                       <button
                         disabled={isSubmitting}
                         type="submit"
-                        className="flex items-center border border-gray-400 bg-transparent px-6 py-2 text-sm font-bold uppercase tracking-widest text-gray-400 hover:border-white hover:text-white focus:border-white focus:text-white focus:outline-none sm:text-2xl"
+                        className="flex items-center border border-zinc-400 bg-transparent px-6 py-2 text-sm font-bold uppercase tracking-widest text-zinc-400 hover:border-white hover:text-white focus:border-white focus:text-white focus:outline-none sm:text-2xl"
                       >
                         {isSubmitting ? (
                           <>

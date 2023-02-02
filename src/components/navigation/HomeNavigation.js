@@ -130,7 +130,7 @@ export const HomeNavigation = (props) => {
               <div className="-my-2 -mr-2 md:hidden">
                 <button
                   type="button"
-                  className="focus:ring-netflix inline-flex items-center justify-center rounded-md bg-white p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset"
+                  className="focus:ring-netflix inline-flex items-center justify-center rounded-md bg-white p-2 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-inset"
                   onClick={() => setIsOpen(!isOpen)}
                 >
                   <span className="sr-only">Open menu</span>

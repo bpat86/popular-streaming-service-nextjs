@@ -2,8 +2,7 @@ import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 
 import { modalStateActions } from "@/actions/Actions";
-
-import usePreviewModalStore from "@/stores/PreviewModalStore";
+import usePreviewModalStore from "@/store/PreviewModalStore";
 
 const CTAButtons = ({ videoPlayback, handleWatchNow, model }) => {
   /**
@@ -72,7 +71,7 @@ const CTAButtons = ({ videoPlayback, handleWatchNow, model }) => {
       <button
         type="button"
         data-uia="billboard-show-more-info"
-        className="focus:focus-outline ml-4 flex h-8 items-center justify-center rounded-md bg-gray-500 bg-opacity-60 px-2 text-xs font-bold text-white shadow-sm transition duration-300 ease-out hover:bg-opacity-70 sm:h-9 sm:text-sm md:py-0 lg:h-10 lg:px-3 lg:text-lg 2xl:h-12 2xl:px-5 2xl:text-xl"
+        className="focus:focus-outline ml-4 flex h-8 items-center justify-center rounded-md bg-zinc-500 bg-opacity-60 px-2 text-xs font-bold text-white shadow-sm transition duration-300 ease-out hover:bg-opacity-70 sm:h-9 sm:text-sm md:py-0 lg:h-10 lg:px-3 lg:text-lg 2xl:h-12 2xl:px-5 2xl:text-xl"
         onClick={handleClick}
       >
         <span className="sr-only">More Info</span>

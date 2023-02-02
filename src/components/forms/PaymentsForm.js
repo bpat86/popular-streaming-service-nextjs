@@ -121,7 +121,7 @@ export const PaymentsForm = ({
 
   return (
     <>
-      <div className="my-1 ml-auto flex flex-row items-center text-sm text-gray-800">
+      <div className="my-1 ml-auto flex flex-row items-center text-sm text-zinc-800">
         Secure Server{" "}
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -148,12 +148,12 @@ export const PaymentsForm = ({
             {isSubmitting || stripeLoading || !stripe || !elements ? (
               <button
                 type="submit"
-                className="flex h-16 w-full flex-row items-center rounded-md border-2 border-gray-400 bg-white py-3 px-4 pr-2 text-base font-semibold tracking-wide text-gray-700 transition duration-700 ease-out focus:outline-none"
+                className="flex h-16 w-full flex-row items-center rounded-md border-2 border-zinc-400 bg-white py-3 px-4 pr-2 text-base font-semibold tracking-wide text-zinc-700 transition duration-700 ease-out focus:outline-none"
               >
                 <span className="ml-auto">Processing</span>
                 {/* Spinner */}
                 <svg
-                  className="ml-2 h-5 w-5 text-gray-500 motion-safe:animate-spin"
+                  className="ml-2 h-5 w-5 text-zinc-500 motion-safe:animate-spin"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -175,7 +175,7 @@ export const PaymentsForm = ({
                 {/* Arrow */}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="ml-auto h-7 w-7 text-gray-400"
+                  className="ml-auto h-7 w-7 text-zinc-400"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -192,7 +192,7 @@ export const PaymentsForm = ({
               <button
                 disabled={isSubmitting || stripeLoading || !stripe || !elements}
                 type="submit"
-                className="flex h-16 w-full flex-row items-center rounded-md border-2 border-gray-300 bg-white py-3 px-4 pr-2 text-base font-semibold tracking-wide text-gray-700 transition duration-700 ease-out hover:border-gray-400 focus:outline-none"
+                className="flex h-16 w-full flex-row items-center rounded-md border-2 border-zinc-300 bg-white py-3 px-4 pr-2 text-base font-semibold tracking-wide text-zinc-700 transition duration-700 ease-out hover:border-zinc-400 focus:outline-none"
               >
                 <span>Credit or Debit Card</span>
                 <span className="flex flex-row space-x-2">
@@ -220,7 +220,7 @@ export const PaymentsForm = ({
                 </span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="ml-auto h-7 w-7 text-gray-400"
+                  className="ml-auto h-7 w-7 text-zinc-400"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"

@@ -15,7 +15,7 @@ export default function Dropdown({ Transition, isOpen, setIsOpen }) {
             ref={ref}
             className="absolute inset-x-0 top-0 z-30 origin-top-right transform p-2 transition md:hidden"
           >
-            <div className="divide-y-2 divide-gray-50 rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5">
+            <div className="divide-y-2 divide-zinc-50 rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5">
               <div className="px-5 pt-5 pb-6">
                 <div className="flex items-center justify-between">
                   <div>
@@ -39,7 +39,7 @@ export default function Dropdown({ Transition, isOpen, setIsOpen }) {
                   <div className="-mr-2">
                     <button
                       type="button"
-                      className="inline-flex items-center justify-center rounded-md bg-white p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-600"
+                      className="inline-flex items-center justify-center rounded-md bg-white p-2 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-600"
                       onClick={() => setIsOpen(!isOpen)}
                     >
                       <span className="sr-only">Close menu</span>
@@ -65,7 +65,7 @@ export default function Dropdown({ Transition, isOpen, setIsOpen }) {
                   <nav className="grid grid-cols-1 gap-7">
                     <a
                       href="#"
-                      className="-m-3 flex items-center rounded-lg p-3 hover:bg-gray-50"
+                      className="-m-3 flex items-center rounded-lg p-3 hover:bg-zinc-50"
                     >
                       <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md bg-indigo-600 text-white">
                         <svg
@@ -84,13 +84,13 @@ export default function Dropdown({ Transition, isOpen, setIsOpen }) {
                           />
                         </svg>
                       </div>
-                      <div className="ml-4 text-base font-medium text-gray-900">
+                      <div className="ml-4 text-base font-medium text-zinc-900">
                         Analytics
                       </div>
                     </a>
                     <a
                       href="#"
-                      className="-m-3 flex items-center rounded-lg p-3 hover:bg-gray-50"
+                      className="-m-3 flex items-center rounded-lg p-3 hover:bg-zinc-50"
                     >
                       <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md bg-indigo-600 text-white">
                         <svg
@@ -109,13 +109,13 @@ export default function Dropdown({ Transition, isOpen, setIsOpen }) {
                           />
                         </svg>
                       </div>
-                      <div className="ml-4 text-base font-medium text-gray-900">
+                      <div className="ml-4 text-base font-medium text-zinc-900">
                         Engagement
                       </div>
                     </a>
                     <a
                       href="#"
-                      className="-m-3 flex items-center rounded-lg p-3 hover:bg-gray-50"
+                      className="-m-3 flex items-center rounded-lg p-3 hover:bg-zinc-50"
                     >
                       <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md bg-indigo-600 text-white">
                         <svg
@@ -134,13 +134,13 @@ export default function Dropdown({ Transition, isOpen, setIsOpen }) {
                           />
                         </svg>
                       </div>
-                      <div className="ml-4 text-base font-medium text-gray-900">
+                      <div className="ml-4 text-base font-medium text-zinc-900">
                         Security
                       </div>
                     </a>
                     <a
                       href="#"
-                      className="-m-3 flex items-center rounded-lg p-3 hover:bg-gray-50"
+                      className="-m-3 flex items-center rounded-lg p-3 hover:bg-zinc-50"
                     >
                       <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md bg-indigo-600 text-white">
                         <svg
@@ -159,13 +159,13 @@ export default function Dropdown({ Transition, isOpen, setIsOpen }) {
                           />
                         </svg>
                       </div>
-                      <div className="ml-4 text-base font-medium text-gray-900">
+                      <div className="ml-4 text-base font-medium text-zinc-900">
                         Integrations
                       </div>
                     </a>
                     <a
                       href="#"
-                      className="-m-3 flex items-center rounded-lg p-3 hover:bg-gray-50"
+                      className="-m-3 flex items-center rounded-lg p-3 hover:bg-zinc-50"
                     >
                       <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md bg-indigo-600 text-white">
                         <svg
@@ -184,13 +184,13 @@ export default function Dropdown({ Transition, isOpen, setIsOpen }) {
                           />
                         </svg>
                       </div>
-                      <div className="ml-4 text-base font-medium text-gray-900">
+                      <div className="ml-4 text-base font-medium text-zinc-900">
                         Automations
                       </div>
                     </a>
                     <a
                       href="#"
-                      className="-m-3 flex items-center rounded-lg p-3 hover:bg-gray-50"
+                      className="-m-3 flex items-center rounded-lg p-3 hover:bg-zinc-50"
                     >
                       <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md bg-indigo-600 text-white">
                         <svg
@@ -209,7 +209,7 @@ export default function Dropdown({ Transition, isOpen, setIsOpen }) {
                           />
                         </svg>
                       </div>
-                      <div className="ml-4 text-base font-medium text-gray-900">
+                      <div className="ml-4 text-base font-medium text-zinc-900">
                         Reports
                       </div>
                     </a>
@@ -220,49 +220,49 @@ export default function Dropdown({ Transition, isOpen, setIsOpen }) {
                 <div className="grid grid-cols-2 gap-4">
                   <a
                     href="#"
-                    className="text-base font-medium text-gray-900 hover:text-gray-700"
+                    className="text-base font-medium text-zinc-900 hover:text-zinc-700"
                   >
                     Pricing
                   </a>
                   <a
                     href="#"
-                    className="text-base font-medium text-gray-900 hover:text-gray-700"
+                    className="text-base font-medium text-zinc-900 hover:text-zinc-700"
                   >
                     Docs
                   </a>
                   <a
                     href="#"
-                    className="text-base font-medium text-gray-900 hover:text-gray-700"
+                    className="text-base font-medium text-zinc-900 hover:text-zinc-700"
                   >
                     Enterprise
                   </a>
                   <a
                     href="#"
-                    className="text-base font-medium text-gray-900 hover:text-gray-700"
+                    className="text-base font-medium text-zinc-900 hover:text-zinc-700"
                   >
                     Blog
                   </a>
                   <a
                     href="#"
-                    className="text-base font-medium text-gray-900 hover:text-gray-700"
+                    className="text-base font-medium text-zinc-900 hover:text-zinc-700"
                   >
                     Help Center
                   </a>
                   <a
                     href="#"
-                    className="text-base font-medium text-gray-900 hover:text-gray-700"
+                    className="text-base font-medium text-zinc-900 hover:text-zinc-700"
                   >
                     Guides
                   </a>
                   <a
                     href="#"
-                    className="text-base font-medium text-gray-900 hover:text-gray-700"
+                    className="text-base font-medium text-zinc-900 hover:text-zinc-700"
                   >
                     Security
                   </a>
                   <a
                     href="#"
-                    className="text-base font-medium text-gray-900 hover:text-gray-700"
+                    className="text-base font-medium text-zinc-900 hover:text-zinc-700"
                   >
                     Events
                   </a>
@@ -274,7 +274,7 @@ export default function Dropdown({ Transition, isOpen, setIsOpen }) {
                   >
                     Sign up
                   </a>
-                  <p className="mt-6 text-center text-base font-medium text-gray-500">
+                  <p className="mt-6 text-center text-base font-medium text-zinc-500">
                     Existing customer?
                     <a
                       href="#"

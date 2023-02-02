@@ -3,7 +3,7 @@ const PlatformFeatures = () => {
     <div className="min-h-screen-3/4 w-full bg-black">
       <div className="relative overflow-hidden">
         {/* Enjoy on your TV. */}
-        <div className="relative border-t-8 border-gray-800 py-8">
+        <div className="relative border-t-8 border-zinc-800 py-8">
           <div className="items-center px-6 text-center lg:mx-auto lg:grid lg:max-w-6xl lg:grid-flow-col-dense lg:grid-cols-2 lg:gap-24 lg:px-8 lg:text-left">
             <div className="mx-auto max-w-xl px-4 sm:px-6 lg:mx-0 lg:max-w-none lg:py-16 lg:px-0">
               <div>
@@ -54,7 +54,7 @@ const PlatformFeatures = () => {
           </div>
         </div>
         {/* Download your shows to watch offline. */}
-        <div className="relative border-t-8 border-gray-800 py-8">
+        <div className="relative border-t-8 border-zinc-800 py-8">
           <div className="items-center px-6 text-center lg:mx-auto lg:grid lg:max-w-6xl lg:grid-flow-col-dense lg:grid-cols-2 lg:gap-8 lg:px-8 lg:text-left">
             <div className="mx-auto max-w-xl px-4 sm:px-6 lg:order-last lg:mx-0 lg:max-w-none lg:py-16 lg:px-0">
               <div>
@@ -78,7 +78,7 @@ const PlatformFeatures = () => {
                     alt=""
                   />
                 </picture>
-                <div className="absolute top-2/3 z-20 m-auto rounded-lg border-2 border-gray-600 bg-black p-3">
+                <div className="absolute top-2/3 z-20 m-auto rounded-lg border-2 border-zinc-600 bg-black p-3">
                   <div className="flex w-80 items-center space-x-6">
                     <div>
                       <picture className="flex">
@@ -111,7 +111,7 @@ const PlatformFeatures = () => {
           </div>
         </div>
         {/* Download your shows to watch offline. */}
-        <div className="relative border-t-8 border-gray-800 py-8">
+        <div className="relative border-t-8 border-zinc-800 py-8">
           <div className="items-center px-6 text-center lg:mx-auto lg:grid lg:max-w-6xl lg:grid-flow-col-dense  lg:grid-cols-2 lg:gap-24 lg:px-8 lg:text-left">
             {/* Text */}
             <div className="mx-auto max-w-xl px-4 sm:px-6 lg:mx-0 lg:max-w-none lg:py-16 lg:px-0">
@@ -164,7 +164,7 @@ const PlatformFeatures = () => {
           </div>
         </div>
         {/* Create profiles for kids. */}
-        <div className="relative border-t-8 border-gray-800 py-8">
+        <div className="relative border-t-8 border-zinc-800 py-8">
           <div className="items-center px-6 text-center lg:mx-auto lg:grid lg:max-w-6xl lg:grid-flow-col-dense lg:grid-cols-2 lg:gap-24 lg:px-8 lg:text-left">
             <div className="mx-auto max-w-xl px-4 sm:px-6 lg:order-last lg:mx-0 lg:max-w-none lg:py-16 lg:px-0">
               <div>

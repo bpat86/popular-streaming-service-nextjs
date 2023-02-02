@@ -68,7 +68,7 @@ const AvatarConfirm = (props) => {
                   <h1 className="my-6 block text-center text-2xl font-semibold text-white sm:text-4xl">
                     Change Profile Icon?
                   </h1>
-                  <div className="my-5 flex w-full border-t border-b border-gray-700 py-4">
+                  <div className="my-5 flex w-full border-t border-b border-zinc-700 py-4">
                     <div className="group my-3 flex w-full cursor-pointer items-center text-center">
                       <div className="relative ml-auto px-6">
                         <div
@@ -108,7 +108,7 @@ const AvatarConfirm = (props) => {
                     <button
                       disabled={isSubmitting}
                       type="submit"
-                      className="flex items-center bg-white px-6 py-2 font-bold uppercase tracking-widest text-gray-900 hover:bg-netflix-red hover:text-white focus:bg-netflix-red focus:text-white focus:outline-none"
+                      className="flex items-center bg-white px-6 py-2 font-bold uppercase tracking-widest text-zinc-900 hover:bg-netflix-red hover:text-white focus:bg-netflix-red focus:text-white focus:outline-none"
                     >
                       {isSubmitting ? (
                         <>
@@ -140,7 +140,7 @@ const AvatarConfirm = (props) => {
                     </button>
                     <button
                       type="button"
-                      className="ml-6 border border-gray-400 bg-transparent px-6 py-2 font-bold uppercase tracking-widest text-gray-400 hover:border-white hover:text-white focus:border-white focus:text-white focus:outline-none"
+                      className="ml-6 border border-zinc-400 bg-transparent px-6 py-2 font-bold uppercase tracking-widest text-zinc-400 hover:border-white hover:text-white focus:border-white focus:text-white focus:outline-none"
                       onClick={() => cancelAvatarConfirm()}
                     >
                       Not Yet

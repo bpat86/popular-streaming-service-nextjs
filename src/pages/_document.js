@@ -14,7 +14,7 @@ class MyDocument extends Document {
         data-focus-visible-added
       >
         <Head />
-        <body className="js-focus-visible bg-gray-900">
+        <body className="js-focus-visible bg-zinc-900">
           <span id="tooltip-root"></span>
           <Main />
           <NextScript />

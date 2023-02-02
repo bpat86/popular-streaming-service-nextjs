@@ -26,7 +26,7 @@ export const ProfileNavigation = ({ user }) => {
               {/* <div className="-my-2 -mr-2 md:hidden">
                 <button
                   type="button"
-                  className="focus:ring-netflix inline-flex items-center justify-center rounded-md bg-white p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset"
+                  className="focus:ring-netflix inline-flex items-center justify-center rounded-md bg-white p-2 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-inset"
                 >
                   <span className="sr-only">Open menu</span>
                   <svg
@@ -53,7 +53,7 @@ export const ProfileNavigation = ({ user }) => {
                       <button
                         type="submit"
                         onClick={() => logout()}
-                        className="ml-8 inline-flex items-center justify-center whitespace-nowrap rounded-sm border border-gray-400 bg-transparent px-4 py-1 text-base font-medium text-gray-400 transition duration-700 ease-out hover:border-white hover:text-white focus:outline-none"
+                        className="ml-8 inline-flex items-center justify-center whitespace-nowrap rounded-sm border border-zinc-400 bg-transparent px-4 py-1 text-base font-medium text-zinc-400 transition duration-700 ease-out hover:border-white hover:text-white focus:outline-none"
                       >
                         Sign Out
                       </button>

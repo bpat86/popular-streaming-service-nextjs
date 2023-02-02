@@ -33,7 +33,7 @@ const InputDark = ({
             onChange={handleChange}
             onBlur={handleBlur}
             value={value}
-            className="input-profile block h-10 w-full appearance-none rounded-sm border-0 bg-gray-500 px-3 text-lg tracking-wider placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 sm:h-12 sm:text-xl"
+            className="input-profile block h-10 w-full appearance-none rounded-sm border-0 bg-zinc-500 px-3 text-lg tracking-wider placeholder-zinc-300 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-zinc-500 sm:h-12 sm:text-xl"
           />
           {errors && touched && errors && (
             <div className="input-error mt-1 px-1 text-left text-sm font-medium text-netflix-red-light">

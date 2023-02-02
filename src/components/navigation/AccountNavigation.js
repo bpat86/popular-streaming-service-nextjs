@@ -1,8 +1,7 @@
 import Link from "next/link";
 
-import { MotionDivWrapper } from "@/lib/MotionDivWrapper";
-
 import ProfilesDropdown from "@/components/navigation/ProfilesDropdown";
+import { MotionDivWrapper } from "@/lib/MotionDivWrapper";
 
 import Logo from "./Logo";
 
@@ -19,7 +18,7 @@ export const AccountNavigation = (props) => {
       }}
     >
       <div className="pinned-navigation-container">
-        <header className="main-navigation-content fixed w-full bg-gray-900 transition duration-150 ease-out">
+        <header className="main-navigation-content fixed w-full bg-zinc-900 transition duration-150 ease-out">
           <div className="main-navbar max-w-screen-3xl relative mx-auto flex h-[68px] items-center justify-between px-6 sm:px-12 md:justify-start md:space-x-10">
             <div className="flex justify-start">
               <Link
@@ -34,7 +33,7 @@ export const AccountNavigation = (props) => {
             <div className="-my-2 -mr-2 md:hidden">
               <button
                 type="button"
-                className="focus:ring-netflix inline-flex items-center justify-center rounded-md bg-white p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset"
+                className="focus:ring-netflix inline-flex items-center justify-center rounded-md bg-white p-2 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-inset"
               >
                 <span className="sr-only">Open menu</span>
                 {/* Heroicon name: menu */}
@@ -74,7 +73,7 @@ export const AccountNavigation = (props) => {
                           }`}
                           legacyBehavior
                         >
-                          <a className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-gray-300">
+                          <a className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-zinc-300">
                             TV Shows
                           </a>
                         </Link>
@@ -86,7 +85,7 @@ export const AccountNavigation = (props) => {
                           }`}
                           legacyBehavior
                         >
-                          <a className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-gray-300">
+                          <a className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-zinc-300">
                             Movies
                           </a>
                         </Link>
@@ -98,7 +97,7 @@ export const AccountNavigation = (props) => {
                           }`}
                           legacyBehavior
                         >
-                          <a className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-gray-300">
+                          <a className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-zinc-300">
                             New & Popular
                           </a>
                         </Link>
@@ -108,7 +107,7 @@ export const AccountNavigation = (props) => {
                           href={`${isActive ? "/browse" : "/my-account"}`}
                           legacyBehavior
                         >
-                          <a className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-gray-300">
+                          <a className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-zinc-300">
                             My List
                           </a>
                         </Link>

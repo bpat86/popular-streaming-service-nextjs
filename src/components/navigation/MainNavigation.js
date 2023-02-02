@@ -25,7 +25,7 @@ export const MainNavigation = memo(({ isLoggedIn, ...rest }) => {
   );
 
   const grayBackgroundNav = scrolled
-    ? "bg-gray-900 ease-out duration-200 delay-150"
+    ? "bg-zinc-900 ease-out duration-200 delay-150"
     : "ease-out duration-200 delay-150";
 
   return (
@@ -55,7 +55,7 @@ export const MainNavigation = memo(({ isLoggedIn, ...rest }) => {
                           legacyBehavior={true}
                           prefetch={false}
                         >
-                          <a className="cursor-pointer text-sm text-white transition duration-700 ease-out hover:text-gray-300">
+                          <a className="cursor-pointer text-sm text-white transition duration-700 ease-out hover:text-zinc-300">
                             Home
                           </a>
                         </Link>
@@ -67,7 +67,7 @@ export const MainNavigation = memo(({ isLoggedIn, ...rest }) => {
                           legacyBehavior={true}
                           prefetch={false}
                         >
-                          <a className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-gray-300">
+                          <a className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-zinc-300">
                             TV Shows
                           </a>
                         </Link>
@@ -79,7 +79,7 @@ export const MainNavigation = memo(({ isLoggedIn, ...rest }) => {
                           legacyBehavior={true}
                           prefetch={false}
                         >
-                          <a className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-gray-300">
+                          <a className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-zinc-300">
                             Movies
                           </a>
                         </Link>
@@ -91,7 +91,7 @@ export const MainNavigation = memo(({ isLoggedIn, ...rest }) => {
                           legacyBehavior={true}
                           prefetch={false}
                         >
-                          <a className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-gray-300">
+                          <a className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-zinc-300">
                             New & Popular
                           </a>
                         </Link>
@@ -103,7 +103,7 @@ export const MainNavigation = memo(({ isLoggedIn, ...rest }) => {
                           legacyBehavior={true}
                           prefetch={false}
                         >
-                          <a className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-gray-300">
+                          <a className="cursor-pointer text-sm text-white transition duration-300 ease-out hover:text-zinc-300">
                             My List
                           </a>
                         </Link>
