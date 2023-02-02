@@ -25,7 +25,7 @@ const BrowseContainer = ({
   initialUser,
   pageAPI,
   pageTitle,
-}: BrowseContainerProps): JSX.Element => {
+}: BrowseContainerProps) => {
   const { logout } = useContext(AuthContext) as AuthContextType;
   const { activeProfile } = useContext(ProfileContext);
   const { user } = useUser({

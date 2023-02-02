@@ -23,7 +23,7 @@ type TitleCardContainerProps = {
   previewModalEnabled: boolean;
   rankNum: number;
   rowNum: number;
-  rowHasPreviewModalOpen: () => boolean;
+  rowHasPreviewModalOpen: () => void;
   toggleExpandedInfoDensity: (arg0: boolean) => void;
 };
 
@@ -40,12 +40,18 @@ const TitleCardContainer = forwardRef(
     ref
   ) => {
     const sliderItemRef = ref as MutableRefObject<HTMLDivElement>;
-    const scopeRef = useRef({
+    const scopeRef = useRef<{
+      hasFetchedModalData: boolean;
+      isHovering: boolean;
+      isModalOpen: boolean;
+    }>({
       hasFetchedModalData: false,
       isHovering: false,
       isModalOpen: false,
     });
-    const hoverTimeoutIdRef = useRef<number | null>(null);
+    const hoverTimeoutIdRef = useRef<
+      ReturnType<typeof setTimeout> | number | null
+    >(null);
 
     /**
      * Determine if a preview modal is currently open
@@ -170,7 +176,9 @@ const TitleCardContainer = forwardRef(
       const { isHovering, isModalOpen } = scopeRef.current;
       if (!hoverTimeoutIdRef.current && !isModalOpen && isHovering) {
         const delay = usePreviewModalStore.getState().wasOpen ? 100 : 400;
-        hoverTimeoutIdRef.current = window.setTimeout(() => {
+        // TODO: Fix this
+        // TypeError: Cannot assign to read only property 'current' of object '#<Object>'
+        hoverTimeoutIdRef.current = setTimeout(() => {
           return openPreviewModal({
             titleCardNode: titleCardRef as MutableRefObject<HTMLDivElement>,
           });
@@ -242,7 +250,7 @@ const TitleCardContainer = forwardRef(
             length: undefined,
           },
           isMyListRow: model.videoModel.isMyListRow,
-          // animationContext: undefined, // galleryModal
+          animationContext: undefined, // galleryModal
         });
     };
 
@@ -298,4 +306,5 @@ const TitleCardContainer = forwardRef(
   }
 );
 
+TitleCardContainer.displayName = "TitleCardContainer";
 export default TitleCardContainer;

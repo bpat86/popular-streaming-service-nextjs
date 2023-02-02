@@ -8,7 +8,7 @@ type PaginationIndicatorProps = {
 const PaginationIndicator = ({
   activePage,
   totalPages,
-}: PaginationIndicatorProps): JSX.Element => {
+}: PaginationIndicatorProps) => {
   // If there's only one page, don't show the dots
   if (!totalPages) return <></>;
   // Return a list of dots, one for each page

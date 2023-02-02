@@ -71,26 +71,34 @@ const Slider = ({
   setActiveRowItemIndex,
   rowHasExpandedInfoDensity,
   toggleExpandedInfoDensity,
-}: SliderProps): JSX.Element => {
+}: SliderProps) => {
   const [isAnimating, setIsAnimating] = useState<boolean>(false);
-  const sliderRef = useRef<HTMLDivElement>(null);
+  const sliderRef = useRef<HTMLDivElement | null>(null);
   const sliderItemRefs = useRef(new Map());
   const wrappedSliderItemsRef = useRef(new Set());
   const sliderIntervalIdRef = useRef<number | null>(null);
   const [shift, setShift] = useState<{
-    event: string;
-    xScrollDirection: string;
-    rowSegment: number | null;
+    event:
+      | typeof sliderActions.MOVE_DIRECTION_NEXT
+      | typeof sliderActions.MOVE_DIRECTION_PREV
+      | typeof sliderActions.SLIDER_NOT_SLIDING
+      | typeof sliderActions.SLIDER_SLIDING;
+    xScrollDirection:
+      | typeof sliderActions.MOVE_DIRECTION_NEXT
+      | typeof sliderActions.MOVE_DIRECTION_PREV
+      | typeof sliderActions.SLIDER_NOT_SLIDING
+      | typeof sliderActions.SLIDER_SLIDING;
+    rowSegment: number;
   }>({
-    event: "",
+    event: sliderActions.SLIDER_NOT_SLIDING,
     xScrollDirection: sliderActions.SLIDER_NOT_SLIDING,
-    rowSegment: null,
+    rowSegment: 0,
   });
 
   /**
    * Determine if a preview modal is currently open
    */
-  const isPreviewModalOpen = (): boolean => {
+  const isPreviewModalOpen = () => {
     const previewModalStateById =
       usePreviewModalStore.getState().previewModalStateById;
     return !!(
@@ -102,7 +110,7 @@ const Slider = ({
   /**
    * Determine if a preview modal is currently open
    */
-  const rowHasPreviewModalOpen = (): boolean => {
+  const rowHasPreviewModalOpen = () => {
     const previewModalStateById =
       usePreviewModalStore.getState().previewModalStateById;
     return !!(
@@ -648,6 +656,7 @@ const Slider = ({
     action:
       | typeof sliderActions.MOVE_DIRECTION_NEXT
       | typeof sliderActions.MOVE_DIRECTION_PREV
+      | typeof sliderActions.SLIDER_NOT_SLIDING
       | typeof sliderActions.SLIDER_SLIDING,
     coordinates: { x: number; y: number } | null,
     isMouseEvent: boolean,
@@ -700,7 +709,13 @@ const Slider = ({
             itemToFocus.querySelector(".slider-refocus") as HTMLDivElement
           )?.focus();
       }, 100));
-  }, [getVisibleSliderItems, shift.xScrollDirection]);
+    // Reset shift values
+    setShift((prevState) => ({
+      event: sliderActions.SLIDER_NOT_SLIDING,
+      xScrollDirection: sliderActions.SLIDER_NOT_SLIDING,
+      rowSegment: prevState.rowSegment,
+    }));
+  }, [getVisibleSliderItems, shift]);
 
   /**
    * Reset the slider base transform values on pageload and after it animates / shifts
@@ -733,7 +748,6 @@ const Slider = ({
             modalOpen={isPreviewModalOpen() && rowHasExpandedInfoDensity}
             moveDirection={sliderActions.MOVE_DIRECTION_PREV}
             onClick={advancePrev}
-            showNextButton={totalItems > itemsInRow}
           />
         )}
         {getTotalPages() > 1 && (
@@ -754,15 +768,16 @@ const Slider = ({
           </div>
         </div>
         {/* Next button */}
-        <Controls
-          enablePeek={enablePeek}
-          hasMovedOnce={hasMovedOnce}
-          isAnimating={isAnimating}
-          modalOpen={isPreviewModalOpen() && rowHasExpandedInfoDensity}
-          moveDirection={sliderActions.MOVE_DIRECTION_NEXT}
-          onClick={advanceNext}
-          showNextButton={totalItems > itemsInRow}
-        />
+        {totalItems > itemsInRow && (
+          <Controls
+            enablePeek={enablePeek}
+            hasMovedOnce={hasMovedOnce}
+            isAnimating={isAnimating}
+            modalOpen={isPreviewModalOpen() && rowHasExpandedInfoDensity}
+            moveDirection={sliderActions.MOVE_DIRECTION_NEXT}
+            onClick={advanceNext}
+          />
+        )}
       </div>
     </div>
   );

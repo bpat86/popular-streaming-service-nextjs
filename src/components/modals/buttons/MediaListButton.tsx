@@ -7,7 +7,7 @@ import { IVideoModel } from "@/store/types";
 
 import Tooltip from "../../tooltips/Tooltip";
 
-type AddToListButtonProps = {
+type MediaListButtonProps = {
   detailView?: boolean;
   handleCloseModal?: () => void;
   inMediaList: boolean;
@@ -15,13 +15,13 @@ type AddToListButtonProps = {
   videoModel: IVideoModel;
 };
 
-const AddToListButton = ({
+const MediaListButton = ({
   detailView,
   handleCloseModal,
   inMediaList,
   isMyListRow,
   videoModel,
-}: AddToListButtonProps) => {
+}: MediaListButtonProps) => {
   const { addMediaToList, removeMediaFromList } = useContext(ProfileContext);
   const [inMediaListState, setInMediaListState] =
     useState<boolean>(inMediaList);
@@ -153,4 +153,4 @@ const AddToListButton = ({
   );
 };
 
-export default AddToListButton;
+export default MediaListButton;

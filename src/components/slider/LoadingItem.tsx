@@ -1,4 +1,4 @@
-const LoadingItem = ({ width }: { width?: number }): JSX.Element => {
+const LoadingItem = ({ width }: { width?: number }) => {
   return (
     <div
       className="slider-item slider-item-"

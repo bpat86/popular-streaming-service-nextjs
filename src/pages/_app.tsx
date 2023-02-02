@@ -15,11 +15,7 @@ type Props = AppProps & {
   Component: Page;
 };
 
-export default function MyApp({
-  Component,
-  pageProps,
-  router,
-}: Props): JSX.Element {
+export default function MyApp({ Component, pageProps, router }: Props) {
   // Combine the multiple context files
   const contextProviders = [AuthProvider, ProfileProvider, InteractionProvider];
 

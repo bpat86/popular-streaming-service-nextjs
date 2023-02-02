@@ -20,7 +20,7 @@ const SliderItem = ({
   fullDataLoaded,
   itemPosition,
   itemPositionIdx,
-}: Partial<SliderItemProps>): JSX.Element => {
+}: Partial<SliderItemProps>) => {
   /**
    * Shrink removal animation when item is removed from user list
    */

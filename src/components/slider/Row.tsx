@@ -1,5 +1,5 @@
 import debounce from "lodash/debounce";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { flushSync } from "react-dom";
 
 import { sliderActions } from "@/actions/Actions";
@@ -29,7 +29,6 @@ const SliderRow = ({
   isMyListRow,
   listContext,
   sliderNum,
-  // mediaType,
   model,
   myListRowItemsLength,
   rowNum,
@@ -45,38 +44,42 @@ const SliderRow = ({
     sliderActions.SLIDER_NOT_SLIDING
   );
   const [hasMovedOnce, setHasMovedOnce] = useState<boolean>(false);
-  // const [initialLowestVisibleIndex, setInitialLowestVisibleIndex] =
-  //   useState<number>(0);
-  // const [highestVisibleItemIndex, setHighestVisibleItemIndex] =
-  //   useState<number>(0);
   const [lowestVisibleItemIndex, setLowestVisibleItemIndex] =
     useState<number>(0);
-  const [activeRowItemIndex, setActiveRowItemIndex] = useState<number>(0);
+  const [_activeRowItemIndex, setActiveRowItemIndex] = useState<number>(0);
   const [itemsInRow, setItemsInRow] = useState<number>(6);
-
-  useEffect(() => {
-    handleWindowResize();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isXl, isLg, isMd, isSm]);
 
   /**
    * Set default slider items count
    */
-  const handleWindowResize = debounce(() => {
-    if (isXl) {
-      setItemsInRow(6);
-    }
-    if (isLg) {
-      setItemsInRow(5);
-    }
-    if (isMd) {
-      setItemsInRow(4);
-    }
-    if (isSm) {
-      setItemsInRow(3);
-    }
-  }, 100);
+  const handleWindowResize = debounce(
+    useCallback(() => {
+      if (isXl) {
+        setItemsInRow(6);
+      }
+      if (isLg) {
+        setItemsInRow(5);
+      }
+      if (isMd) {
+        setItemsInRow(4);
+      }
+      if (isSm) {
+        setItemsInRow(3);
+      }
+    }, [isXl, isLg, isMd, isSm]),
+    100
+  );
 
+  /**
+   * Set the default slider items count
+   */
+  useEffect(() => {
+    handleWindowResize();
+  }, [isXl, isLg, isMd, isSm, handleWindowResize]);
+
+  /**
+   * Toggle the expanded info density state
+   */
   const toggleExpandedInfoDensity = (isExpanded: boolean) => {
     setRowHasExpandedInfoDensity(isExpanded);
   };
@@ -84,8 +87,6 @@ const SliderRow = ({
   /**
    * Update the lowest visible index state
    * Set the slider move direction
-   * @param {Number} idx
-   * @param {String} direction
    */
   const handleSliderMove = (idx: number, direction: string) => {
     flushSync(() => {
@@ -101,19 +102,16 @@ const SliderRow = ({
    * from the Slider component.
    * https://reactjs.org/docs/react-api.html#reactchildren
    */
-  const getSliderRowItems = () => {
+  const renderSliderItems = () => {
     // console.log(`Slider ${sliderNum} items ${data}`);
     return hasMovedOnce
       ? model.map(({ id }, idx) => (
-          <SliderItem key={`title_${id}_${rowNum}${idx}`} model={model[idx]} />
+          <SliderItem key={`title_${id}_${rowNum}`} model={model[idx]} />
         ))
       : model
           .slice(0, itemsInRow + 2)
           .map(({ id }, idx) => (
-            <SliderItem
-              key={`title_${id}_${rowNum}${idx}`}
-              model={model[idx]}
-            />
+            <SliderItem key={`title_${id}_${rowNum}`} model={model[idx]} />
           ));
   };
 
@@ -130,14 +128,9 @@ const SliderRow = ({
         ])}
       >
         <Slider
-          // activeRowItemIndex={activeRowItemIndex}
           enableLooping={enableLooping}
           enablePeek={enablePeek}
           hasMovedOnce={hasMovedOnce}
-          // highestVisibleItemIndex={highestVisibleItemIndex}
-          // setHighestVisibleItemIndex={setHighestVisibleItemIndex}
-          // initialLowestVisibleIndex={initialLowestVisibleIndex}
-          // setInitialLowestVisibleIndex={setInitialLowestVisibleIndex}
           isMyListRow={isMyListRow}
           itemsInRow={itemsInRow}
           listContext={listContext}
@@ -145,8 +138,6 @@ const SliderRow = ({
           myListRowItemsLength={myListRowItemsLength}
           setLowestVisibleItemIndex={setLowestVisibleItemIndex}
           setActiveRowItemIndex={setActiveRowItemIndex}
-          // fullDataLoaded={hasMovedOnce}
-          // model={model}
           onSliderMove={(totalItemCount, direction) =>
             handleSliderMove(totalItemCount, direction)
           }
@@ -156,12 +147,11 @@ const SliderRow = ({
           sliderMoveDirection={sliderMoveDirection}
           sliderNum={sliderNum}
           sliderName={title}
-          // sliderMediaType={mediaType}
           setHasMovedOnce={setHasMovedOnce}
           toggleExpandedInfoDensity={toggleExpandedInfoDensity}
           totalItems={model?.length}
         >
-          {getSliderRowItems()}
+          {renderSliderItems()}
         </Slider>
       </div>
     </div>

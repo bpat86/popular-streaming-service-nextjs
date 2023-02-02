@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import {
   cloneElement,
   forwardRef,
-  MutableRefObject,
+  RefObject,
   useCallback,
   useLayoutEffect,
 } from "react";
@@ -23,7 +23,7 @@ type PreviewModalContainerProps = {
 
 const PreviewModalContainer = forwardRef(
   ({ children, mutateSliderData }: PreviewModalContainerProps, ref) => {
-    const layoutWrapperRef = ref as MutableRefObject<HTMLDivElement>;
+    const layoutWrapperRef = ref as RefObject<HTMLDivElement>;
     const { previewModalStateById } = usePreviewModalStore(
       (state) => ({
         previewModalStateById: state.previewModalStateById,
@@ -39,7 +39,7 @@ const PreviewModalContainer = forwardRef(
      */
     const isPreviewModalOpen = useCallback(
       (videoId: IPreviewModal["videoId"]) => {
-        if (!usePreviewModalStore) return false;
+        if (!previewModalStateById) return false;
         let modal;
         return videoId
           ? null === (modal = previewModalStateById[videoId]) ||
@@ -58,6 +58,7 @@ const PreviewModalContainer = forwardRef(
      * @returns {Object}
      */
     const openPreviewModalState = useCallback(() => {
+      if (!previewModalStateById) return;
       return Object.values(previewModalStateById).find(
         ({ isOpen }) => isOpen
       ) as IPreviewModal;
@@ -114,6 +115,7 @@ const PreviewModalContainer = forwardRef(
      * Close all preview modals
      */
     const closeAllModals = useCallback(() => {
+      if (!previewModalStateById) return;
       Object.values(previewModalStateById)
         .filter(({ isOpen }) => isOpen)
         .forEach(({ videoId }) => {
@@ -142,18 +144,18 @@ const PreviewModalContainer = forwardRef(
           titleCardRect: undefined,
           videoPlayback: undefined,
           model: {
-            uid: router.query.jbv,
-            id: router.query.jbv,
-            mediaType: router.query.type,
+            uid: router.query.jbv as string,
+            id: router.query.jbv as string,
+            mediaType: router.query.type as string,
             videoModel: {
               listContext: undefined,
-              id: router.query.jbv,
+              id: router.query.jbv as string,
               identifiers: {
-                uid: router.query.jbv,
-                id: router.query.jbv,
-                mediaType: router.query.type,
+                uid: router.query.jbv as string,
+                id: router.query.jbv as string,
+                mediaType: router.query.type as string,
               },
-              mediaType: router.query.type,
+              mediaType: router.query.type as string,
               rankNum: undefined,
               rect: undefined,
               rowNum: undefined,
@@ -162,16 +164,16 @@ const PreviewModalContainer = forwardRef(
               titleCardRef: undefined,
             },
           },
-          videoId: router.query.jbv,
+          videoId: router.query.jbv as string,
           videoModel: {
             listContext: undefined,
-            id: router.query.jbv,
+            id: router.query.jbv as string,
             identifiers: {
-              uid: router.query.jbv,
-              id: router.query.jbv,
-              mediaType: router.query.type,
+              uid: router.query.jbv as string,
+              id: router.query.jbv as string,
+              mediaType: router.query.type as string,
             },
-            mediaType: router.query.type,
+            mediaType: router.query.type as string,
             rankNum: undefined,
             rect: undefined,
             rowNum: undefined,
@@ -196,6 +198,7 @@ const PreviewModalContainer = forwardRef(
      * Render mini preview modal
      */
     const renderMiniModal = () => {
+      if (!previewModalStateById) return;
       return Object.values(previewModalStateById)
         .filter(({ closeWithoutAnimation, isOpen, modalState }) => {
           return (
@@ -211,6 +214,7 @@ const PreviewModalContainer = forwardRef(
      * Render detail preview modal
      */
     const renderDetailModal = () => {
+      if (!previewModalStateById) return;
       const modal = Object.values(previewModalStateById).find(
         ({ closeWithoutAnimation, isOpen, modalState }) => {
           return (
@@ -253,9 +257,9 @@ const PreviewModalContainer = forwardRef(
         <PreviewModal
           key={`${uid}-${isOpen}`}
           ref={layoutWrapperRef}
-          modalState={modalState}
           previewModalState={{
             ...modal,
+            modalState,
             mutateSliderData,
           }}
         />

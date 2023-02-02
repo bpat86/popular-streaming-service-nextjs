@@ -14,7 +14,7 @@ type LoginProps = {
   isLoggedIn: boolean;
 };
 
-const Login = ({ isLoggedIn, initialEmailValue }: LoginProps): JSX.Element => {
+const Login = ({ isLoggedIn, initialEmailValue }: LoginProps) => {
   const [formData, setFormData] = useState<object>({
     email: initialEmailValue,
     password: "",

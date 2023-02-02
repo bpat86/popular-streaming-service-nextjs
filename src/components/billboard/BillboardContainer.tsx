@@ -26,7 +26,7 @@ const BillboardContainer = ({
 
   return (
     <InView initialInView={true}>
-      {({ ref, inView, entry }): JSX.Element => (
+      {({ ref, inView, entry }) => (
         <Billboard
           ref={ref}
           inView={inView}

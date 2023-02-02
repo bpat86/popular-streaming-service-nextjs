@@ -3,6 +3,7 @@ import { MutableRefObject } from "react";
 import { previewModalActions } from "@/actions/Actions";
 
 export interface IVideoModel {
+  animationContext?: string | undefined;
   cast?: Array<{
     id: number;
     original_name: string;
@@ -46,6 +47,9 @@ export interface IVideoModel {
   mutateModalData?: (data: IPreviewModal) => void;
   mutateSliderData?: (data: any) => void;
   overview?: string | undefined;
+  queryData?: {
+    [key: string]: any;
+  };
   rankNum?: number;
   rect?: DOMRect;
   reference?: string[];
@@ -57,9 +61,7 @@ export interface IVideoModel {
   tagline?: string;
   title?: string;
   titleCardId?: string;
-  titleCardRef?:
-    | MutableRefObject<HTMLAnchorElement | HTMLDivElement>
-    | undefined;
+  titleCardRef?: MutableRefObject<HTMLDivElement> | undefined;
   videoId?: string;
   videoKey?: string;
   videos?: Array<{
@@ -77,6 +79,7 @@ export interface IVideoModel {
 }
 
 export interface IModel {
+  animationContext?: string | undefined;
   uid?: string;
   id?: number;
   isMyListRow?: boolean;
@@ -84,13 +87,11 @@ export interface IModel {
   mediaType?: string;
   rankNum?: number;
   rect?: DOMRect;
-  ref?: MutableRefObject<HTMLAnchorElement | HTMLDivElement> | undefined;
+  ref?: MutableRefObject<HTMLDivElement> | undefined;
   rowNum?: number;
   scrollPosition?: number;
   sliderName?: string;
-  titleCardRef?:
-    | MutableRefObject<HTMLAnchorElement | HTMLDivElement>
-    | undefined;
+  titleCardRef?: MutableRefObject<HTMLDivElement> | undefined;
   imageKey?: string;
   videoId?: string;
   videoKey?: string;
@@ -99,6 +100,7 @@ export interface IModel {
 }
 
 export interface IPreviewModal {
+  animationContext?: string | undefined;
   billboardVideoMerchId?: string | undefined;
   closeWithoutAnimation?: boolean;
   individualState?: {
@@ -115,9 +117,7 @@ export interface IPreviewModal {
     sliderRow?: number;
     titleCardId?: string | undefined;
     titleCardRect?: DOMRect | undefined;
-    titleCardRef?:
-      | MutableRefObject<HTMLAnchorElement | HTMLDivElement>
-      | undefined;
+    titleCardRef?: MutableRefObject<HTMLDivElement> | undefined;
     videoId?: string | undefined;
     videoKey?: string | undefined;
     videoModel?: IVideoModel | undefined;
@@ -136,9 +136,7 @@ export interface IPreviewModal {
   scrollPosition?: number | undefined;
   sliderRow?: number;
   titleCardId?: string | undefined;
-  titleCardRef?:
-    | MutableRefObject<HTMLAnchorElement | HTMLDivElement>
-    | undefined;
+  titleCardRef?: MutableRefObject<HTMLDivElement> | undefined;
   titleCardRect?: DOMRect | undefined;
   videoId?: string | undefined;
   videoKey?: string | undefined;

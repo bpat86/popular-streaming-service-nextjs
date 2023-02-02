@@ -65,7 +65,7 @@ const TitleCard = ({
   toggleExpandedInfoDensity,
   watchURL,
 }: TitleCardProps) => {
-  const titleCardRef = useRef<HTMLDivElement>(null);
+  const titleCardRef = useRef<HTMLDivElement | null>(null);
 
   /**
    * Only visible when the user selects thumbs down for a media title
@@ -90,7 +90,7 @@ const TitleCard = ({
   /**
    * Handle the onMouseEnter event for the title card.
    */
-  const handleOnMouseEnter = (e: MouseEvent<HTMLDivElement>): void => {
+  const handleOnMouseEnter = (e: MouseEvent<HTMLDivElement>) => {
     const mouseEnter = onMouseEnter;
     mouseEnter &&
       mouseEnter(e, titleCardRef as MutableRefObject<HTMLDivElement>);
@@ -124,7 +124,7 @@ const TitleCard = ({
   /**
    * Handle the onKeyDown event for the title card.
    */
-  const handleOnKeyDown = (e: KeyboardEvent<HTMLDivElement>): void => {
+  const handleOnKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     onKeyDown && onKeyDown(e, titleCardRef as MutableRefObject<HTMLDivElement>);
   };
 
@@ -160,9 +160,10 @@ const TitleCard = ({
         onClick={handleAnchorClick}
       >
         <div
-          className={clsxm("boxart-size-16x9 boxart-rounded bg-zinc-800", [
-            isDisliked && "grayscale",
-          ])}
+          className={clsxm(
+            "boxart-size-16x9 boxart-rounded relative bg-zinc-800",
+            [isDisliked && "grayscale"]
+          )}
         >
           {getIsDisliked()}
           <BoxArt

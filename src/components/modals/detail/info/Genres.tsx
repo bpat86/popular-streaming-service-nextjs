@@ -4,7 +4,7 @@ type GenresProps = {
   genres: IVideoModel["genres"];
 };
 
-const Genres = ({ genres }: GenresProps): JSX.Element => {
+const Genres = ({ genres }: GenresProps) => {
   if (!genres) return <></>;
   return (
     <div className="genres mt-1 mb-4">

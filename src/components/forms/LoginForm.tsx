@@ -34,7 +34,7 @@ const LoginForm = ({
   setFormData,
   login,
   strapiError,
-}: LoginFormProps): JSX.Element => {
+}: LoginFormProps) => {
   return (
     <>
       <Formik

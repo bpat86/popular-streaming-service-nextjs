@@ -58,7 +58,7 @@ const VideoPlayer = ({
   onReady,
   opts,
   videoId,
-}: VideoPlayerProps): JSX.Element => {
+}: VideoPlayerProps) => {
   if (!canPlay) return <></>;
   return (
     <div className="absolute inset-0 h-full w-full overflow-hidden">
@@ -216,7 +216,7 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
     /**
      * Set error if YouTube video returns an error
      */
-    const onError: YouTubeProps["onError"] = ({ data }): void => {
+    const onError: YouTubeProps["onError"] = ({ data }) => {
       if (data === 2 || data === 5 || data === 100 || data === 101) {
         setPlaybackError(true);
         setVideoCanPlayThrough(false);
@@ -250,7 +250,7 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
     /**
      * Render BoxArt Wrapper Component
      */
-    const renderBoxArt = (): JSX.Element => {
+    const renderBoxArt = () => {
       return (
         <div
           className="boxart-wrapper"
@@ -260,7 +260,6 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
         >
           {imageKey ? (
             <Image
-              fill
               priority={true}
               className={clsxm("boxart-image", [isDisliked && "grayscale"])}
               src={`https://image.tmdb.org/t/p/${
@@ -279,6 +278,10 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
                     ? 0
                     : 1,
               }}
+              sizes="(max-width: 768px) 100vw,
+              (max-width: 1200px) 50vw,
+              33vw"
+              fill
             />
           ) : (
             <></>
@@ -298,7 +301,6 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
             <div className="story-art detail-modal relative">
               {imageKey ? (
                 <Image
-                  fill
                   priority={true}
                   className={clsxm("boxart-image", [isDisliked && "grayscale"])}
                   src={`https://image.tmdb.org/t/p/${
@@ -317,6 +319,10 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
                         ? 0
                         : 1,
                   }}
+                  sizes="(max-width: 768px) 100vw,
+              (max-width: 1200px) 50vw,
+              33vw"
+                  fill
                 />
               ) : (
                 <></>
@@ -327,7 +333,6 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
             <div className="story-art detail-modal relative">
               {imageKey ? (
                 <Image
-                  fill
                   priority={true}
                   className={clsxm("boxart-image", [isDisliked && "grayscale"])}
                   src={`https://image.tmdb.org/t/p/${
@@ -346,6 +351,10 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
                         ? 0
                         : 1,
                   }}
+                  sizes="(max-width: 768px) 100vw,
+              (max-width: 1200px) 50vw,
+              33vw"
+                  fill
                 />
               ) : (
                 <></>
@@ -359,7 +368,7 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
     /**
      * Render TitleTreatment Component
      */
-    const renderTitleTreatmentWrapper = (): JSX.Element => {
+    const renderTitleTreatmentWrapper = () => {
       return (
         <>
           {/* Mini / Detail modal info */}

@@ -19,7 +19,7 @@ type BrowseLayoutProps = {
 };
 
 const BrowseLayout = forwardRef(
-  ({ children, title, ...rest }: BrowseLayoutProps, ref): JSX.Element => {
+  ({ children, title, ...rest }: BrowseLayoutProps, ref) => {
     const layoutWrapperRef = ref as MutableRefObject<HTMLDivElement>;
     const { isWatchModeEnabled } = useContext(InteractionContext);
     const pageTitle = title.split(" ").join("-").toLowerCase();

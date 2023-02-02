@@ -25,7 +25,7 @@ const TitleCardLink = ({
   onClick,
   watchURL,
 }: TitleCardLinkProps) => {
-  const watchLinkAnchorRef = useRef<HTMLAnchorElement>(null);
+  const watchLinkAnchorRef = useRef<HTMLAnchorElement | null>(null);
   return (
     <Link href={watchURL} prefetch={false} legacyBehavior>
       <a
@@ -43,5 +43,4 @@ const TitleCardLink = ({
   );
 };
 
-TitleCardLink.displayName = "TitleCardLink";
 export default TitleCardLink;

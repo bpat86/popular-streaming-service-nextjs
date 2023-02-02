@@ -6,7 +6,7 @@ import { IVideoModel } from "@/store/types";
 
 import DislikeMediaButton from "../../buttons/DislikeMediaButton";
 import LikeMediaButton from "../../buttons/LikeMediaButton";
-import AddToListButton from "../../buttons/MediaListButton";
+import MediaListButton from "../../buttons/MediaListButton";
 import { WatchLink } from "../../WatchLink";
 
 type WatchNowProps = {
@@ -16,10 +16,10 @@ type WatchNowProps = {
 
 type ButtonControlsProps = {
   identifiers: IVideoModel["identifiers"];
-  isMyListRow: boolean;
-  inMediaList: boolean;
-  isLiked: boolean;
-  isDisliked: boolean;
+  isMyListRow: IVideoModel["isMyListRow"];
+  inMediaList: IVideoModel["inMediaList"];
+  isLiked: IVideoModel["isLiked"];
+  isDisliked: IVideoModel["isDisliked"];
   handleWatchNow: ({ id, mediaType }: WatchNowProps) => void;
   handleViewDetails: () => void;
   handleCloseModal: (e: MouseEvent<Element, MouseEvent>) => void;
@@ -101,7 +101,7 @@ const ButtonControls = memo(
               </svg>
             </button>
           </WatchLink>
-          <AddToListButton {...addToListProps} />
+          <MediaListButton {...addToListProps} />
           <LikeMediaButton {...likedMediaProps} />
           <DislikeMediaButton {...likedMediaProps} />
           <Tooltip
