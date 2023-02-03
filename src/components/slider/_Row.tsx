@@ -8,8 +8,8 @@ import useWindowResize from "@/hooks/useWindowResize";
 import clsxm from "@/lib/clsxm";
 import { IModel } from "@/store/types";
 
-import Slider from "./Slider";
-import SliderItem from "./SliderItem";
+import Slider from "./_Slider";
+import SliderItem from "./_SliderItem";
 
 type SliderRowProps = {
   isMyListRow: boolean;
@@ -135,23 +135,24 @@ const SliderRow = ({
           itemsInRow={itemsInRow}
           listContext={listContext}
           lowestVisibleItemIndex={lowestVisibleItemIndex}
-          model={hasMovedOnce ? model : model.slice(0, itemsInRow + 2)}
           myListRowItemsLength={myListRowItemsLength}
+          setLowestVisibleItemIndex={setLowestVisibleItemIndex}
+          setActiveRowItemIndex={setActiveRowItemIndex}
           onSliderMove={(totalItemCount, direction) =>
             handleSliderMove(totalItemCount, direction)
           }
           previewModalEnabled={previewModalEnabled}
           rowNum={rowNum}
           rowHasExpandedInfoDensity={rowHasExpandedInfoDensity}
-          setLowestVisibleItemIndex={setLowestVisibleItemIndex}
-          setActiveRowItemIndex={setActiveRowItemIndex}
           sliderMoveDirection={sliderMoveDirection}
           sliderNum={sliderNum}
           sliderName={title}
           setHasMovedOnce={setHasMovedOnce}
           toggleExpandedInfoDensity={toggleExpandedInfoDensity}
           totalItems={model?.length}
-        />
+        >
+          {renderSliderItems()}
+        </Slider>
       </div>
     </div>
   );

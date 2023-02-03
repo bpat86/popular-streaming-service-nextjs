@@ -1,21 +1,40 @@
 import { MutableRefObject } from "react";
 
 import { previewModalActions } from "@/actions/Actions";
+import { IMediaItem } from "@/pages/api/tmdb/types";
 
 export interface IVideoModel {
   animationContext?: string | undefined;
-  cast?: Array<{
-    id: number;
-    original_name: string;
-    profile_path: string;
-    character: string;
-  }>;
-  crew?: Array<{
-    id: number;
-    original_name: string;
-    profile_path: string;
-    job: string;
-  }>;
+  credits?: {
+    id?: number;
+    cast?: Array<{
+      adult?: boolean;
+      gender?: number | null;
+      id?: number;
+      known_for_department?: string;
+      name?: string;
+      original_name?: string;
+      popularity?: number;
+      profile_path?: string | null;
+      cast_id?: number;
+      character: string;
+      credit_id: string;
+      order: number;
+    }>;
+    crew?: Array<{
+      adult?: boolean;
+      gender?: number | null;
+      id?: number;
+      known_for_department?: string;
+      name?: string;
+      original_name?: string;
+      popularity?: number;
+      profile_path?: string | null;
+      credit_id?: string;
+      department?: string;
+      job?: string;
+    }>;
+  };
   dislikedMediaId?: number;
   genres?: Array<{
     id: number;
@@ -64,14 +83,20 @@ export interface IVideoModel {
   titleCardRef?: MutableRefObject<HTMLDivElement | null> | undefined;
   videoId?: string;
   videoKey?: string;
-  videos?: Array<{
-    id: string;
-    key: string;
-    name: string;
-    site: string;
-    size: number;
-    type: string;
-  }>;
+  videos?: {
+    results: Array<{
+      id?: string;
+      iso_639_1?: string;
+      iso_3166_1?: string;
+      key?: string;
+      name?: string;
+      site?: string;
+      size?: number;
+      type?: string;
+      official?: boolean;
+      published_at?: string;
+    }>;
+  };
   videoPlayback?: {
     start: number;
     length: number;
@@ -85,8 +110,9 @@ export interface IModel {
   isMyListRow?: boolean;
   listContext?: string;
   mediaType?: string;
+  model?: IMediaItem;
   rankNum?: number;
-  rect?: DOMRect;
+  rect?: DOMRect | undefined;
   ref?: MutableRefObject<HTMLDivElement> | undefined;
   rowNum?: number;
   scrollPosition?: number;
@@ -95,8 +121,21 @@ export interface IModel {
   imageKey?: string;
   videoId?: string;
   videoKey?: string;
-  videoModel?: IVideoModel | undefined;
-  videoURL?: string;
+  videoModel?: IVideoModel;
+  videos?: {
+    results: Array<{
+      id?: string;
+      iso_639_1?: string;
+      iso_3166_1?: string;
+      key?: string;
+      name?: string;
+      site?: string;
+      size?: number;
+      type?: string;
+      official?: boolean;
+      published_at?: string;
+    }>;
+  };
 }
 
 export interface IPreviewModal {

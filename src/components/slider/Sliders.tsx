@@ -3,7 +3,7 @@ import { ISlider } from "@/pages/api/tmdb/types";
 import Row from "./Row";
 
 type SlidersProps = {
-  model: Array<ISlider>;
+  model: ISlider[];
 };
 
 const Sliders = ({ model }: SlidersProps) => {

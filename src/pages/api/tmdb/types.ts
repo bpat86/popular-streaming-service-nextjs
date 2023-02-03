@@ -1,66 +1,114 @@
+import { IVideoModel } from "@/store/types";
+
 export interface IMediaItem {
-  adult: boolean;
-  backdrop_path: string | null;
-  belongs_to_collection: string | object;
-  budget: number;
-  credits?: Array<{
-    credit_type: string;
-    department: string;
-    job: string;
-    media: {
-      id: number;
-      name: string;
-      original_name: string;
-      characer: string;
-      episodes: Array<{
-        air_date: string;
-        poster_path: string;
-        season_number: number;
-        episode_number: number;
-      }>;
-      seasons: Array<{
-        air_date: string;
-        poster_path: string;
-        season_number: number;
-      }>;
-    };
-    media_type: string;
-    id: number;
-    person: {
-      name: string;
-      id: number;
-    };
+  adult?: boolean;
+  backdrop_path?: string | null;
+  belongs_to_collection?: string | object;
+  budget?: number;
+  cast?: Array<{
+    adult?: boolean;
+    gender?: number | null;
+    id?: number;
+    known_for_department?: string;
+    name?: string;
+    original_name?: string;
+    popularity?: number;
+    profile_path?: string | null;
+    cast_id?: number;
+    character: string;
+    credit_id: string;
+    order: number;
   }>;
-  genres: Array<{ id: number; name: string }>;
-  homepage: string;
-  id: number;
-  imdb_id: string;
-  is_billboard: boolean;
-  original_language: string;
-  original_title: string;
-  overview: string;
-  popularity: number;
-  poster_path: string | null;
+  crew?: Array<{
+    adult?: boolean;
+    gender?: number | null;
+    id?: number;
+    known_for_department?: string;
+    name?: string;
+    original_name?: string;
+    popularity?: number;
+    profile_path?: string | null;
+    credit_id?: string;
+    department?: string;
+    job?: string;
+  }>;
+  credits?: {
+    id?: number;
+    cast?: Array<{
+      adult?: boolean;
+      gender?: number | null;
+      id?: number;
+      known_for_department?: string;
+      name?: string;
+      original_name?: string;
+      popularity?: number;
+      profile_path?: string | null;
+      cast_id?: number;
+      character: string;
+      credit_id: string;
+      order: number;
+    }>;
+    crew?: Array<{
+      adult?: boolean;
+      gender?: number | null;
+      id?: number;
+      known_for_department?: string;
+      name?: string;
+      original_name?: string;
+      popularity?: number;
+      profile_path?: string | null;
+      credit_id?: string;
+      department?: string;
+      job?: string;
+    }>;
+  };
+  genres?: Array<{ id: number; name: string }>;
+  homepage?: string;
+  id?: number;
+  imdb_id?: string;
+  is_billboard?: boolean;
+  original_language?: string;
+  original_title?: string;
+  original_name?: string;
+  overview?: string;
+  popularity?: number;
+  poster_path?: string | null;
   production_companies: Array<{
-    id: number;
-    logo_path: string;
-    name: string;
-    origin_country: string;
+    id?: number;
+    logo_path?: string;
+    name?: string;
+    origin_country?: string;
   }>;
-  production_countries: Array<{
-    iso_3166_1: string;
-    name: string;
+  production_countries?: Array<{
+    iso_3166_1?: string;
+    name?: string;
   }>;
-  release_date: string;
-  revenue: number;
-  runtime: number;
-  spoken_languages: Array<{ iso_639_1: string; name: string }>;
-  status: string;
-  tagline: string;
-  title: string;
-  video: boolean;
-  vote_average: number;
-  vote_count: number;
+  release_date?: string;
+  revenue?: number;
+  runtime?: number;
+  spoken_languages?: Array<{ iso_639_1?: string; name?: string }>;
+  status?: string;
+  tagline?: string;
+  title?: string;
+  video?: boolean;
+  videos?: {
+    results?: Array<{
+      id?: string;
+      iso_639_1?: string;
+      iso_3166_1?: string;
+      key?: string;
+      name?: string;
+      site?: string;
+      size?: number;
+      type?: string;
+      official?: boolean;
+      published_at?: string;
+    }>;
+  };
+  videoKey?: string;
+  videoModel?: IVideoModel;
+  vote_average?: number;
+  vote_count?: number;
 }
 
 export interface IMediaItemWithUserPreferences extends IMediaItem {

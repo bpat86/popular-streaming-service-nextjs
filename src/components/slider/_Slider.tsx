@@ -1,4 +1,5 @@
 import {
+  Children,
   cloneElement,
   MouseEvent,
   ReactElement,
@@ -10,14 +11,15 @@ import {
 import { flushSync } from "react-dom";
 
 import { sliderActions } from "@/actions/Actions";
+import SliderItem from "@/components/slider/_SliderItem";
+//
 import Controls from "@/components/slider/Controls";
 import LoadingItem from "@/components/slider/LoadingItem";
 import PaginationIndicator from "@/components/slider/PaginationIndicator";
-import SliderItem from "@/components/slider/SliderItem";
 import TitleCardContainer from "@/components/slider/title-card/TitleCardContainer";
 import { AnimatePresenceWrapper } from "@/lib/AnimatePresenceWrapper";
+//
 import clsxm from "@/lib/clsxm";
-import { IMediaItemWithUserPreferences } from "@/pages/api/tmdb/types";
 import usePreviewModalStore from "@/store/PreviewModalStore";
 import { getVideoKey } from "@/utils/getVideoKey";
 
@@ -32,7 +34,6 @@ type SliderProps = {
   enableLooping: boolean;
   isMyListRow: boolean;
   listContext: string;
-  model: IMediaItemWithUserPreferences[];
   myListRowItemsLength: number;
   onSliderMove: (sliderNum: number, direction: string) => void;
   lowestVisibleItemIndex: number;
@@ -61,7 +62,6 @@ const Slider = ({
   enableLooping,
   isMyListRow,
   listContext,
-  model,
   myListRowItemsLength,
   onSliderMove,
   lowestVisibleItemIndex,
@@ -234,8 +234,6 @@ const Slider = ({
     return newOffset * getSliderItemsWidth() * direction;
   };
 
-  // TODO: Build slider item resolver to handle different types of items
-
   /**
    * Handle child elements and clone, wrap them in props so we can track
    * their visibility and positions.
@@ -243,16 +241,16 @@ const Slider = ({
   const renderSliderItems = () => {
     const totalItemsCount = getTotalItemsCount();
     let lowestIndex = lowestVisibleItemIndex - getLowestIndex(),
-      offscreenItems: (IMediaItemWithUserPreferences | ReactElement)[] = [],
-      visibleItems: (IMediaItemWithUserPreferences | ReactElement)[] = [],
+      offscreenItems = [] as ReactElement[],
+      visibleItems = [] as ReactElement[],
       itemsRange = 0;
     /**
      * Rather than dump the entire array of data onto the page,
      * we're only going to load the items that are visible.
      */
-    if (model && model.length) {
+    if (children && children.length) {
       itemsRange = getHighestIndex() - getLowestIndex();
-      visibleItems = model.slice(getLowestIndex(), getHighestIndex());
+      visibleItems = children.slice(getLowestIndex(), getHighestIndex());
       for (
         let idx = 0;
         visibleItems.length < itemsRange &&
@@ -274,13 +272,10 @@ const Slider = ({
         getHighestIndex() - lowestVisibleItemIndex <= itemsInRow * 2 &&
         ((offscreenItems =
           lowestVisibleItemIndex + itemsInRow === totalItemsCount // Determine if current page is the last page
-            ? model.slice(0, itemsInRow + 1) // Initial set of items in the sequence
-            : model.slice(0, 1)), // First child item in the sequence
+            ? children.slice(0, itemsInRow + 1) // Initial set of items in the sequence
+            : children.slice(0, 1)), // First child item in the sequence
         // Clone slider item component and append latest items with mapped props to the sequence
-        (offscreenItems = cloneItemsWithNewKeys(
-          offscreenItems as ReactElement[],
-          "_appended"
-        )),
+        (offscreenItems = cloneItemsWithNewKeys(offscreenItems, "_appended")),
         // Combine arrays
         (visibleItems = Array.from(
           new Set(visibleItems.concat(offscreenItems))
@@ -293,14 +288,11 @@ const Slider = ({
         // If first page of results, get last page, otherwise
         ((offscreenItems =
           lowestVisibleItemIndex === 0
-            ? model.slice(-itemsInRow - 1) // Last set of items in the sequence
-            : model.slice(-1)), // Last child item in the sequence
+            ? children.slice(-itemsInRow - 1) // Last set of items in the sequence
+            : children.slice(-1)), // Last child item in the sequence
         (lowestIndex += offscreenItems.length),
         // Clone slider item component and prepend latest items with mapped props to the sequence
-        (offscreenItems = cloneItemsWithNewKeys(
-          offscreenItems as ReactElement[],
-          "_prepended"
-        )),
+        (offscreenItems = cloneItemsWithNewKeys(offscreenItems, "_prepended")),
         // Combine arrays
         (visibleItems = Array.from(
           new Set(offscreenItems.concat(visibleItems))
@@ -310,10 +302,7 @@ const Slider = ({
      * Map through the 60 or so Children components and then wrap the cloned items
      * with props denoting their position on the viewport.
      */
-    return wrapSliderItems(
-      visibleItems as IMediaItemWithUserPreferences[],
-      lowestIndex
-    );
+    return wrapSliderItems(visibleItems, lowestIndex);
   };
 
   /**
@@ -331,7 +320,7 @@ const Slider = ({
    * Create new slider items and apply props
    */
   const wrapSliderItems = (
-    visibleItems: IMediaItemWithUserPreferences[],
+    itemChildren: ReactElement[], // visibleItems
     lowestIndex: number
   ) => {
     const visibleItemIdx = lowestIndex + itemsInRow - 1;
@@ -339,8 +328,8 @@ const Slider = ({
     // Reset the set of wrapped visible items
     wrappedSliderItemsRef.current = new Set();
     // Return the wrapped items
-    return visibleItems.map((model: IMediaItemWithUserPreferences, idx) => {
-      console.log("model: ", model);
+    return Children.map([...itemChildren], (itemChild, idx) => {
+      const { model } = itemChild.props;
       // Set item position based on its viewport positioning
       const uid = `${rowNum}${idx}${model?.id}`;
       let itemPosition = "",
@@ -357,7 +346,9 @@ const Slider = ({
           idx <= visibleItemIdx &&
           ((itemPosition = "middle"), (itemTabbable = true));
       // Set item keys and ids
-      const itemUid = model.id ? model.id + "slider-item" : "item_" + idx;
+      const itemUid = itemChild.key
+        ? itemChild.key + "slider-item"
+        : "item_" + idx;
       let inViewport = false;
       // Push wrapped item into slider wrapped item array
       itemPosition && ((itemPositionIdx += 1), (inViewport = true)),
@@ -366,65 +357,14 @@ const Slider = ({
           inViewport: inViewport,
         });
 
-      const titleCardModel = {
-        uid,
-        id: model?.id,
-        isMyListRow,
-        listContext,
-        mediaType: model?.media_type,
-        rankNum: idx,
-        rect: sliderItemRefs.current.get(itemUid)?.getBoundingClientRect(),
-        ref: sliderItemRefs.current.get(itemUid),
-        rowNum,
-        scrollPosition: scrollY,
-        sliderName,
-        titleCardRef: sliderItemRefs.current.get(itemUid),
-        imageKey: model?.backdrop_path,
-        videoId: model?.id,
-        videoKey: getVideoKey(model?.videos),
-        videoModel: {
-          cast: model?.cast,
-          crew: model?.crew,
-          dislikedMediaId: model?.disliked_media_id,
-          genres: model?.genres,
-          listContext,
-          id: model?.id,
-          identifiers: {
-            uid: `${rowNum}${idx}${model?.id}`,
-            id: model?.id,
-            mediaType: model?.media_type,
-          },
-          imageKey: model?.backdrop_path,
-          inMediaList: model?.in_media_list,
-          isBillboard: model?.is_billboard,
-          isMyListRow,
-          isDisliked: model?.is_disliked,
-          isLiked: model?.is_liked,
-          likedMediaId: model?.liked_media_id,
-          logos: model?.images?.logos,
-          mediaListId: model?.media_list_id,
-          mediaType: model?.media_type,
-          rankNum: idx,
-          rect: sliderItemRefs.current.get(itemUid)?.getBoundingClientRect(),
-          reference: model,
-          rowNum,
-          scrollPosition: scrollY,
-          sliderName,
-          synopsis: model?.overview,
-          rowHasExpandedInfoDensity: rowHasExpandedInfoDensity,
-          tagline: model?.tagline,
-          title: model?.original_title || model?.original_name,
-          titleCardId: `title-card-${sliderNum}-${idx}`,
-          titleCardRef: sliderItemRefs.current.get(itemUid),
-          videoId: model?.id,
-          videoKey: getVideoKey(model?.videos),
-          videos: model?.videos,
-          videoPlayback: {
-            start: null,
-            length: null,
-          },
-        },
-      };
+      // Clone the items in the viewport array and assign props (Gallery modal stuff)
+      // const clonedItem = cloneElement(itemChild, {
+      //   itemUid,
+      //   itemTabbable,
+      //   itemPosition,
+      // });
+      // const { model } = clonedItem.props;
+      // console.log("clonedItem: ", clonedItem.props);
 
       // Render the slider items
       return (
@@ -441,7 +381,70 @@ const Slider = ({
             inViewport={inViewport}
             itemTabbable={itemTabbable}
             listContext={listContext}
-            model={titleCardModel}
+            model={{
+              uid,
+              id: model?.id,
+              isMyListRow,
+              listContext: listContext,
+              mediaType: model?.media_type,
+              rankNum: idx,
+              rect: sliderItemRefs.current
+                .get(itemUid)
+                ?.getBoundingClientRect(),
+              ref: sliderItemRefs.current.get(itemUid),
+              rowNum,
+              scrollPosition: scrollY,
+              sliderName,
+              titleCardRef: sliderItemRefs.current.get(itemUid),
+              imageKey: model?.backdrop_path,
+              videoId: model?.id,
+              videoKey: getVideoKey(model),
+              videoModel: {
+                cast: model?.cast,
+                crew: model?.crew,
+                dislikedMediaId: model?.disliked_media_id,
+                genres: model?.genres,
+                listContext,
+                id: model?.id,
+                identifiers: {
+                  uid: `${rowNum}${idx}${model?.id}`,
+                  id: model?.id,
+                  mediaType: model?.media_type,
+                },
+                imageKey: model?.backdrop_path,
+                inMediaList: model?.in_media_list,
+                isBillboard: model?.is_billboard,
+                isMyListRow,
+                isDisliked: model?.is_disliked,
+                isLiked: model?.is_liked,
+                likedMediaId: model?.liked_media_id,
+                logos: model?.images?.logos,
+                mediaListId: model?.media_list_id,
+                mediaType: model?.media_type,
+                rankNum: idx,
+                rect: sliderItemRefs.current
+                  .get(itemUid)
+                  ?.getBoundingClientRect(),
+                reference: model,
+                rowNum,
+                scrollPosition: scrollY,
+                sliderName,
+                synopsis: model?.overview,
+                rowHasExpandedInfoDensity: rowHasExpandedInfoDensity,
+                tagline: model?.tagline,
+                title: model?.original_title || model?.original_name,
+                titleCardId: `title-card-${sliderNum}-${idx}`,
+                titleCardRef: sliderItemRefs.current.get(itemUid),
+                videoId: model?.id,
+                videoKey: getVideoKey(model),
+                videos: model?.videos,
+                videoPlayback: {
+                  start: null,
+                  length: null,
+                },
+              },
+              videoURL: model?.videos,
+            }}
             myListRowItemsLength={myListRowItemsLength}
             onFocus={() => handleRowItemFocus(idx)}
             previewModalEnabled={previewModalEnabled}
