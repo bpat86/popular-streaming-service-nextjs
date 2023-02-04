@@ -16,7 +16,7 @@ const Sliders = ({ model }: SlidersProps) => {
         if (slider.data.length > 0) {
           return (
             <Row
-              key={`${slider.id}_${idx}`}
+              key={`${slider.name}_${slider.id}_${idx}`}
               model={slider.data}
               enablePeek={true}
               enableLooping={true}

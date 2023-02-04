@@ -24,26 +24,25 @@ const SliderItem = ({
   /**
    * Shrink removal animation when item is removed from user list
    */
-  const removeFromListAnimationProps = () => {
-    return !isAnimating
-      ? {
-          exit: {
-            scaleX: 0,
-            scaleY: 0,
-            opacity: 0,
-            transition: {
-              delay: 0.12,
-              opacity: {
-                delay: 0.3,
-                duration: 0.36,
-                ease: "linear",
-              },
-              duration: 0.36,
-              ease: [0.21, 0, 0.07, 1],
-            },
+  const animationProps = () => {
+    if (isAnimating) return {};
+    return {
+      exit: {
+        scaleX: 0,
+        scaleY: 0,
+        opacity: 0,
+        transition: {
+          delay: 0.12,
+          opacity: {
+            delay: 0.3,
+            duration: 0.36,
+            ease: "linear",
           },
-        }
-      : {};
+          duration: 0.36,
+          ease: [0.21, 0, 0.07, 1],
+        },
+      },
+    };
   };
 
   return (
@@ -54,7 +53,7 @@ const SliderItem = ({
           : `slider-item-`,
         itemPosition && `${itemPosition}`,
       ])}
-      {...removeFromListAnimationProps()}
+      {...animationProps()}
     >
       {fullDataLoaded ? (
         children

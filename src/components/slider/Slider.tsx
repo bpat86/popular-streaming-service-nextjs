@@ -19,10 +19,8 @@ import { AnimatePresenceWrapper } from "@/lib/AnimatePresenceWrapper";
 import clsxm from "@/lib/clsxm";
 import { IMediaItemWithUserPreferences } from "@/pages/api/tmdb/types";
 import usePreviewModalStore from "@/store/PreviewModalStore";
-import { getVideoKey } from "@/utils/getVideoKey";
 
 type SliderProps = {
-  children: ReactElement[];
   rowNum: number;
   sliderNum: number;
   sliderName: string;
@@ -51,7 +49,6 @@ type SliderProps = {
 };
 
 const Slider = ({
-  children,
   rowNum,
   sliderNum,
   sliderName,
@@ -76,8 +73,8 @@ const Slider = ({
 }: SliderProps) => {
   const [isAnimating, setIsAnimating] = useState<boolean>(false);
   const sliderRef = useRef<HTMLDivElement | null>(null);
-  const sliderItemRefs = useRef(new Map());
-  const wrappedSliderItemsRef = useRef(new Set());
+  const sliderItemsRef = useRef<Map<string, HTMLDivElement> | null>(null);
+  const wrappedSliderItemsRef = useRef<Map<string, {}> | null>(null);
   const sliderIntervalIdRef = useRef<number | null>(null);
   const [shift, setShift] = useState<{
     event:
@@ -96,6 +93,28 @@ const Slider = ({
     xScrollDirection: sliderActions.SLIDER_NOT_SLIDING,
     rowSegment: 0,
   });
+
+  /**
+   * Get the slider items ref map
+   */
+  const getItemRefsMap = () => {
+    if (!sliderItemsRef.current) {
+      // Initialize the Map on first usage.
+      sliderItemsRef.current = new Map();
+    }
+    return sliderItemsRef.current;
+  };
+
+  /**
+   * Get the wrapped slider items ref map
+   */
+  const getWrappedItemRefsMap = () => {
+    if (!wrappedSliderItemsRef.current) {
+      // Initialize the Map on first usage.
+      wrappedSliderItemsRef.current = new Map();
+    }
+    return wrappedSliderItemsRef.current;
+  };
 
   /**
    * Determine if a preview modal is currently open
@@ -234,34 +253,33 @@ const Slider = ({
     return newOffset * getSliderItemsWidth() * direction;
   };
 
-  // TODO: Build slider item resolver to handle different types of items
-
   /**
    * Handle child elements and clone, wrap them in props so we can track
    * their visibility and positions.
    */
   const renderSliderItems = () => {
     const totalItemsCount = getTotalItemsCount();
+    const data: IMediaItemWithUserPreferences[] = Array.from(model);
     let lowestIndex = lowestVisibleItemIndex - getLowestIndex(),
       offscreenItems: (IMediaItemWithUserPreferences | ReactElement)[] = [],
       visibleItems: (IMediaItemWithUserPreferences | ReactElement)[] = [],
       itemsRange = 0;
     /**
-     * Rather than dump the entire array of data onto the page,
-     * we're only going to load the items that are visible.
+     * Fill in the gaps with empty loading items
      */
-    if (model && model.length) {
+    if (data && data.length) {
       itemsRange = getHighestIndex() - getLowestIndex();
-      visibleItems = model.slice(getLowestIndex(), getHighestIndex());
+      visibleItems = data.slice(getLowestIndex(), getHighestIndex());
       for (
         let idx = 0;
         visibleItems.length < itemsRange &&
         visibleItems.length < totalItemsCount;
         idx++
       ) {
+        // Fill in the gaps with loading items
         visibleItems.push(
           <LoadingItem
-            key={"loading-title-" + idx}
+            key={`loading-title-${idx}`}
             width={getSliderItemsWidth()}
           />
         );
@@ -269,22 +287,21 @@ const Slider = ({
       /**
        * The state of the slider before it has shifted at least once
        */
-      getTotalPages() > 1 &&
-        enableLooping &&
+      enableLooping &&
+        getTotalPages() > 1 &&
         getHighestIndex() - lowestVisibleItemIndex <= itemsInRow * 2 &&
         ((offscreenItems =
           lowestVisibleItemIndex + itemsInRow === totalItemsCount // Determine if current page is the last page
-            ? model.slice(0, itemsInRow + 1) // Initial set of items in the sequence
-            : model.slice(0, 1)), // First child item in the sequence
+            ? data.slice(0, itemsInRow + 1) // Initial set of items in the sequence
+            : data.slice(0, 1)), // First child item in the sequence
         // Clone slider item component and append latest items with mapped props to the sequence
         (offscreenItems = cloneItemsWithNewKeys(
-          offscreenItems as ReactElement[],
+          offscreenItems as (IMediaItemWithUserPreferences & ReactElement)[],
           "_appended"
         )),
         // Combine arrays
-        (visibleItems = Array.from(
-          new Set(visibleItems.concat(offscreenItems))
-        )));
+        (visibleItems = visibleItems.concat(offscreenItems)));
+
       /**
        * If the slider has shifted at least once, we need to check if the
        */
@@ -293,23 +310,18 @@ const Slider = ({
         // If first page of results, get last page, otherwise
         ((offscreenItems =
           lowestVisibleItemIndex === 0
-            ? model.slice(-itemsInRow - 1) // Last set of items in the sequence
-            : model.slice(-1)), // Last child item in the sequence
+            ? data.slice(-itemsInRow - 1) // Last set of items in the sequence
+            : data.slice(-1)), // Last child item in the sequence
         (lowestIndex += offscreenItems.length),
         // Clone slider item component and prepend latest items with mapped props to the sequence
         (offscreenItems = cloneItemsWithNewKeys(
-          offscreenItems as ReactElement[],
+          offscreenItems as (IMediaItemWithUserPreferences & ReactElement)[],
           "_prepended"
         )),
         // Combine arrays
-        (visibleItems = Array.from(
-          new Set(offscreenItems.concat(visibleItems))
-        )));
+        (visibleItems = offscreenItems.concat(visibleItems)));
     }
-    /**
-     * Map through the 60 or so Children components and then wrap the cloned items
-     * with props denoting their position on the viewport.
-     */
+    // Return the wrapped items
     return wrapSliderItems(
       visibleItems as IMediaItemWithUserPreferences[],
       lowestIndex
@@ -317,12 +329,15 @@ const Slider = ({
   };
 
   /**
-   * Clone items and apply new keys
+   * Clone slider items and append new keys
    */
-  const cloneItemsWithNewKeys = (items: ReactElement[], str: string) => {
+  const cloneItemsWithNewKeys = (
+    items: (IMediaItemWithUserPreferences & ReactElement)[],
+    str: string
+  ) => {
     return items.map((item) => {
       return cloneElement(item, {
-        key: item.key + str,
+        key: `title_${item.id}_${rowNum}${str}`,
       });
     });
   };
@@ -336,15 +351,15 @@ const Slider = ({
   ) => {
     const visibleItemIdx = lowestIndex + itemsInRow - 1;
     let itemPositionIdx = 0;
-    // Reset the set of wrapped visible items
-    wrappedSliderItemsRef.current = new Set();
+    // Clear the wrapped items map before re-rendering
+    getWrappedItemRefsMap().clear();
     // Return the wrapped items
-    return visibleItems.map((model: IMediaItemWithUserPreferences, idx) => {
-      console.log("model: ", model);
-      // Set item position based on its viewport positioning
-      const uid = `${rowNum}${idx}${model?.id}`;
+    return visibleItems.map((model, idx) => {
+      // console.log("model: ", model);
+      const uid = Number(`${rowNum}${model?.id}${idx}`);
       let itemPosition = "",
         itemTabbable = false;
+      // Assign item position based on its index
       idx === lowestIndex
         ? ((itemPosition = "leftEdge"), (itemTabbable = true))
         : idx === lowestIndex - 1
@@ -356,76 +371,80 @@ const Slider = ({
         : idx >= lowestIndex &&
           idx <= visibleItemIdx &&
           ((itemPosition = "middle"), (itemTabbable = true));
-      // Set item keys and ids
-      const itemUid = model.id ? model.id + "slider-item" : "item_" + idx;
+      // Get the item's unique ID
+      const itemUid = model.key ? `${model.key}slider-item` : `item_${idx}`;
+      // Get the item's DOM node
+      const itemNode = getItemRefsMap().get(itemUid);
       let inViewport = false;
-      // Push wrapped item into slider wrapped item array
-      itemPosition && ((itemPositionIdx += 1), (inViewport = true)),
-        wrappedSliderItemsRef.current.add({
+      // If the item is in the viewport, set its position and add it to the map
+      if (itemPosition && ((itemPositionIdx += 1), (inViewport = true))) {
+        getWrappedItemRefsMap().set(itemUid, {
           uid: itemUid,
-          inViewport: inViewport,
+          inViewport,
         });
-
-      const titleCardModel = {
+      }
+      // TitleCard videoModel
+      const tcVideoModel = {
+        cast: model?.cast,
+        crew: model?.crew,
+        dislikedMediaId: model?.disliked_media_id,
+        genres: model?.genres,
+        listContext,
+        id: model?.id,
+        identifiers: {
+          uid,
+          id: model?.id,
+          mediaType: model?.media_type,
+        },
+        imageKey: model?.backdrop_path,
+        inMediaList: model?.in_media_list,
+        isBillboard: model?.is_billboard,
+        isMyListRow,
+        isDisliked: model?.is_disliked,
+        isLiked: model?.is_liked,
+        likedMediaId: model?.liked_media_id,
+        // logos: model?.images?.logos,
+        mediaListId: model?.media_list_id,
+        mediaType: model?.media_type,
+        rankNum: idx,
+        rect: itemNode?.getBoundingClientRect(),
+        reference: { ...model },
+        rowNum,
+        scrollPosition: scrollY,
+        sliderName,
+        synopsis: model?.overview,
+        rowHasExpandedInfoDensity,
+        tagline: model?.tagline,
+        title: model?.original_title || model?.original_name,
+        titleCardId: `title-card-${sliderNum}-${idx}`,
+        titleCardRef: itemNode,
+        videoId: model?.id,
+        // videoKey: getVideoKey(model?.videos),
+        // videos: model?.videos,
+        videoPlayback: {
+          start: null,
+          length: null,
+        },
+      };
+      // TitleCard model
+      const tcModel = {
         uid,
         id: model?.id,
         isMyListRow,
         listContext,
         mediaType: model?.media_type,
         rankNum: idx,
-        rect: sliderItemRefs.current.get(itemUid)?.getBoundingClientRect(),
-        ref: sliderItemRefs.current.get(itemUid),
+        rect: itemNode?.getBoundingClientRect(),
+        ref: itemNode,
         rowNum,
         scrollPosition: scrollY,
         sliderName,
-        titleCardRef: sliderItemRefs.current.get(itemUid),
+        titleCardRef: itemNode,
         imageKey: model?.backdrop_path,
         videoId: model?.id,
-        videoKey: getVideoKey(model?.videos),
-        videoModel: {
-          cast: model?.cast,
-          crew: model?.crew,
-          dislikedMediaId: model?.disliked_media_id,
-          genres: model?.genres,
-          listContext,
-          id: model?.id,
-          identifiers: {
-            uid: `${rowNum}${idx}${model?.id}`,
-            id: model?.id,
-            mediaType: model?.media_type,
-          },
-          imageKey: model?.backdrop_path,
-          inMediaList: model?.in_media_list,
-          isBillboard: model?.is_billboard,
-          isMyListRow,
-          isDisliked: model?.is_disliked,
-          isLiked: model?.is_liked,
-          likedMediaId: model?.liked_media_id,
-          logos: model?.images?.logos,
-          mediaListId: model?.media_list_id,
-          mediaType: model?.media_type,
-          rankNum: idx,
-          rect: sliderItemRefs.current.get(itemUid)?.getBoundingClientRect(),
-          reference: model,
-          rowNum,
-          scrollPosition: scrollY,
-          sliderName,
-          synopsis: model?.overview,
-          rowHasExpandedInfoDensity: rowHasExpandedInfoDensity,
-          tagline: model?.tagline,
-          title: model?.original_title || model?.original_name,
-          titleCardId: `title-card-${sliderNum}-${idx}`,
-          titleCardRef: sliderItemRefs.current.get(itemUid),
-          videoId: model?.id,
-          videoKey: getVideoKey(model?.videos),
-          videos: model?.videos,
-          videoPlayback: {
-            start: null,
-            length: null,
-          },
-        },
+        // videoKey: getVideoKey(model?.videos),
+        videoModel: { ...tcVideoModel },
       };
-
       // Render the slider items
       return (
         <SliderItem
@@ -437,11 +456,14 @@ const Slider = ({
         >
           <TitleCardContainer
             key={`title-card-container-${uid}`}
-            ref={(element) => sliderItemRefs.current.set(itemUid, element)}
+            ref={(node: HTMLDivElement) => {
+              const map = getItemRefsMap();
+              node ? map.set(itemUid, node) : map.delete(itemUid);
+            }}
             inViewport={inViewport}
             itemTabbable={itemTabbable}
             listContext={listContext}
-            model={titleCardModel}
+            model={tcModel}
             myListRowItemsLength={myListRowItemsLength}
             onFocus={() => handleRowItemFocus(idx)}
             previewModalEnabled={previewModalEnabled}
@@ -462,22 +484,23 @@ const Slider = ({
     (items: Array<{ uid: string; inViewport: boolean }>) => {
       const visible = new Map();
       items.forEach(({ uid }: { uid: string }) => {
-        sliderItemRefs.current.get(uid) &&
-          visible.set(uid, sliderItemRefs.current.get(uid));
+        visible.set(uid, getItemRefsMap().get(uid));
       });
       // console.log("visible: ", visible);
-      // console.log("sliderItemRefs: ", sliderItemRefs);
       return visible;
     },
-    [sliderItemRefs]
+    []
   );
 
   /**
    * Get the slider items that currently visible in the viewport
    */
   const getVisibleSliderItems = useCallback(() => {
+    // console.log("keys: ", getWrappedItemRefsMap().keys());
+    // console.log("values: ", getWrappedItemRefsMap().values());
+    // console.log("entries: ", getWrappedItemRefsMap().entries());
     return getSliderItems(
-      (Array.from(wrappedSliderItemsRef.current.values()) as []).filter(
+      (Array.from(getWrappedItemRefsMap().values()) as []).filter(
         ({ inViewport }) => inViewport
       )
     );
@@ -705,15 +728,16 @@ const Slider = ({
         shift.xScrollDirection === sliderActions.MOVE_DIRECTION_NEXT
           ? 1
           : visibleItems.length - 2);
+    // console.log("itemToFocus 1: ", visibleItems),
     // console.log("itemToFocus 2: ", visibleItems[itemIdx]),
     itemIdx &&
       (itemToFocus = visibleItems[itemIdx]) &&
+      itemToFocus &&
       (sliderIntervalIdRef.current = window.setInterval(() => {
         sliderIntervalIdRef.current &&
           clearInterval(sliderIntervalIdRef.current),
-          (sliderIntervalIdRef.current = null),
           (
-            itemToFocus.querySelector(".slider-refocus") as HTMLDivElement
+            itemToFocus.querySelector(".slider-refocus") as HTMLAnchorElement
           ).focus();
       }, 100));
   }, [getVisibleSliderItems, shift.xScrollDirection]);
@@ -732,9 +756,10 @@ const Slider = ({
    */
   useEffect(() => {
     if (itemsInRow) {
+      getVisibleSliderItems();
       resetSliderPosition();
     }
-  }, [itemsInRow, resetSliderPosition]);
+  }, [getVisibleSliderItems, itemsInRow, resetSliderPosition]);
 
   return (
     <div className="row-content slider-hover-trigger-layer w-full overflow-x-visible whitespace-nowrap">

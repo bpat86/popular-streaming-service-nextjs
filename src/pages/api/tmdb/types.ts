@@ -1,6 +1,7 @@
 import { IVideoModel } from "@/store/types";
 
 export interface IMediaItem {
+  key?: string | undefined;
   adult?: boolean;
   backdrop_path?: string | null;
   belongs_to_collection?: string | object;

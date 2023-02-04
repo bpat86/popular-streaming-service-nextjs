@@ -6,17 +6,16 @@ import { sliderActions } from "@/actions/Actions";
 // Hooks
 import useWindowResize from "@/hooks/useWindowResize";
 import clsxm from "@/lib/clsxm";
-import { IModel } from "@/store/types";
+import { IMediaItemWithUserPreferences } from "@/pages/api/tmdb/types";
 
 import Slider from "./Slider";
-import SliderItem from "./SliderItem";
 
 type SliderRowProps = {
   isMyListRow: boolean;
   listContext: string;
   sliderNum: number;
   mediaType: string;
-  model: IModel[];
+  model: IMediaItemWithUserPreferences[];
   myListRowItemsLength: number;
   rowNum: number;
   title: string;
@@ -93,26 +92,6 @@ const SliderRow = ({
       setLowestVisibleItemIndex(idx);
       setSliderMoveDirection(direction);
     });
-  };
-
-  /**
-   * Create the SliderItem components with initial data items.
-   * After the slider has moved once, map the rest of data.
-   * SliderItems will be accessible as `props.children`
-   * from the Slider component.
-   * https://reactjs.org/docs/react-api.html#reactchildren
-   */
-  const renderSliderItems = () => {
-    // console.log("model: ", model);
-    return hasMovedOnce
-      ? model.map(({ id }, idx) => (
-          <SliderItem key={`title_${id}_${rowNum}`} model={model[idx]} />
-        ))
-      : model
-          .slice(0, itemsInRow + 2)
-          .map(({ id }, idx) => (
-            <SliderItem key={`title_${id}_${rowNum}`} model={model[idx]} />
-          ));
   };
 
   return (
