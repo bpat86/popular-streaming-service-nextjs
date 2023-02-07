@@ -3,6 +3,7 @@ import {
   KeyboardEvent,
   MouseEvent,
   MutableRefObject,
+  useCallback,
   useRef,
 } from "react";
 
@@ -21,7 +22,7 @@ type TitleCardProps = {
   onFocus: (e: FocusEvent<HTMLDivElement>) => void;
   onMouseEnter: (
     e: MouseEvent<HTMLDivElement>,
-    ref: MutableRefObject<HTMLDivElement | null>
+    ref: MutableRefObject<HTMLDivElement>
   ) => void;
   onMouseLeave: (
     e: MouseEvent<HTMLDivElement> & {
@@ -30,22 +31,23 @@ type TitleCardProps = {
           location: Location;
         };
     },
-    ref: MutableRefObject<HTMLDivElement | null>
+    ref: MutableRefObject<HTMLDivElement>
   ) => void;
   onMouseMove: (
     e: MouseEvent<HTMLDivElement>,
-    ref: MutableRefObject<HTMLDivElement | null>
+    ref: MutableRefObject<HTMLDivElement>
   ) => void;
   onKeyDown: (
     e: KeyboardEvent<HTMLDivElement>,
-    ref: MutableRefObject<HTMLDivElement | null>
+    ref: MutableRefObject<HTMLDivElement>
   ) => void;
   onClick: (
     e:
       | MouseEvent<HTMLDivElement | HTMLAnchorElement>
       | KeyboardEvent<HTMLDivElement | HTMLAnchorElement>,
-    ref: MutableRefObject<HTMLDivElement | null>
+    ref: MutableRefObject<HTMLDivElement>
   ) => void;
+  rowNum: number;
   toggleExpandedInfoDensity: (arg0: boolean) => void;
   watchURL: string;
 };
@@ -62,10 +64,11 @@ const TitleCard = ({
   onMouseLeave,
   onMouseMove,
   onClick,
+  rowNum,
   toggleExpandedInfoDensity,
   watchURL,
 }: TitleCardProps) => {
-  const titleCardRef = useRef<HTMLDivElement | null>(null);
+  const titleCardRef = useRef<HTMLDivElement>(null);
 
   /**
    * Only visible when the user selects thumbs down for a media title
@@ -90,52 +93,74 @@ const TitleCard = ({
   /**
    * Handle the onMouseEnter event for the title card.
    */
-  const handleOnMouseEnter = (e: MouseEvent<HTMLDivElement>) => {
-    const mouseEnter = onMouseEnter;
-    mouseEnter && mouseEnter(e, titleCardRef);
-    toggleExpandedInfoDensity && toggleExpandedInfoDensity(true);
-  };
+  const handleOnMouseEnter = useCallback(
+    (e: MouseEvent<HTMLDivElement>) => {
+      const mouseEnter = onMouseEnter;
+      mouseEnter &&
+        mouseEnter(e, titleCardRef as MutableRefObject<HTMLDivElement>);
+      toggleExpandedInfoDensity && toggleExpandedInfoDensity(true);
+    },
+    [onMouseEnter, titleCardRef, toggleExpandedInfoDensity]
+  );
 
   /**
    * Handle the onMouseMove event for the title card.
    */
-  const handleOnMouseMove = (e: MouseEvent<HTMLDivElement>) => {
-    onMouseMove && onMouseMove(e, titleCardRef);
-  };
+  const handleOnMouseMove = useCallback(
+    (e: MouseEvent<HTMLDivElement>) => {
+      onMouseMove &&
+        onMouseMove(e, titleCardRef as MutableRefObject<HTMLDivElement>);
+    },
+    [onMouseMove, titleCardRef]
+  );
 
   /**
    * Handle the onMouseLeave event for the title card.
    */
-  const handleOnMouseLeave = (
-    e: MouseEvent<HTMLDivElement> & {
-      relatedTarget: EventTarget &
-        Node & {
-          location: Location;
-        };
-    }
-  ) => {
-    onMouseLeave && onMouseLeave(e, titleCardRef);
-    toggleExpandedInfoDensity && toggleExpandedInfoDensity(false);
-  };
+  const handleOnMouseLeave = useCallback(
+    (
+      e: MouseEvent<HTMLDivElement> & {
+        relatedTarget: EventTarget &
+          Node & {
+            location: Location;
+          };
+      }
+    ) => {
+      onMouseLeave &&
+        onMouseLeave(e, titleCardRef as MutableRefObject<HTMLDivElement>);
+      toggleExpandedInfoDensity && toggleExpandedInfoDensity(false);
+    },
+    [onMouseLeave, titleCardRef, toggleExpandedInfoDensity]
+  );
 
   /**
    * Handle the onKeyDown event for the title card.
    */
-  const handleOnKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    onKeyDown && onKeyDown(e, titleCardRef);
-  };
+  const handleOnKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLDivElement>) => {
+      onKeyDown &&
+        onKeyDown(e, titleCardRef as MutableRefObject<HTMLDivElement>);
+    },
+    [onKeyDown, titleCardRef]
+  );
 
   /**
    * Handle the onClick event for the title card.
    */
-  const handleAnchorClick = (
-    e:
-      | MouseEvent<HTMLDivElement | HTMLAnchorElement>
-      | KeyboardEvent<HTMLDivElement | HTMLAnchorElement>
-  ) => {
-    const click = onClick;
-    click && (e.stopPropagation(), e.preventDefault(), click(e, titleCardRef));
-  };
+  const handleAnchorClick = useCallback(
+    (
+      e:
+        | MouseEvent<HTMLDivElement | HTMLAnchorElement>
+        | KeyboardEvent<HTMLDivElement | HTMLAnchorElement>
+    ) => {
+      const click = onClick;
+      click &&
+        (e.stopPropagation(),
+        e.preventDefault(),
+        click(e, titleCardRef as MutableRefObject<HTMLDivElement>));
+    },
+    [onClick, titleCardRef]
+  );
 
   return (
     <div
@@ -164,6 +189,7 @@ const TitleCard = ({
             className="boxart-image"
             imageKey={imageKey}
             onFocus={onFocus}
+            priority={rowNum < 3}
           />
         </div>
       </WatchLink>

@@ -15,7 +15,6 @@ import LoadingItem from "@/components/slider/LoadingItem";
 import PaginationIndicator from "@/components/slider/PaginationIndicator";
 import SliderItem from "@/components/slider/SliderItem";
 import TitleCardContainer from "@/components/slider/title-card/TitleCardContainer";
-import { AnimatePresenceWrapper } from "@/lib/AnimatePresenceWrapper";
 import clsxm from "@/lib/clsxm";
 import { IMediaItemWithUserPreferences } from "@/pages/api/tmdb/types";
 import usePreviewModalStore from "@/store/PreviewModalStore";
@@ -76,45 +75,28 @@ const Slider = ({
   const sliderItemsRef = useRef<Map<string, HTMLDivElement> | null>(null);
   const wrappedSliderItemsRef = useRef<Map<string, {}> | null>(null);
   const sliderIntervalIdRef = useRef<number | null>(null);
-  const [shift, setShift] = useState<{
-    event:
-      | typeof sliderActions.MOVE_DIRECTION_NEXT
-      | typeof sliderActions.MOVE_DIRECTION_PREV
-      | typeof sliderActions.SLIDER_NOT_SLIDING
-      | typeof sliderActions.SLIDER_SLIDING;
-    xScrollDirection:
-      | typeof sliderActions.MOVE_DIRECTION_NEXT
-      | typeof sliderActions.MOVE_DIRECTION_PREV
-      | typeof sliderActions.SLIDER_NOT_SLIDING
-      | typeof sliderActions.SLIDER_SLIDING;
-    rowSegment: number;
-  }>({
-    event: sliderActions.SLIDER_NOT_SLIDING,
-    xScrollDirection: sliderActions.SLIDER_NOT_SLIDING,
-    rowSegment: 0,
-  });
 
   /**
    * Get the slider items ref map
    */
-  const getItemRefsMap = () => {
+  const getItemRefsMap = useCallback(() => {
     if (!sliderItemsRef.current) {
       // Initialize the Map on first usage.
       sliderItemsRef.current = new Map();
     }
     return sliderItemsRef.current;
-  };
+  }, []);
 
   /**
    * Get the wrapped slider items ref map
    */
-  const getWrappedItemRefsMap = () => {
+  const getWrappedItemRefsMap = useCallback(() => {
     if (!wrappedSliderItemsRef.current) {
       // Initialize the Map on first usage.
       wrappedSliderItemsRef.current = new Map();
     }
     return wrappedSliderItemsRef.current;
-  };
+  }, []);
 
   /**
    * Determine if a preview modal is currently open
@@ -177,9 +159,9 @@ const Slider = ({
    * accounting for the "leftEdge" and "rightEdge" items.
    */
   const getHighestIndex = () => {
-    const nextRow = lowestVisibleItemIndex + 2 * itemsInRow + 1;
+    const next = lowestVisibleItemIndex + 2 * itemsInRow + 1;
     const totalItemsCount = getTotalItemsCount();
-    return Math.min(totalItemsCount, nextRow);
+    return Math.min(totalItemsCount, next);
   };
 
   /**
@@ -191,8 +173,8 @@ const Slider = ({
    * against zero and return the larger of the two.
    */
   const getLowestIndex = () => {
-    const prevRow = lowestVisibleItemIndex - itemsInRow - 1;
-    return Math.max(0, prevRow);
+    const prev = lowestVisibleItemIndex - itemsInRow - 1;
+    return Math.max(0, prev);
   };
 
   const getTotalItemsCount = useCallback(() => {
@@ -289,19 +271,20 @@ const Slider = ({
        */
       enableLooping &&
         getTotalPages() > 1 &&
-        getHighestIndex() - lowestVisibleItemIndex <= itemsInRow * 2 &&
-        ((offscreenItems =
-          lowestVisibleItemIndex + itemsInRow === totalItemsCount // Determine if current page is the last page
-            ? data.slice(0, itemsInRow + 1) // Initial set of items in the sequence
-            : data.slice(0, 1)), // First child item in the sequence
-        // Clone slider item component and append latest items with mapped props to the sequence
-        (offscreenItems = cloneItemsWithNewKeys(
-          offscreenItems as (IMediaItemWithUserPreferences & ReactElement)[],
-          "_appended"
-        )),
+        (getHighestIndex() - lowestVisibleItemIndex <= itemsInRow * 2 &&
+          ((offscreenItems =
+            lowestVisibleItemIndex + itemsInRow === totalItemsCount // Determine if current page is the last page
+              ? data.slice(0, itemsInRow + 1) // Initial set of items in the sequence
+              : data.slice(0, 1)), // First child item in the sequence
+          // Clone slider item component and append latest items with mapped props to the sequence
+          (offscreenItems = cloneItemsWithNewKeys(
+            offscreenItems as (IMediaItemWithUserPreferences & ReactElement)[],
+            "_appended"
+          ))),
         // Combine arrays
-        (visibleItems = visibleItems.concat(offscreenItems)));
-
+        (visibleItems = visibleItems.concat(offscreenItems)),
+        console.log("offscreenItems", offscreenItems),
+        console.log("visibleItems", visibleItems));
       /**
        * If the slider has shifted at least once, we need to check if the
        */
@@ -319,7 +302,9 @@ const Slider = ({
           "_prepended"
         )),
         // Combine arrays
-        (visibleItems = offscreenItems.concat(visibleItems)));
+        (visibleItems = offscreenItems.concat(visibleItems)),
+        console.log("offscreenItems", offscreenItems),
+        console.log("visibleItems", visibleItems));
     }
     // Return the wrapped items
     return wrapSliderItems(
@@ -345,137 +330,155 @@ const Slider = ({
   /**
    * Create new slider items and apply props
    */
-  const wrapSliderItems = (
-    visibleItems: IMediaItemWithUserPreferences[],
-    lowestIndex: number
-  ) => {
-    const visibleItemIdx = lowestIndex + itemsInRow - 1;
-    let itemPositionIdx = 0;
-    // Clear the wrapped items map before re-rendering
-    getWrappedItemRefsMap().clear();
-    // Return the wrapped items
-    return visibleItems.map((model, idx) => {
-      // console.log("model: ", model);
-      const uid = Number(`${rowNum}${model?.id}${idx}`);
-      let itemPosition = "",
-        itemTabbable = false;
-      // Assign item position based on its index
-      idx === lowestIndex
-        ? ((itemPosition = "leftEdge"), (itemTabbable = true))
-        : idx === lowestIndex - 1
-        ? (itemPosition = "leftPeek")
-        : idx === visibleItemIdx + 1
-        ? (itemPosition = "rightPeek")
-        : idx === visibleItemIdx
-        ? ((itemPosition = "rightEdge"), (itemTabbable = true))
-        : idx >= lowestIndex &&
-          idx <= visibleItemIdx &&
-          ((itemPosition = "middle"), (itemTabbable = true));
-      // Get the item's unique ID
-      const itemUid = model.key ? `${model.key}slider-item` : `item_${idx}`;
-      // Get the item's DOM node
-      const itemNode = getItemRefsMap().get(itemUid);
-      let inViewport = false;
-      // If the item is in the viewport, set its position and add it to the map
-      if (itemPosition && ((itemPositionIdx += 1), (inViewport = true))) {
-        getWrappedItemRefsMap().set(itemUid, {
-          uid: itemUid,
-          inViewport,
-        });
-      }
-      // TitleCard videoModel
-      const tcVideoModel = {
-        cast: model?.cast,
-        crew: model?.crew,
-        dislikedMediaId: model?.disliked_media_id,
-        genres: model?.genres,
-        listContext,
-        id: model?.id,
-        identifiers: {
+  const wrapSliderItems = useCallback(
+    (visibleItems: IMediaItemWithUserPreferences[], lowestIndex: number) => {
+      const visibleItemIdx = lowestIndex + itemsInRow - 1;
+      let itemPositionIdx = 0;
+      // Clear the wrapped items map before re-rendering
+      getWrappedItemRefsMap().clear();
+      // Return the wrapped items
+      return visibleItems.map((model, idx) => {
+        // console.log("model: ", model);
+        const uid = Number(`${rowNum}${model?.id}${idx}`);
+        let itemPosition = "",
+          itemTabbable = false;
+        // Assign item position based on its index
+        idx === lowestIndex
+          ? ((itemPosition = "leftEdge"), (itemTabbable = true))
+          : idx === lowestIndex - 1
+          ? (itemPosition = "leftPeek")
+          : idx === visibleItemIdx + 1
+          ? (itemPosition = "rightPeek")
+          : idx === visibleItemIdx
+          ? ((itemPosition = "rightEdge"), (itemTabbable = true))
+          : idx >= lowestIndex &&
+            idx <= visibleItemIdx &&
+            ((itemPosition = "middle"), (itemTabbable = true));
+        // Get the item's unique ID
+        const itemUid = model.key ? `${model.key}slider-item` : `item_${idx}`;
+        // Get the item's DOM node
+        const itemNode = getItemRefsMap().get(itemUid);
+        let inViewport = false;
+        // If the item is in the viewport, set its position and add it to the map
+        if (itemPosition && ((itemPositionIdx += 1), (inViewport = true))) {
+          getWrappedItemRefsMap().set(itemUid, {
+            uid: itemUid,
+            inViewport,
+          });
+        }
+        // TitleCard videoModel
+        const tcVideoModel = {
+          cast: model?.cast,
+          crew: model?.crew,
+          dislikedMediaId: model?.disliked_media_id,
+          genres: model?.genres,
+          listContext,
+          id: model?.id,
+          identifiers: {
+            uid,
+            id: model?.id,
+            mediaType: model?.media_type,
+          },
+          imageKey: model?.backdrop_path,
+          inMediaList: model?.in_media_list,
+          isBillboard: model?.is_billboard,
+          isMyListRow,
+          isDisliked: model?.is_disliked,
+          isLiked: model?.is_liked,
+          likedMediaId: model?.liked_media_id,
+          // logos: model?.images?.logos,
+          mediaListId: model?.media_list_id,
+          mediaType: model?.media_type,
+          rankNum: idx,
+          rect: itemNode?.getBoundingClientRect(),
+          reference: { ...model },
+          rowNum,
+          scrollPosition: scrollY,
+          sliderName,
+          synopsis: model?.overview,
+          rowHasExpandedInfoDensity,
+          tagline: model?.tagline,
+          title: model?.original_title || model?.original_name,
+          titleCardId: `title-card-${sliderNum}-${idx}`,
+          titleCardRef: itemNode,
+          videoId: model?.id,
+          // videoKey: getVideoKey(model?.videos),
+          // videos: model?.videos,
+          videoPlayback: {
+            start: null,
+            length: null,
+          },
+        };
+        // TitleCard model
+        const tcModel = {
           uid,
           id: model?.id,
+          isMyListRow,
+          listContext,
           mediaType: model?.media_type,
-        },
-        imageKey: model?.backdrop_path,
-        inMediaList: model?.in_media_list,
-        isBillboard: model?.is_billboard,
-        isMyListRow,
-        isDisliked: model?.is_disliked,
-        isLiked: model?.is_liked,
-        likedMediaId: model?.liked_media_id,
-        // logos: model?.images?.logos,
-        mediaListId: model?.media_list_id,
-        mediaType: model?.media_type,
-        rankNum: idx,
-        rect: itemNode?.getBoundingClientRect(),
-        reference: { ...model },
-        rowNum,
-        scrollPosition: scrollY,
-        sliderName,
-        synopsis: model?.overview,
-        rowHasExpandedInfoDensity,
-        tagline: model?.tagline,
-        title: model?.original_title || model?.original_name,
-        titleCardId: `title-card-${sliderNum}-${idx}`,
-        titleCardRef: itemNode,
-        videoId: model?.id,
-        // videoKey: getVideoKey(model?.videos),
-        // videos: model?.videos,
-        videoPlayback: {
-          start: null,
-          length: null,
-        },
-      };
-      // TitleCard model
-      const tcModel = {
-        uid,
-        id: model?.id,
-        isMyListRow,
-        listContext,
-        mediaType: model?.media_type,
-        rankNum: idx,
-        rect: itemNode?.getBoundingClientRect(),
-        ref: itemNode,
-        rowNum,
-        scrollPosition: scrollY,
-        sliderName,
-        titleCardRef: itemNode,
-        imageKey: model?.backdrop_path,
-        videoId: model?.id,
-        // videoKey: getVideoKey(model?.videos),
-        videoModel: { ...tcVideoModel },
-      };
-      // Render the slider items
-      return (
-        <SliderItem
-          key={itemUid}
-          fullDataLoaded={!!model?.backdrop_path}
-          isAnimating={isAnimating}
-          itemPositionIdx={itemPosition ? itemPositionIdx : 0}
-          itemPosition={itemPosition}
-        >
-          <TitleCardContainer
-            key={`title-card-container-${uid}`}
-            ref={(node: HTMLDivElement) => {
-              const map = getItemRefsMap();
-              node ? map.set(itemUid, node) : map.delete(itemUid);
-            }}
-            inViewport={inViewport}
-            itemTabbable={itemTabbable}
-            listContext={listContext}
-            model={tcModel}
-            myListRowItemsLength={myListRowItemsLength}
-            onFocus={() => handleRowItemFocus(idx)}
-            previewModalEnabled={previewModalEnabled}
-            rankNum={idx}
-            rowNum={rowNum}
-            rowHasPreviewModalOpen={rowHasPreviewModalOpen}
-            toggleExpandedInfoDensity={toggleExpandedInfoDensity}
-          />
-        </SliderItem>
-      );
-    });
-  };
+          rankNum: idx,
+          rect: itemNode?.getBoundingClientRect(),
+          ref: itemNode,
+          rowNum,
+          scrollPosition: scrollY,
+          sliderName,
+          titleCardRef: itemNode,
+          imageKey: model?.backdrop_path,
+          videoId: model?.id,
+          // videoKey: getVideoKey(model?.videos),
+          videoModel: { ...tcVideoModel },
+        };
+        // Render the slider items
+        return (
+          <SliderItem
+            key={itemUid}
+            fullDataLoaded={!!model?.backdrop_path}
+            isAnimating={isAnimating}
+            itemPositionIdx={itemPosition ? itemPositionIdx : 0}
+            itemPosition={itemPosition}
+          >
+            <TitleCardContainer
+              key={`title-card-container-${uid}`}
+              ref={(node: HTMLDivElement) => {
+                const map = getItemRefsMap();
+                node ? map.set(itemUid, node) : map.delete(itemUid);
+              }}
+              inViewport={inViewport}
+              itemTabbable={itemTabbable}
+              listContext={listContext}
+              model={tcModel}
+              myListRowItemsLength={myListRowItemsLength}
+              onFocus={() => {
+                return handleRowItemFocus(idx);
+              }}
+              previewModalEnabled={previewModalEnabled}
+              rankNum={idx}
+              rowNum={rowNum}
+              rowHasPreviewModalOpen={rowHasPreviewModalOpen}
+              toggleExpandedInfoDensity={toggleExpandedInfoDensity}
+            />
+          </SliderItem>
+        );
+      });
+    },
+    [
+      getItemRefsMap,
+      getWrappedItemRefsMap,
+      handleRowItemFocus,
+      isAnimating,
+      isMyListRow,
+      itemsInRow,
+      listContext,
+      myListRowItemsLength,
+      previewModalEnabled,
+      rowHasPreviewModalOpen,
+      rowNum,
+      rowHasExpandedInfoDensity,
+      sliderNum,
+      sliderName,
+      toggleExpandedInfoDensity,
+    ]
+  );
 
   /**
    * Return visible slider item refs
@@ -489,7 +492,7 @@ const Slider = ({
       // console.log("visible: ", visible);
       return visible;
     },
-    []
+    [getItemRefsMap]
   );
 
   /**
@@ -504,24 +507,24 @@ const Slider = ({
         ({ inViewport }) => inViewport
       )
     );
-  }, [getSliderItems]);
+  }, [getSliderItems, getWrappedItemRefsMap]);
 
   /**
    * Set the .slider-content animation `style` attribute
    */
-  const getAnimationStyle = (movePercentage = 0) => {
+  const getAnimationStyle = (translateX: number) => {
     return [
-      `-webkit-transform: translate3d(${movePercentage}%, 0px, 0px)`,
-      `-ms-transform: translate3d(${movePercentage}%, 0px, 0px)`,
-      `transform: translate3d(${movePercentage}%, 0px, 0px)`,
+      `-webkit-transform: translate3d(${translateX}%, 0px, 0px)`,
+      `-ms-transform: translate3d(${translateX}%, 0px, 0px)`,
+      `transform: translate3d(${translateX}%, 0px, 0px)`,
     ].join(";");
   };
 
   /**
    * Set the initial .slider-content animation `style` attribute
    */
-  const getReactAnimationStyle = (movePercentage = 0) => {
-    const transform = `translate3d(${movePercentage}%, 0px, 0px)`;
+  const getReactAnimationStyle = (translateX: number) => {
+    const transform = translateX ? `translate3d(${translateX}%, 0px, 0px)` : "";
     return {
       WebkitTransform: transform,
       MsTransform: transform,
@@ -562,58 +565,57 @@ const Slider = ({
    * Move the slider backwards when the Previous button is clicked
    */
   const advancePrev = (e: MouseEvent<HTMLSpanElement>) => {
-    e && e.preventDefault();
     // Proceed if the previous button is active and the slider is not currently animating
-    if (isPrevBtnNavActive() && !isAnimating) {
-      setIsAnimating(true);
-      // Get the total number of items
-      const totalItemsCount = getTotalItemsCount();
-      let rowItems = lowestVisibleItemIndex - itemsInRow;
-      lowestVisibleItemIndex !== 0 && rowItems < 0 && (rowItems = 0);
-      // Amount to offset the slider
-      const amountToOffset = lowestVisibleItemIndex - rowItems;
-      lowestVisibleItemIndex === 0 && (rowItems = totalItemsCount - itemsInRow);
-      // Get the new slider offset
-      const getNewOffset = getNewSliderOffset(amountToOffset),
-        newOffsetAmount = getNewOffset + getBaseSliderOffset();
-      e && "wheel" === e.type
-        ? shiftSlider(
-            rowItems,
-            newOffsetAmount,
-            sliderActions.MOVE_DIRECTION_PREV,
-            {
-              x: e.clientX,
-              y: e.clientY,
-            },
-            false,
-            getActiveRowSegment(totalItemsCount, itemsInRow, rowItems)
-          )
-        : e && "keydown" === e.type
-        ? shiftSlider(
-            rowItems,
-            newOffsetAmount,
-            sliderActions.MOVE_DIRECTION_PREV,
-            null,
-            true,
-            getActiveRowSegment(totalItemsCount, itemsInRow, rowItems)
-          )
-        : shiftSlider(
-            rowItems,
-            newOffsetAmount,
-            sliderActions.MOVE_DIRECTION_PREV,
-            null,
-            false,
-            getActiveRowSegment(totalItemsCount, itemsInRow, rowItems)
-          );
-    }
+    if (!isPrevBtnNavActive() || isAnimating) return;
+
+    setIsAnimating(true);
+    // Get the total number of items
+    const totalItemsCount = getTotalItemsCount();
+    let rowItems = lowestVisibleItemIndex - itemsInRow;
+    lowestVisibleItemIndex !== 0 && rowItems < 0 && (rowItems = 0);
+    // Amount to offset the slider
+    const amountToOffset = lowestVisibleItemIndex - rowItems;
+    lowestVisibleItemIndex === 0 && (rowItems = totalItemsCount - itemsInRow);
+    // Get the new slider offset
+    const getNewOffset = getNewSliderOffset(amountToOffset),
+      newOffsetAmount = getNewOffset + getBaseSliderOffset();
+    e && "wheel" === e.type
+      ? shiftSlider(
+          rowItems,
+          newOffsetAmount,
+          sliderActions.MOVE_DIRECTION_PREV,
+          {
+            x: e.clientX,
+            y: e.clientY,
+          },
+          false,
+          getActiveRowSegment(totalItemsCount, itemsInRow, rowItems)
+        )
+      : e && "keydown" === e.type
+      ? shiftSlider(
+          rowItems,
+          newOffsetAmount,
+          sliderActions.MOVE_DIRECTION_PREV,
+          null,
+          true,
+          getActiveRowSegment(totalItemsCount, itemsInRow, rowItems)
+        )
+      : shiftSlider(
+          rowItems,
+          newOffsetAmount,
+          sliderActions.MOVE_DIRECTION_PREV,
+          null,
+          false,
+          getActiveRowSegment(totalItemsCount, itemsInRow, rowItems)
+        );
   };
 
   /**
    * Determine if slider has additional next pages
    */
   const hasMoreNextPages = () => {
-    const potentialNextPages = lowestVisibleItemIndex + itemsInRow;
-    return enableLooping || potentialNextPages < getTotalItemsCount();
+    const potentialNext = lowestVisibleItemIndex + itemsInRow;
+    return enableLooping || potentialNext < getTotalItemsCount();
   };
 
   /**
@@ -693,54 +695,58 @@ const Slider = ({
     if (!sliderRef.current) return;
     const slider = sliderRef.current;
     const getNewStyle = getAnimationStyle(newOffsetAmount);
-    slider.classList.add("animating");
-    slider.setAttribute("style", getNewStyle);
+    // typeof onSliderMove === "function" && onSliderMove(totalItemsCount, action);
     slider.addEventListener("transitionend", function transitionEnd(e) {
       flushSync(() => {
-        e.target === slider && resetSliderPosition();
+        e.target === slider &&
+          slider.removeEventListener("transitionend", transitionEnd),
+          slider.classList.remove("animating");
         setLowestVisibleItemIndex(totalItemsCount);
-        handleActiveRowIndex(totalItemsCount);
-        setShift({
-          event: sliderActions.SLIDER_SLIDING,
-          xScrollDirection: action,
-          rowSegment: activeRowSegment,
-        });
-        onSliderMove(totalItemsCount, action);
-        slider.classList.remove("animating");
-        slider.removeEventListener("transitionend", transitionEnd);
         !hasMovedOnce && setHasMovedOnce(true);
+        resetSliderPosition();
         setIsAnimating(false);
-        refocusAfterShift();
+        onSliderMove(totalItemsCount, action);
+        refocusAfterShift(action);
       });
     });
+    slider.classList.add("animating");
+    slider.setAttribute("style", getNewStyle);
   };
 
   /**
    * Refocus visible slider item after the slider shifts
    */
-  const refocusAfterShift = useCallback(() => {
-    const visibleItems = Array.from(getVisibleSliderItems().values());
-    // console.log("itemToFocus 1: ", visibleItems);
-    // console.log("itemToFocus 2: ", Array.from(visibleItems.values()));
-    let itemToFocus: HTMLDivElement, itemIdx;
-    visibleItems.length > 1 &&
-      (itemIdx =
-        shift.xScrollDirection === sliderActions.MOVE_DIRECTION_NEXT
-          ? 1
-          : visibleItems.length - 2);
-    // console.log("itemToFocus 1: ", visibleItems),
-    // console.log("itemToFocus 2: ", visibleItems[itemIdx]),
-    itemIdx &&
-      (itemToFocus = visibleItems[itemIdx]) &&
-      itemToFocus &&
-      (sliderIntervalIdRef.current = window.setInterval(() => {
-        sliderIntervalIdRef.current &&
-          clearInterval(sliderIntervalIdRef.current),
-          (
-            itemToFocus.querySelector(".slider-refocus") as HTMLAnchorElement
-          ).focus();
-      }, 100));
-  }, [getVisibleSliderItems, shift.xScrollDirection]);
+  const refocusAfterShift = useCallback(
+    (
+      action:
+        | typeof sliderActions.MOVE_DIRECTION_NEXT
+        | typeof sliderActions.MOVE_DIRECTION_PREV
+    ) => {
+      const visibleItems = getVisibleSliderItems();
+      const visibleItemsValues = Array.from(visibleItems.values());
+      // console.log("itemToFocus 1: ", visibleItems);
+      // console.log("itemToFocus 2: ", Array.from(visibleItems.values()));
+      let itemToFocus: HTMLDivElement, itemIdx;
+      visibleItemsValues.length > 1 &&
+        (itemIdx =
+          action === sliderActions.MOVE_DIRECTION_NEXT
+            ? 1
+            : visibleItemsValues.length - 2);
+      // console.log("itemToFocus 1: ", visibleItemsValues),
+      // console.log("itemToFocus 2: ", visibleItemsValues[itemIdx]),
+      itemIdx &&
+        (itemToFocus = visibleItemsValues[itemIdx]) &&
+        itemToFocus &&
+        (sliderIntervalIdRef.current = window.setInterval(() => {
+          sliderIntervalIdRef.current &&
+            clearInterval(sliderIntervalIdRef.current),
+            (
+              itemToFocus.querySelector(".slider-refocus") as HTMLAnchorElement
+            ).focus();
+        }, 300));
+    },
+    [getVisibleSliderItems]
+  );
 
   /**
    * Reset the slider base transform values on pageload and after it animates / shifts
@@ -748,7 +754,7 @@ const Slider = ({
   const resetSliderPosition = useCallback(() => {
     const baseSliderOffset = getBaseSliderOffset();
     const getNewStyle = getAnimationStyle(baseSliderOffset);
-    sliderRef.current?.setAttribute("style", getNewStyle);
+    sliderRef.current && sliderRef.current.setAttribute("style", getNewStyle);
   }, [getBaseSliderOffset]);
 
   /**
@@ -787,9 +793,7 @@ const Slider = ({
             className="slider-content row-with-x-columns"
             style={getReactAnimationStyle(getBaseSliderOffset())}
           >
-            <AnimatePresenceWrapper>
-              {renderSliderItems()}
-            </AnimatePresenceWrapper>
+            {renderSliderItems()}
           </div>
         </div>
         {/* Next button */}

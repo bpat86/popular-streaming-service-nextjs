@@ -1,15 +1,16 @@
 import { ReactNode, useEffect, useRef, useState } from "react";
 
+import { PreviewModalStore } from "@/store/types";
+
 type TitleTreatmentWrapperProps = {
   animationTiming?: number;
   children: ReactNode;
   delayTiming?: number;
   isDefaultModal?: boolean;
-  isDetailModal?: boolean;
+  isDetailModal?: PreviewModalStore["isDetailModal"];
   transitionTiming?: number;
   videoCompleted?: boolean;
   videoCanPlayThrough?: boolean;
-  videoPlaybackError?: boolean;
   videoId?: string;
 };
 
@@ -18,11 +19,10 @@ const TitleTreatmentWrapper = ({
   children,
   delayTiming = 6000,
   isDefaultModal = false,
-  isDetailModal = false,
+  isDetailModal,
   transitionTiming = 500,
   videoCompleted,
   videoCanPlayThrough,
-  videoPlaybackError,
   videoId,
 }: TitleTreatmentWrapperProps) => {
   const [isHovered, setIsHovered] = useState<boolean>(false);
@@ -35,7 +35,6 @@ const TitleTreatmentWrapper = ({
     !videoId ||
     isDelayed ||
     isDetailModal ||
-    videoPlaybackError ||
     (videoCompleted && !videoCanPlayThrough)
       ? {
           opacity: mounted ? 1 : 0,

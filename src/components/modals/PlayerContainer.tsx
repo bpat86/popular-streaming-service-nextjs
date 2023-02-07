@@ -1,16 +1,25 @@
 import Image from "next/image";
-import { forwardRef, MutableRefObject, useEffect, useState } from "react";
-import { flushSync } from "react-dom";
-import YouTube, { YouTubeProps } from "react-youtube";
+import {
+  forwardRef,
+  LegacyRef,
+  MutableRefObject,
+  useRef,
+  useState,
+} from "react";
+// import YouTube, { YouTubeProps } from "react-youtube";
+import {
+  default as ReactPlayer,
+  default as YouTubePlayer,
+} from "react-player/youtube";
 
 import Logo from "@/components/modals/Logo";
 import clsxm from "@/lib/clsxm";
 import { MotionDivWrapper } from "@/lib/MotionDivWrapper";
+import { PreviewModalStore } from "@/store/types";
 
 import ButtonControls from "./detail/ButtonControls";
 import MediaControls from "./MediaControls";
 import TitleTreatmentWrapper from "./mini/TitleTreatmentWrapper";
-import PlaybackError from "./PlaybackError";
 
 type PlayerContainerProps = {
   [key: string]: any;
@@ -26,7 +35,7 @@ type PlayerContainerProps = {
   isLoading?: boolean;
   isLiked?: boolean;
   isDisliked?: boolean;
-  isDetailModal?: boolean;
+  isDetailModal?: PreviewModalStore["isDetailModal"];
   isDefaultModal?: boolean;
   handleWatchNow?: any;
   showBoxArtOnMount?: boolean;
@@ -41,42 +50,90 @@ type PlayerContainerProps = {
 
 type VideoPlayerProps = {
   canPlay: boolean;
-  onEnd: YouTubeProps["onEnd"];
-  onError: YouTubeProps["onError"];
-  onReady: YouTubeProps["onReady"];
-  opts: YouTubeProps["opts"];
+  controls: boolean;
+  duration: number;
+  light: boolean;
+  loaded: number;
+  loop: boolean;
+  muted: boolean;
+  onDuration: (duration: number) => void;
+  onReady: () => void;
+  onEnded: () => void;
+  onPause: () => void;
+  onPlay: () => void;
+  played: number;
+  playbackRate: number;
+  playing: boolean;
+  url: string;
+  volume: number;
   videoId: string;
 };
 
 /**
  * Handle the YoutTube player iframe
  */
-const VideoPlayer = ({
-  canPlay,
-  onEnd,
-  onError,
-  onReady,
-  opts,
-  videoId,
-}: VideoPlayerProps) => {
-  if (!canPlay) return <></>;
-  return (
-    <div className="absolute inset-0 h-full w-full overflow-hidden">
-      <YouTube
-        className="relative h-full w-full overflow-hidden"
-        data-videoid={videoId}
-        id={videoId}
-        iframeClassName="bg-black absolute inset-0 w-full h-full"
-        onEnd={onEnd}
-        onError={onError}
-        onReady={onReady}
-        opts={opts}
-        title=""
-        videoId={videoId}
-      />
-    </div>
-  );
-};
+const VideoPlayer = forwardRef(
+  (
+    {
+      url,
+      playing,
+      controls,
+      light,
+      muted,
+      loop,
+      loaded,
+      duration,
+      onReady,
+      onPlay,
+      onPause,
+      onEnded,
+      onDuration,
+      playbackRate,
+      canPlay,
+      volume,
+      videoId,
+    }: VideoPlayerProps,
+    ref
+  ) => {
+    const playerRef = ref as LegacyRef<YouTubePlayer>;
+    const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
+    // Don't render the player while the modal is animating
+    if (!canPlay) return <></>;
+    // Render the player
+    return (
+      <div className="absolute inset-0 h-full w-full overflow-hidden">
+        <div className="relative h-full w-full overflow-hidden">
+          <ReactPlayer
+            ref={playerRef}
+            width="100%"
+            height="100%"
+            id={videoId}
+            url={videoUrl}
+            className="absolute inset-0 h-full w-full bg-black"
+            title=""
+            playing={playing}
+            controls={controls}
+            light={light}
+            loop={loop}
+            playbackRate={playbackRate}
+            volume={volume}
+            muted={muted}
+            onReady={onReady}
+            onStart={() => console.log("onStart")}
+            onPlay={onPlay}
+            onPause={onPause}
+            onBuffer={() => console.log("onBuffer")}
+            onSeek={(e) => console.log("onSeek", e)}
+            onEnded={onEnded}
+            onError={(e) => console.log("onError", e)}
+            onDuration={onDuration}
+            videoId={videoId}
+          />
+        </div>
+      </div>
+    );
+  }
+);
 
 const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
   (
@@ -108,143 +165,84 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
     ref
   ) => {
     const buttonsRef = ref as MutableRefObject<HTMLDivElement>;
-    const [audioEnabled, setAudioEnabled] = useState<boolean>(false);
-    const [player, setPlayer] = useState<any>(null);
-    const [playbackError, setPlaybackError] = useState<boolean>(false);
+    // NEW
+    const playerRef = useRef<YouTubePlayer>(null);
+    const [playing, setPlaying] = useState<boolean>(true);
+    const [played, setPlayed] = useState<number>(0);
+    const [videoCompleted, setVideoCompleted] = useState<boolean>(false);
     const [videoCanPlayThrough, setVideoCanPlayThrough] =
       useState<boolean>(false);
-    const [videoCompleted, setVideoCompleted] = useState<boolean>(false);
     const [videoHasPlayedAtLeastOnce, setVideoHasPlayedAtLeastOnce] =
       useState<boolean>(false);
+    const [muted, setMuted] = useState<boolean>(true);
+    const [light, setLight] = useState<boolean>(false);
+    const [controls, setControls] = useState<boolean>(false);
+    const [loop, setLoop] = useState<boolean>(false);
+    const [loaded, setLoaded] = useState<number>(0);
+    const [volume, setVolume] = useState<number>(0.1);
+    const [duration, setDuration] = useState<number>(0);
 
-    /**
-     * Enable audio globally
-     */
-    const enableAudio = () => {
-      setAudioEnabled(true);
+    console.log("playing: ", playing);
+
+    const handleToggleLight = () => {
+      setLight(!light);
     };
 
-    /**
-     * Disable audio globally
-     */
-    const disableAudio = () => {
-      setAudioEnabled(false);
+    const handleToggleLoop = () => {
+      setLoop(!loop);
     };
 
+    const handlePlayPause = () => {
+      setPlaying(!playing);
+    };
+
+    const handleStop = () => {
+      setPlaying(false);
+    };
+
+    const toggleAudio = () => {
+      setMuted(!muted);
+    };
+
+    const handlePlayerReady = () => {
+      handleSeek();
+      setVideoCanPlayThrough(true);
+    };
+
+    const handlePlay = () => {
+      setPlaying(true);
+    };
+
+    const handlePause = () => {
+      setPlaying(false);
+    };
+
+    const handleEnded = () => {
+      setPlaying(false);
+      setVideoCompleted(true);
+      setVideoHasPlayedAtLeastOnce(true);
+    };
+
+    const handleDuration = (duration: number) => {
+      setDuration(duration);
+    };
+
+    const handleSeek = () => {
+      playerRef.current?.seekTo(videoPlayback ? parseFloat(videoPlayback) : 0);
+    };
+
+    const replayVideo = () => {
+      setPlayed(0);
+      setPlaying(true);
+      setVideoCompleted(false);
+    };
+
+    // OLD
     /**
      * Return if audio is enabled globally
      */
-    const audioIsEnabled = () => {
-      return audioEnabled;
-    };
-
-    /**
-     * Watch for when the video is finished playing
-     */
-    useEffect(() => {
-      if (videoCompleted) {
-        setVideoCanPlayThrough(false);
-      }
-    }, [videoCompleted]);
-
-    /**
-     * Mute the player
-     */
-    const mute = () => {
-      if (player?.getPlayerState() === 1 || player?.getPlayerState() === 2) {
-        player.setVolume(0);
-        player.mute();
-        disableAudio();
-      }
-    };
-
-    /**
-     * UnMute the player
-     */
-    const unMute = () => {
-      if (player?.getPlayerState() === 1 || player?.getPlayerState() === 2) {
-        player.setVolume(10);
-        player.unMute();
-        enableAudio();
-      }
-    };
-
-    /**
-     * Toggle audio on / off
-     */
-    const toggleAudio = () => {
-      audioIsEnabled() ? mute() : unMute();
-    };
-
-    /**
-     * Reset animations and state before replaying the video
-     */
-    const replayVideo = () => {
-      setVideoCompleted(false);
-      setVideoCanPlayThrough(true);
-      unMute();
-    };
-
-    /**
-     * YouTube API event for when the player is loaded
-     */
-    const onReady: YouTubeProps["onReady"] = (e) => {
-      // e.target.playVideo();
-      setPlayer(e.target);
-      setVideoCanPlayThrough(true);
-      audioIsEnabled() && unMute();
-    };
-
-    /**
-     * YouTube API event for when the video ends
-     */
-    const onEnd: YouTubeProps["onEnd"] = () => {
-      !videoCompleted && handleVideoCompleted();
-    };
-
-    /**
-     * Handle when the video ends
-     */
-    const handleVideoCompleted = () => {
-      if (!videoHasPlayedAtLeastOnce) {
-        flushSync(() => setPlayer(undefined));
-        setVideoCompleted(true);
-        setVideoHasPlayedAtLeastOnce(true);
-      }
-    };
-
-    /**
-     * Set error if YouTube video returns an error
-     */
-    const onError: YouTubeProps["onError"] = ({ data }) => {
-      if (data === 2 || data === 5 || data === 100 || data === 101) {
-        setPlaybackError(true);
-        setVideoCanPlayThrough(false);
-      }
-    };
-
-    /**
-     * YouTube Player config
-     * https://developers.google.com/youtube/player_parameters
-     */
-    const defaultOpts: YouTubeProps["opts"] = {
-      height: null,
-      width: null,
-      playerVars: {
-        color: "white",
-        mute: 1,
-        autoplay: 1,
-        controls: 0,
-        disablekb: 1,
-        enablejsapi: 1,
-        fs: 0,
-        cc_load_policy: 0, // Hide closed captions
-        iv_load_policy: 3, // Hide the Video Annotations
-        modestbranding: 1,
-        playsinline: 1,
-        start: videoPlayback ? Math.round(videoPlayback) : 0,
-        // end: 5,
-      },
+    const audioEnabled = () => {
+      return muted;
     };
 
     /**
@@ -263,14 +261,13 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
               priority={true}
               className={clsxm("boxart-image", [isDisliked && "grayscale"])}
               src={`https://image.tmdb.org/t/p/${
-                "w780" || "original"
+                "w780" ?? "original"
               }${imageKey}`}
               alt={title ?? ""}
               style={{
                 opacity:
                   !showBoxArtOnMount &&
                   !showBoxArtOnClose &&
-                  !playbackError &&
                   !videoCompleted &&
                   !willClose &&
                   showVideo &&
@@ -304,14 +301,13 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
                   priority={true}
                   className={clsxm("boxart-image", [isDisliked && "grayscale"])}
                   src={`https://image.tmdb.org/t/p/${
-                    "w1280" || "original"
+                    "w1280" ?? "original"
                   }${imageKey}`}
                   alt={title ?? ""}
                   style={{
                     opacity:
                       !showBoxArtOnMount &&
                       !showBoxArtOnClose &&
-                      !playbackError &&
                       !videoCompleted &&
                       !willClose &&
                       showVideo &&
@@ -336,14 +332,13 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
                   priority={true}
                   className={clsxm("boxart-image", [isDisliked && "grayscale"])}
                   src={`https://image.tmdb.org/t/p/${
-                    "w1280" || "original"
+                    "w1280" ?? "original"
                   }${imageKey}`}
                   alt={title ?? ""}
                   style={{
                     opacity:
                       !showBoxArtOnMount &&
                       !showBoxArtOnClose &&
-                      !playbackError &&
                       !videoCompleted &&
                       !willClose &&
                       showVideo &&
@@ -378,7 +373,6 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
               videoId={videoId}
               videoCompleted={videoCompleted}
               videoCanPlayThrough={videoCanPlayThrough}
-              playbackError={playbackError}
             >
               <MotionDivWrapper
                 inherit={false}
@@ -406,21 +400,15 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
                   />
                 )}
               </MotionDivWrapper>
-              {showVideo && !playbackError && (
+              {showVideo && (
                 <MediaControls
-                  audioIsEnabled={audioIsEnabled()}
+                  audioEnabled={audioEnabled()}
                   isDetailModal={isDetailModal}
                   toggleAudio={toggleAudio}
                   replayVideo={replayVideo}
                   videoCompleted={videoCompleted}
                   videoCanPlayThrough={videoCanPlayThrough}
                   videoHasPlayedAtLeastOnce={videoHasPlayedAtLeastOnce}
-                />
-              )}
-              {showVideo && playbackError && (
-                <PlaybackError
-                  isDetailModal={isDetailModal}
-                  errorText="Preview Unavailable"
                 />
               )}
             </TitleTreatmentWrapper>
@@ -433,7 +421,6 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
               videoId={videoId}
               videoCompleted={videoCompleted}
               videoCanPlayThrough={videoCanPlayThrough}
-              playbackError={playbackError}
             >
               <MotionDivWrapper
                 inherit={false}
@@ -459,21 +446,15 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
                   videoModel={videoModel}
                 />
               </MotionDivWrapper>
-              {showVideo && !playbackError && (
+              {showVideo && (
                 <MediaControls
-                  audioIsEnabled={audioIsEnabled()}
+                  audioEnabled={audioEnabled()}
                   isDetailModal={isDetailModal}
                   toggleAudio={toggleAudio}
                   replayVideo={replayVideo}
                   videoCompleted={videoCompleted}
                   videoCanPlayThrough={videoCanPlayThrough}
                   videoHasPlayedAtLeastOnce={videoHasPlayedAtLeastOnce}
-                />
-              )}
-              {showVideo && playbackError && (
-                <PlaybackError
-                  isDetailModal={isDetailModal}
-                  errorText="Preview Unavailable"
                 />
               )}
             </TitleTreatmentWrapper>
@@ -486,6 +467,7 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
       <div className={className}>
         {videoId && (
           <VideoPlayer
+            ref={playerRef}
             canPlay={
               !!(
                 showVideo &&
@@ -497,10 +479,21 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
                 !willClose
               )
             }
-            onEnd={onEnd}
-            onError={onError}
-            onReady={onReady}
-            opts={defaultOpts}
+            playing={playing}
+            controls={controls}
+            light={light}
+            loop={loop}
+            volume={volume}
+            muted={muted}
+            onReady={handlePlayerReady}
+            onStart={() => console.log("onStart")}
+            onPlay={handlePlay}
+            onPause={handlePause}
+            onBuffer={() => console.log("onBuffer")}
+            onSeek={(e) => console.log("onSeek", e)}
+            onEnded={handleEnded}
+            onError={(e) => console.log("onError", e)}
+            onDuration={handleDuration}
             videoId={videoId}
           />
         )}

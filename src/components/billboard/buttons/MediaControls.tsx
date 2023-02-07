@@ -1,13 +1,20 @@
-const MediaControls = (props) => {
-  const {
-    audioIsEnabled,
-    replayVideo,
-    title,
-    toggleAudio,
-    videoPlaying,
-    videoCompleted,
-  } = props;
+type MediaControlsProps = {
+  audioIsEnabled: boolean;
+  replayVideo: () => void;
+  title: string;
+  toggleAudio: () => void;
+  videoPlaying: boolean;
+  videoCompleted: boolean;
+};
 
+const MediaControls = ({
+  audioIsEnabled,
+  replayVideo,
+  title,
+  toggleAudio,
+  videoPlaying,
+  videoCompleted,
+}: MediaControlsProps) => {
   return (
     <span className="media-control-buttons">
       <div

@@ -39,7 +39,7 @@ const TitleCardContainer = forwardRef(
     }: TitleCardContainerProps,
     ref
   ) => {
-    const sliderItemRef = ref as MutableRefObject<HTMLDivElement | null>;
+    const sliderItemRef = ref as MutableRefObject<HTMLDivElement>;
     const scopeRef = useRef<{
       hasFetchedModalData: boolean;
       isHovering: boolean;
@@ -87,7 +87,7 @@ const TitleCardContainer = forwardRef(
      */
     const handleMouseEnter = (
       e: MouseEvent<HTMLDivElement>,
-      titleCardRef: MutableRefObject<HTMLDivElement | null>
+      titleCardRef: MutableRefObject<HTMLDivElement>
     ) => {
       const { isModalOpen } = scopeRef.current;
       const mouseEnter =
@@ -101,9 +101,7 @@ const TitleCardContainer = forwardRef(
     /**
      * Queue a preview modal to open.
      */
-    const handleEnter = (
-      titleCardRef: MutableRefObject<HTMLDivElement | null>
-    ) => {
+    const handleEnter = (titleCardRef: MutableRefObject<HTMLDivElement>) => {
       const { hasFetchedModalData } = scopeRef.current;
       // Set hasFetchedModalData to true after the modal has opened once
       scopeRef.current.isHovering = true;
@@ -124,7 +122,7 @@ const TitleCardContainer = forwardRef(
             location: Location;
           };
       },
-      titleCardRef: MutableRefObject<HTMLDivElement | null>
+      titleCardRef: MutableRefObject<HTMLDivElement>
     ) => {
       const mouseLeave =
         (e && !e.relatedTarget) ||
@@ -140,7 +138,7 @@ const TitleCardContainer = forwardRef(
      */
     const handleMouseMove = (
       e: MouseEvent<HTMLDivElement>,
-      titleCardRef: MutableRefObject<HTMLDivElement | null>
+      titleCardRef: MutableRefObject<HTMLDivElement>
     ) => {
       const { isHovering } = scopeRef.current;
       isHovering || isPreviewModalOpen() || handleMouseEnter(e, titleCardRef);
@@ -170,15 +168,14 @@ const TitleCardContainer = forwardRef(
      * Queue the preview modal to open.
      */
     const queuePreviewModalOpen = (
-      titleCardRef: MutableRefObject<HTMLDivElement | null>
+      titleCardRef: MutableRefObject<HTMLDivElement>
     ) => {
       const { isHovering, isModalOpen } = scopeRef.current;
       if (!hoverTimeoutIdRef.current && !isModalOpen && isHovering) {
         const delay = usePreviewModalStore.getState().wasOpen ? 100 : 400;
         hoverTimeoutIdRef.current = window.setTimeout(() => {
           return openPreviewModal({
-            titleCardRef:
-              titleCardRef as MutableRefObject<HTMLDivElement | null>,
+            titleCardRef: titleCardRef as MutableRefObject<HTMLDivElement>,
           });
         }, delay);
       }
@@ -192,7 +189,7 @@ const TitleCardContainer = forwardRef(
       titleCardRef,
     }: {
       openDetailModal?: boolean;
-      titleCardRef?: MutableRefObject<HTMLDivElement | null>;
+      titleCardRef?: MutableRefObject<HTMLDivElement>;
     }) => {
       if (titleCardRef) {
         // Initialize window resize listener for the title card
@@ -216,7 +213,7 @@ const TitleCardContainer = forwardRef(
                 });
               }),
           queuePreviewModalOpen(
-            titleCardRef as MutableRefObject<HTMLDivElement | null>
+            titleCardRef as MutableRefObject<HTMLDivElement>
           )
         );
       }
@@ -228,7 +225,7 @@ const TitleCardContainer = forwardRef(
           videoId: model.videoModel.videoId,
           listContext: model.videoModel.listContext,
           titleCardId: titleCardRef ? titleCardRef?.current?.id : undefined,
-          titleCardRef: titleCardRef,
+          titleCardRef: undefined,
           titleCardRect: openDetailModal
             ? undefined
             : titleCardRef?.current?.getBoundingClientRect(),
@@ -257,7 +254,7 @@ const TitleCardContainer = forwardRef(
      */
     const handleKeyDown = (
       e: KeyboardEvent<HTMLDivElement>,
-      titleCardRef: MutableRefObject<HTMLDivElement | null>
+      titleCardRef: MutableRefObject<HTMLDivElement>
     ) => {
       (e && e.key) === "Enter" && handleClick(e, titleCardRef);
     };
@@ -269,13 +266,13 @@ const TitleCardContainer = forwardRef(
       e:
         | MouseEvent<HTMLDivElement | HTMLAnchorElement>
         | KeyboardEvent<HTMLDivElement | HTMLAnchorElement>,
-      titleCardRef: MutableRefObject<HTMLDivElement | null>
+      titleCardRef: MutableRefObject<HTMLDivElement>
     ) => {
       e.stopPropagation();
       if (isPreviewModalOpen()) return;
       clearDelays();
       openPreviewModal({
-        titleCardRef: titleCardRef as MutableRefObject<HTMLDivElement | null>,
+        titleCardRef: titleCardRef as MutableRefObject<HTMLDivElement>,
         openDetailModal: true,
       });
     };
@@ -296,6 +293,7 @@ const TitleCardContainer = forwardRef(
           onMouseLeave={handleMouseLeave}
           onMouseMove={handleMouseMove}
           onClick={handleClick}
+          rowNum={rowNum}
           toggleExpandedInfoDensity={toggleExpandedInfoDensity}
           watchURL={`/watch/${model.videoModel.mediaType}-${model.videoModel.id}`}
         />

@@ -1,10 +1,10 @@
 import { useRouter } from "next/router";
 import {
-  cloneElement,
-  forwardRef,
-  MutableRefObject,
-  useCallback,
-  useLayoutEffect,
+	cloneElement,
+	forwardRef,
+	MutableRefObject,
+	useCallback,
+	useLayoutEffect
 } from "react";
 import { shallow } from "zustand/shallow";
 
@@ -34,7 +34,6 @@ const PreviewModalContainer = forwardRef(
 
     /**
      * Determine if a preview modal is currently open
-     * @returns {Boolean}
      */
     const isPreviewModalOpen = useCallback(
       (videoId: IPreviewModal["videoId"]) => {
@@ -45,16 +44,13 @@ const PreviewModalContainer = forwardRef(
             undefined === modal
             ? undefined
             : modal.isOpen
-          : Object.values(previewModalStateById).some(({ isOpen }) => {
-              return isOpen;
-            });
+          : Object.values(previewModalStateById).some(({ isOpen }) => isOpen);
       },
       [previewModalStateById]
     );
 
     /**
      * Returns the state of the currently open preview modal
-     * @returns {Object}
      */
     const openPreviewModalState = useCallback(() => {
       if (!previewModalStateById) return;
@@ -74,7 +70,6 @@ const PreviewModalContainer = forwardRef(
 
     /**
      *
-     * @returns {boolean}
      */
     const isJBVRoute = useCallback(() => {
       const jbv = router.query.jbv;
@@ -82,8 +77,7 @@ const PreviewModalContainer = forwardRef(
     }, [router.query.jbv]);
 
     /**
-     *
-     * @returns {Object}
+     * Get page props from router
      */
     // const getPageProps = () => {
     //   let jbv = router.query.jbv,

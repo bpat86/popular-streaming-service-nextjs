@@ -1,19 +1,37 @@
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import { MouseEvent } from "react";
 
 import { modalStateActions } from "@/actions/Actions";
 import usePreviewModalStore from "@/store/PreviewModalStore";
+import { IModel, IVideoModel } from "@/store/types";
 
-const CTAButtons = ({ videoPlayback, handleWatchNow, model }) => {
+type WatchNowProps = {
+  id: number;
+  mediaType: string;
+};
+
+type CTAButtonsProps = {
+  videoPlayback: IVideoModel["videoPlayback"];
+  handleClick?: () => void;
+  handleWatchNow: (identifiers: WatchNowProps) => void;
+  model: IModel;
+};
+
+const CTAButtons = ({
+  videoPlayback,
+  handleWatchNow,
+  model,
+}: CTAButtonsProps) => {
   /**
    * Open default preview modal.
    */
   const handleClick = () => {
     usePreviewModalStore.getState().setPreviewModalOpen({
       model: model,
-      videoId: model.videoModel.videoId,
+      videoId: model.videoModel?.videoId,
       videoModel: model.videoModel,
-      listContext: model.videoModel.listContext,
+      listContext: model.videoModel?.listContext,
       modalState: modalStateActions.DETAIL_MODAL,
       animationContext: modalStateActions.DETAIL_MODAL,
       scrollPosition: window.scrollY,
@@ -23,18 +41,20 @@ const CTAButtons = ({ videoPlayback, handleWatchNow, model }) => {
     });
   };
 
-  const handleWatchNowClick = (e) => {
+  const handleWatchNowClick = (e: MouseEvent<Element>) => {
     e.preventDefault();
-    handleWatchNow(model?.videoModel?.identifiers);
+    if (model?.videoModel?.identifiers) {
+      handleWatchNow(model?.videoModel?.identifiers);
+    }
   };
 
   return (
     <div className="billboard-links button-layer">
       <Link
         href={{
-          pathname: `/watch/${encodeURIComponent(
-            model?.videoModel?.identifiers?.id
-          )}`,
+          pathname: model?.videoModel?.identifiers
+            ? `/watch/${encodeURIComponent(model?.videoModel?.identifiers?.id)}`
+            : "/",
           query: {
             mediaId: `${model?.videoModel?.identifiers?.mediaType}-${model?.videoModel?.identifiers?.id}`,
           },
@@ -45,13 +65,13 @@ const CTAButtons = ({ videoPlayback, handleWatchNow, model }) => {
         <a
           className="focus:focus-outline flex items-center justify-center rounded-md"
           onClick={handleWatchNowClick}
-          tabIndex="0"
+          tabIndex={0}
           role="link"
         >
           <button
             type="button"
             className="play focus:focus-outline flex h-8 items-center justify-center rounded-md bg-white px-2 text-xs font-bold text-black shadow-sm transition duration-300 ease-out hover:bg-opacity-80 sm:h-9 sm:text-sm md:py-0 lg:h-10 lg:px-3 lg:text-lg 2xl:h-12 2xl:px-5 2xl:text-xl"
-            tabIndex="-1"
+            tabIndex={-1}
           >
             <span className="sr-only">Watch now</span>
             <svg

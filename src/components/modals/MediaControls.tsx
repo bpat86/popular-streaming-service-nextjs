@@ -1,6 +1,9 @@
+import clsxm from "@/lib/clsxm";
+import { PreviewModalStore } from "@/store/types";
+
 type MediaControlsProps = {
-  audioIsEnabled: boolean;
-  isDetailModal: boolean;
+  audioEnabled: boolean;
+  isDetailModal: PreviewModalStore["isDetailModal"];
   replayVideo: () => void;
   title: string;
   toggleAudio: () => void;
@@ -10,7 +13,7 @@ type MediaControlsProps = {
 };
 
 const MediaControls = ({
-  audioIsEnabled,
+  audioEnabled,
   isDetailModal,
   replayVideo,
   title,
@@ -21,26 +24,29 @@ const MediaControls = ({
 }: MediaControlsProps) => {
   return (
     <div
-      className={`${
-        isDetailModal ? "detail-modal" : "mini-modal"
-      } preview-modal-audio-toggle`}
+      className={clsxm("preview-modal-audio-toggle", [
+        isDetailModal ? "detail-modal" : "mini-modal",
+      ])}
     >
       <div
-        className={`${
+        className={clsxm("button-layer", [
           !videoCompleted && videoCanPlayThrough
             ? "global-supplemental-audio-toggle audio-btn"
             : videoHasPlayedAtLeastOnce &&
-              "global-supplemental-replay-toggle replay-btn"
-        } button-layer`}
+              "global-supplemental-replay-toggle replay-btn",
+        ])}
       >
         <button
           type="button"
-          className={`relative flex h-7 w-7 items-center justify-center rounded-full border-2 border-white border-opacity-50 bg-transparent font-bold text-white transition duration-150 ease-out hover:border-opacity-100 hover:bg-white hover:bg-opacity-50 focus:border-opacity-100 focus:bg-white focus:bg-opacity-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white sm:h-8 sm:w-8 md:text-xl lg:h-9 lg:w-9 2xl:h-11 2xl:w-11 ${
-            !(
-              (!videoCompleted && videoCanPlayThrough) ||
-              videoHasPlayedAtLeastOnce
-            ) && "hidden"
-          }`}
+          className={clsxm(
+            "relative flex h-7 w-7 items-center justify-center rounded-full border-2 border-white border-opacity-50 bg-transparent font-bold text-white transition duration-150 ease-out hover:border-opacity-100 hover:bg-white hover:bg-opacity-50 focus:border-opacity-100 focus:bg-white focus:bg-opacity-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white sm:h-8 sm:w-8 md:text-xl lg:h-9 lg:w-9 2xl:h-11 2xl:w-11",
+            [
+              !(
+                (!videoCompleted && videoCanPlayThrough) ||
+                videoHasPlayedAtLeastOnce
+              ) && "hidden",
+            ]
+          )}
           onClick={() =>
             !videoCompleted && videoCanPlayThrough
               ? toggleAudio()
@@ -51,7 +57,7 @@ const MediaControls = ({
           <>
             {!videoCompleted && videoCanPlayThrough ? (
               <span className="sr-only">
-                {audioIsEnabled ? "Mute" : "Unmute"}
+                {audioEnabled ? "Mute" : "Unmute"}
               </span>
             ) : (
               videoHasPlayedAtLeastOnce && (
@@ -62,7 +68,7 @@ const MediaControls = ({
           <div className="absolute inset-0 flex items-center justify-center">
             {!videoCompleted && videoCanPlayThrough ? (
               <>
-                {audioIsEnabled ? (
+                {audioEnabled ? (
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-6 w-6"

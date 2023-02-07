@@ -53,7 +53,7 @@ const SliderItem = ({
           : `slider-item-`,
         itemPosition && `${itemPosition}`,
       ])}
-      {...animationProps()}
+      // {...animationProps()}
     >
       {fullDataLoaded ? (
         children

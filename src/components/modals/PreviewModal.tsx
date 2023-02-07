@@ -480,7 +480,6 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
 
     /**
      * Compute the framer-motion `variants` for the modal's detail state
-     * @returns {Object}
      */
     const getDetailModalAnimationProps = () => {
       /**
@@ -763,7 +762,6 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
 
     /**
      * Get the animation props for each animation state
-     * @returns {Object}
      */
     const getAnimationProps = () => {
       switch (modalState) {

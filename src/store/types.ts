@@ -80,7 +80,7 @@ export interface IVideoModel {
   tagline?: string;
   title?: string;
   titleCardId?: string;
-  titleCardRef?: MutableRefObject<HTMLDivElement | null> | undefined;
+  titleCardRef?: MutableRefObject<HTMLDivElement> | undefined;
   videoId?: string;
   videoKey?: string;
   videos?: {
@@ -117,7 +117,7 @@ export interface IModel {
   rowNum?: number;
   scrollPosition?: number;
   sliderName?: string;
-  titleCardRef?: MutableRefObject<HTMLDivElement | null> | undefined;
+  titleCardRef?: MutableRefObject<HTMLDivElement> | undefined;
   imageKey?: string;
   videoId?: string;
   videoKey?: string;
@@ -156,7 +156,7 @@ export interface IPreviewModal {
     sliderRow?: number;
     titleCardId?: string | undefined;
     titleCardRect?: DOMRect | undefined;
-    titleCardRef?: MutableRefObject<HTMLDivElement | null> | undefined;
+    titleCardRef?: MutableRefObject<HTMLDivElement> | undefined;
     videoId?: string | undefined;
     videoKey?: string | undefined;
     videoModel?: IVideoModel | undefined;
@@ -175,7 +175,7 @@ export interface IPreviewModal {
   scrollPosition?: number | undefined;
   sliderRow?: number;
   titleCardId?: string | undefined;
-  titleCardRef?: MutableRefObject<HTMLDivElement | null> | undefined;
+  titleCardRef?: MutableRefObject<HTMLDivElement> | undefined;
   titleCardRect?: DOMRect | undefined;
   videoId?: string | undefined;
   videoKey?: string | undefined;
@@ -199,7 +199,7 @@ export interface IInitialState {
 
 // Create the store.
 export interface PreviewModalStore extends IInitialState {
-  isDetailModal: (videoId: string) => boolean;
+  isDetailModal: () => boolean;
   setPreviewModalOpen: (payload: IPreviewModal) => void;
   setPreviewModalWasOpen: (payload: IInitialState) => void;
   setPreviewModalClose: (payload: IPreviewModal) => void;

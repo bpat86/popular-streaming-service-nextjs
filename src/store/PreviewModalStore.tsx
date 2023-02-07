@@ -37,8 +37,8 @@ const initialState = {
   wasOpen: false,
 };
 
-const immerReducer = ({ state, action }: ImmerReducerProps) =>
-  produce<PreviewModalStore>(state, (draft) => {
+const immerReducer = ({ state, action }: ImmerReducerProps) => {
+  return produce(state, (draft) => {
     switch (action.type) {
       case previewModalActions.SET_PREVIEW_MODAL_OPEN: {
         const { previewModalStateById } = state;
@@ -46,9 +46,13 @@ const immerReducer = ({ state, action }: ImmerReducerProps) =>
           payload,
           payload: { modalState, videoId },
         } = action;
-        if (!videoId || !previewModalStateById || !draft.previewModalStateById)
+        if (
+          !videoId ||
+          !previewModalStateById ||
+          !draft.previewModalStateById
+        ) {
           return;
-        const modal = previewModalStateById[videoId];
+        }
         draft.previewModalStateById[videoId] = {
           ...initialPreviewModalState,
           ...payload,
@@ -59,57 +63,66 @@ const immerReducer = ({ state, action }: ImmerReducerProps) =>
             ? modalState
             : modalStateActions.MINI_MODAL;
         draft.previewModalStateById[videoId].billboardVideoMerchId =
-          modal?.billboardVideoMerchId;
-        break;
+          previewModalStateById[videoId]?.billboardVideoMerchId;
+        return;
       }
       case previewModalActions.SET_PREVIEW_MODAL_WAS_OPEN: {
         const {
-          payload: { wasOpen = false },
+          payload: { wasOpen },
         } = action;
         draft.wasOpen = wasOpen;
-        break;
+        return;
       }
       case previewModalActions.SET_PREVIEW_MODAL_CLOSE: {
         const { previewModalStateById } = state;
         const {
           payload: { closeWithoutAnimation = false, videoId = undefined },
         } = action;
-        if (!videoId || !previewModalStateById || !draft.previewModalStateById)
+        if (
+          !videoId ||
+          !previewModalStateById ||
+          !draft.previewModalStateById
+        ) {
           return;
-        const modal = previewModalStateById[videoId];
+        }
         draft.previewModalStateById[videoId] = {
           ...initialPreviewModalState,
         };
         draft.previewModalStateById[videoId].closeWithoutAnimation =
           closeWithoutAnimation;
         draft.previewModalStateById[videoId].isOpen = false;
-        draft.previewModalStateById[videoId].isMyListRow = !!modal.isMyListRow;
-        break;
+        draft.previewModalStateById[videoId].isMyListRow =
+          previewModalStateById[videoId].isMyListRow;
+        return;
       }
       case previewModalActions.UPDATE_PREVIEW_MODAL_STATE: {
         const { previewModalStateById } = state;
         const {
-          payload,
           payload: {
             individualState,
             individualState: { videoId = undefined } = {},
           },
         } = action;
         const individual = individualState === undefined ? {} : individualState;
-        if (!videoId || !previewModalStateById || !draft.previewModalStateById)
+        if (
+          !videoId ||
+          !previewModalStateById ||
+          !draft.previewModalStateById
+        ) {
           return;
+        }
         draft.previewModalStateById[videoId] = {
           ...previewModalStateById[videoId],
           ...individual,
         };
-        draft = { ...draft, ...payload };
-        break;
+        return;
       }
       default: {
         return state;
       }
     }
   });
+};
 
 export const usePreviewModalStore = create<PreviewModalStore>((set, get) => ({
   ...initialState,

@@ -27,18 +27,17 @@ const TitleCardLink = ({
 }: TitleCardLinkProps) => {
   const watchLinkAnchorRef = useRef<HTMLAnchorElement | null>(null);
   return (
-    <Link href={watchURL} prefetch={false} legacyBehavior>
-      <a
-        ref={watchLinkAnchorRef}
-        className={className}
-        tabIndex={itemTabbable ? 0 : -1}
-        aria-hidden={itemTabbable ? false : true}
-        onClick={(e) =>
-          onClick(e, watchLinkAnchorRef as MutableRefObject<HTMLAnchorElement>)
-        }
-      >
-        {children}
-      </a>
+    <Link
+      ref={watchLinkAnchorRef}
+      className={className}
+      tabIndex={itemTabbable ? 0 : -1}
+      aria-hidden={itemTabbable ? false : true}
+      onClick={(e) =>
+        onClick(e, watchLinkAnchorRef as MutableRefObject<HTMLAnchorElement>)
+      }
+      href={watchURL}
+    >
+      {children}
     </Link>
   );
 };

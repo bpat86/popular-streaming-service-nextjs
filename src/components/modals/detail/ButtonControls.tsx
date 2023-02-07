@@ -1,6 +1,6 @@
 import { forwardRef, MouseEvent, MutableRefObject } from "react";
 
-import { IVideoModel } from "@/store/types";
+import { IVideoModel, PreviewModalStore } from "@/store/types";
 
 import DislikeMediaButton from "../buttons/DislikeMediaButton";
 import LikeMediaButton from "../buttons/LikeMediaButton";
@@ -13,7 +13,7 @@ type ButtonControlsProps = {
   inMediaList: boolean;
   isLiked: boolean;
   isDisliked: boolean;
-  isDetailModal: boolean;
+  isDetailModal: PreviewModalStore["isDetailModal"];
   handleWatchNow: (identifiers: IVideoModel["identifiers"]) => void;
   videoModel: IVideoModel;
 };

@@ -290,7 +290,7 @@ const Billboard = forwardRef<HTMLDivElement, BillboardProps>(
             onReady={onReady}
             onStateChange={onStateChange}
             opts={defaultOpts}
-            title={null}
+            title=""
             videoId={videoKey}
           />
         );

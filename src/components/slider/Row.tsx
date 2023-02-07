@@ -79,20 +79,20 @@ const SliderRow = ({
   /**
    * Toggle the expanded info density state
    */
-  const toggleExpandedInfoDensity = (isExpanded: boolean) => {
+  const toggleExpandedInfoDensity = useCallback((isExpanded: boolean) => {
     setRowHasExpandedInfoDensity(isExpanded);
-  };
+  }, []);
 
   /**
    * Update the lowest visible index state
    * Set the slider move direction
    */
-  const handleSliderMove = (idx: number, direction: string) => {
+  const onSliderMove = useCallback((idx: number, direction: string) => {
     flushSync(() => {
       setLowestVisibleItemIndex(idx);
       setSliderMoveDirection(direction);
     });
-  };
+  }, []);
 
   return (
     <div className="slider-row title-card">
@@ -116,9 +116,7 @@ const SliderRow = ({
           lowestVisibleItemIndex={lowestVisibleItemIndex}
           model={hasMovedOnce ? model : model.slice(0, itemsInRow + 2)}
           myListRowItemsLength={myListRowItemsLength}
-          onSliderMove={(totalItemCount, direction) =>
-            handleSliderMove(totalItemCount, direction)
-          }
+          onSliderMove={onSliderMove}
           previewModalEnabled={previewModalEnabled}
           rowNum={rowNum}
           rowHasExpandedInfoDensity={rowHasExpandedInfoDensity}

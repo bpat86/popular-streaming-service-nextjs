@@ -19,7 +19,7 @@ const AudioToggle = ({
 }: AudioToggleProps) => {
   return (
     <div
-      className={clsxm("preview-modal-audio-toggle", [
+      className={clsxm("preview-modal-audio-toggle z-50", [
         isDetailModal ? "detail-modal" : "mini-modal",
       ])}
     >
