@@ -3,7 +3,7 @@ import { PreviewModalStore } from "@/store/types";
 
 type MediaControlsProps = {
   audioEnabled: boolean;
-  isDetailModal: PreviewModalStore["isDetailModal"];
+  isDetailModal?: PreviewModalStore["isDetailModal"];
   replayVideo: () => void;
   title: string;
   toggleAudio: () => void;

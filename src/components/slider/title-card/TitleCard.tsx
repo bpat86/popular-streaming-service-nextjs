@@ -19,7 +19,7 @@ type TitleCardProps = {
   imageKey: string;
   itemTabbable: boolean;
   inViewport?: boolean;
-  onFocus: (e: FocusEvent<HTMLDivElement>) => void;
+  onFocus: (e: FocusEvent<HTMLAnchorElement>) => void;
   onMouseEnter: (
     e: MouseEvent<HTMLDivElement>,
     ref: MutableRefObject<HTMLDivElement>
@@ -177,6 +177,7 @@ const TitleCard = ({
         watchURL={watchURL}
         itemTabbable={itemTabbable}
         onClick={handleAnchorClick}
+        onFocus={onFocus}
       >
         <div
           className={clsxm(
@@ -188,7 +189,6 @@ const TitleCard = ({
           <BoxArt
             className="boxart-image"
             imageKey={imageKey}
-            onFocus={onFocus}
             priority={rowNum < 3}
           />
         </div>

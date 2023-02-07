@@ -22,7 +22,7 @@ type ButtonControlsProps = {
   isDisliked: IVideoModel["isDisliked"];
   handleWatchNow: ({ id, mediaType }: WatchNowProps) => void;
   handleViewDetails: () => void;
-  handleCloseModal: (e: MouseEvent<Element, MouseEvent>) => void;
+  handleCloseModal: () => void;
   videoModel: IVideoModel;
 };
 

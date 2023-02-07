@@ -2,11 +2,11 @@ import { ReactNode } from "react";
 
 import clsxm from "@/lib/clsxm";
 import { MotionDivWrapper } from "@/lib/MotionDivWrapper";
-import { IModel } from "@/store/types";
+import { IMediaItemWithUserPreferences } from "@/pages/api/tmdb/types";
 
 type SliderItemProps = {
   children: ReactNode;
-  model: IModel;
+  model: IMediaItemWithUserPreferences;
   isAnimating: boolean;
   fullDataLoaded: boolean;
   inViewport: boolean;

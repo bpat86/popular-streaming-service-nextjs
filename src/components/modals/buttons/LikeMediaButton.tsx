@@ -9,7 +9,7 @@ import Tooltip from "../../tooltips/Tooltip";
 
 type LikeMediaButtonProps = {
   detailView?: boolean;
-  isLiked: boolean;
+  isLiked: IVideoModel["isLiked"];
   videoModel: IVideoModel;
 };
 
@@ -20,14 +20,14 @@ const LikeMediaButton = ({
 }: LikeMediaButtonProps) => {
   const { addToLikedMedia, removeFromLikedMedia } = useContext(ProfileContext);
 
-  const [isLikedState, setIsLikedState] = useState(isLiked);
+  const [isLikedState, setIsLikedState] = useState<boolean>(isLiked || false);
   const [clicked, setClicked] = useState(false);
 
   /**
    * Optimistically show the updated button state in the ui
    */
   useEffect(() => {
-    setIsLikedState(isLiked);
+    setIsLikedState(isLiked || false);
   }, [isLiked]);
 
   /**

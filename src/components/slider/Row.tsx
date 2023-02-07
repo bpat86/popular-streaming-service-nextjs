@@ -1,8 +1,6 @@
 import debounce from "lodash/debounce";
 import { useCallback, useEffect, useState } from "react";
-import { flushSync } from "react-dom";
 
-import { sliderActions } from "@/actions/Actions";
 // Hooks
 import useWindowResize from "@/hooks/useWindowResize";
 import clsxm from "@/lib/clsxm";
@@ -39,13 +37,7 @@ const SliderRow = ({
   const { isXl, isLg, isMd, isSm } = useWindowResize();
   const [rowHasExpandedInfoDensity, setRowHasExpandedInfoDensity] =
     useState<boolean>(false);
-  const [sliderMoveDirection, setSliderMoveDirection] = useState<string>(
-    sliderActions.SLIDER_NOT_SLIDING
-  );
   const [hasMovedOnce, setHasMovedOnce] = useState<boolean>(false);
-  const [lowestVisibleItemIndex, setLowestVisibleItemIndex] =
-    useState<number>(0);
-  const [_activeRowItemIndex, setActiveRowItemIndex] = useState<number>(0);
   const [itemsInRow, setItemsInRow] = useState<number>(6);
 
   /**
@@ -83,17 +75,6 @@ const SliderRow = ({
     setRowHasExpandedInfoDensity(isExpanded);
   }, []);
 
-  /**
-   * Update the lowest visible index state
-   * Set the slider move direction
-   */
-  const onSliderMove = useCallback((idx: number, direction: string) => {
-    flushSync(() => {
-      setLowestVisibleItemIndex(idx);
-      setSliderMoveDirection(direction);
-    });
-  }, []);
-
   return (
     <div className="slider-row title-card">
       {title && (
@@ -113,16 +94,11 @@ const SliderRow = ({
           isMyListRow={isMyListRow}
           itemsInRow={itemsInRow}
           listContext={listContext}
-          lowestVisibleItemIndex={lowestVisibleItemIndex}
           model={hasMovedOnce ? model : model.slice(0, itemsInRow + 2)}
           myListRowItemsLength={myListRowItemsLength}
-          onSliderMove={onSliderMove}
           previewModalEnabled={previewModalEnabled}
           rowNum={rowNum}
           rowHasExpandedInfoDensity={rowHasExpandedInfoDensity}
-          setLowestVisibleItemIndex={setLowestVisibleItemIndex}
-          setActiveRowItemIndex={setActiveRowItemIndex}
-          sliderMoveDirection={sliderMoveDirection}
           sliderNum={sliderNum}
           sliderName={title}
           setHasMovedOnce={setHasMovedOnce}

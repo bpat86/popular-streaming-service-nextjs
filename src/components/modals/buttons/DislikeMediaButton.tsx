@@ -9,7 +9,7 @@ import Tooltip from "../../tooltips/Tooltip";
 
 type DislikeMediaButtonProps = {
   detailView?: boolean;
-  isDisliked: boolean;
+  isDisliked: IVideoModel["isDisliked"];
   videoModel: IVideoModel;
 };
 
@@ -20,15 +20,16 @@ const DislikeMediaButton = ({
 }: DislikeMediaButtonProps) => {
   const { addToDislikedMedia, removeFromDislikedMedia } =
     useContext(ProfileContext);
-
-  const [isDislikedState, setIsDislikedState] = useState(isDisliked);
+  const [isDislikedState, setIsDislikedState] = useState<boolean>(
+    isDisliked || false
+  );
   const [clicked, setClicked] = useState(false);
 
   /**
    * Optimistically show the updated button state in the ui
    */
   useEffect(() => {
-    setIsDislikedState(isDisliked);
+    setIsDislikedState(isDisliked || false);
   }, [isDisliked]);
 
   /**

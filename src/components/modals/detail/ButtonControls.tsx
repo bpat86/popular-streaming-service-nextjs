@@ -9,11 +9,11 @@ import { WatchLink } from "../WatchLink";
 
 type ButtonControlsProps = {
   identifiers: IVideoModel["identifiers"];
-  isMyListRow: boolean;
-  inMediaList: boolean;
-  isLiked: boolean;
-  isDisliked: boolean;
-  isDetailModal: PreviewModalStore["isDetailModal"];
+  isMyListRow: IVideoModel["isMyListRow"];
+  inMediaList: IVideoModel["inMediaList"];
+  isLiked: IVideoModel["isLiked"];
+  isDisliked: IVideoModel["isDisliked"];
+  isDetailModal?: PreviewModalStore["isDetailModal"];
   handleWatchNow: (identifiers: IVideoModel["identifiers"]) => void;
   videoModel: IVideoModel;
 };

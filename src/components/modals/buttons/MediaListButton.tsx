@@ -9,9 +9,9 @@ import Tooltip from "../../tooltips/Tooltip";
 
 type MediaListButtonProps = {
   detailView?: boolean;
-  handleCloseModal?: () => void;
-  inMediaList: boolean;
-  isMyListRow?: boolean;
+  handleCloseModal: () => void;
+  inMediaList: IVideoModel["inMediaList"];
+  isMyListRow?: IVideoModel["isMyListRow"];
   videoModel: IVideoModel;
 };
 
@@ -23,15 +23,16 @@ const MediaListButton = ({
   videoModel,
 }: MediaListButtonProps) => {
   const { addMediaToList, removeMediaFromList } = useContext(ProfileContext);
-  const [inMediaListState, setInMediaListState] =
-    useState<boolean>(inMediaList);
+  const [inMediaListState, setInMediaListState] = useState<boolean>(
+    inMediaList || false
+  );
   const [clicked, setClicked] = useState<boolean>(false);
 
   /**
    * Optimistically show the updated button state in the ui
    */
   useEffect(() => {
-    setInMediaListState(inMediaList);
+    setInMediaListState(inMediaList || false);
   }, [inMediaList]);
 
   /**

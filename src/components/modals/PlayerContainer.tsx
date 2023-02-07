@@ -15,11 +15,16 @@ import {
 import Logo from "@/components/modals/Logo";
 import clsxm from "@/lib/clsxm";
 import { MotionDivWrapper } from "@/lib/MotionDivWrapper";
-import { PreviewModalStore } from "@/store/types";
+import { IVideoModel, PreviewModalStore } from "@/store/types";
 
 import ButtonControls from "./detail/ButtonControls";
 import MediaControls from "./MediaControls";
 import TitleTreatmentWrapper from "./mini/TitleTreatmentWrapper";
+
+type WatchNowProps = {
+  id: number;
+  mediaType: string;
+};
 
 type PlayerContainerProps = {
   [key: string]: any;
@@ -29,15 +34,15 @@ type PlayerContainerProps = {
   imageKey?: string;
   title?: string;
   identifiers?: any;
-  isMyListRow?: boolean;
-  inMediaList?: boolean;
+  isMyListRow?: IVideoModel["isMyListRow"];
+  inMediaList?: IVideoModel["inMediaList"];
   isAnimating?: boolean;
   isLoading?: boolean;
-  isLiked?: boolean;
-  isDisliked?: boolean;
+  isLiked?: IVideoModel["isLiked"];
+  isDisliked?: IVideoModel["isDisliked"];
   isDetailModal?: PreviewModalStore["isDetailModal"];
   isDefaultModal?: boolean;
-  handleWatchNow?: any;
+  handleWatchNow: ({ id, mediaType }: WatchNowProps) => void;
   showBoxArtOnMount?: boolean;
   showBoxArtOnClose?: boolean;
   showTitleGradient?: boolean;
@@ -127,7 +132,6 @@ const VideoPlayer = forwardRef(
             onEnded={onEnded}
             onError={(e) => console.log("onError", e)}
             onDuration={onDuration}
-            videoId={videoId}
           />
         </div>
       </div>
@@ -165,7 +169,7 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
     ref
   ) => {
     const buttonsRef = ref as MutableRefObject<HTMLDivElement>;
-    // NEW
+    // Player state
     const playerRef = useRef<YouTubePlayer>(null);
     const [playing, setPlaying] = useState<boolean>(true);
     const [played, setPlayed] = useState<number>(0);
@@ -181,8 +185,6 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
     const [loaded, setLoaded] = useState<number>(0);
     const [volume, setVolume] = useState<number>(0.1);
     const [duration, setDuration] = useState<number>(0);
-
-    console.log("playing: ", playing);
 
     const handleToggleLight = () => {
       setLight(!light);
@@ -237,10 +239,6 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
       setVideoCompleted(false);
     };
 
-    // OLD
-    /**
-     * Return if audio is enabled globally
-     */
     const audioEnabled = () => {
       return muted;
     };

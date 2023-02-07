@@ -14,6 +14,7 @@ import { IPreviewModal } from "@/store/types";
 import TitleCard from "./TitleCard";
 
 type TitleCardContainerProps = {
+  activeRowItemIndex: number;
   inViewport: boolean;
   itemTabbable: boolean;
   listContext: any;
@@ -30,6 +31,7 @@ type TitleCardContainerProps = {
 const TitleCardContainer = forwardRef(
   (
     {
+      activeRowItemIndex,
       inViewport,
       itemTabbable,
       model,
@@ -172,7 +174,7 @@ const TitleCardContainer = forwardRef(
     ) => {
       const { isHovering, isModalOpen } = scopeRef.current;
       if (!hoverTimeoutIdRef.current && !isModalOpen && isHovering) {
-        const delay = usePreviewModalStore.getState().wasOpen ? 100 : 400;
+        const delay = usePreviewModalStore.getState().wasOpen ? 200 : 500;
         hoverTimeoutIdRef.current = window.setTimeout(() => {
           return openPreviewModal({
             titleCardRef: titleCardRef as MutableRefObject<HTMLDivElement>,
@@ -269,8 +271,7 @@ const TitleCardContainer = forwardRef(
       titleCardRef: MutableRefObject<HTMLDivElement>
     ) => {
       e.stopPropagation();
-      if (isPreviewModalOpen()) return;
-      clearDelays();
+      if ((clearDelays(), !activeRowItemIndex || isPreviewModalOpen())) return;
       openPreviewModal({
         titleCardRef: titleCardRef as MutableRefObject<HTMLDivElement>,
         openDetailModal: true,

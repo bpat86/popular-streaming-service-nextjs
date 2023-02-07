@@ -1,5 +1,6 @@
 import Link from "next/link";
 import {
+  FocusEvent,
   KeyboardEvent,
   MouseEvent,
   MutableRefObject,
@@ -15,6 +16,7 @@ type TitleCardLinkProps = {
     e: MouseEvent<HTMLAnchorElement> | KeyboardEvent<HTMLAnchorElement>,
     ref: MutableRefObject<HTMLAnchorElement>
   ) => void;
+  onFocus: (e: FocusEvent<HTMLAnchorElement>) => void;
   watchURL: string;
 };
 
@@ -24,6 +26,7 @@ const TitleCardLink = ({
   itemTabbable,
   onClick,
   watchURL,
+  onFocus,
 }: TitleCardLinkProps) => {
   const watchLinkAnchorRef = useRef<HTMLAnchorElement | null>(null);
   return (
@@ -35,6 +38,7 @@ const TitleCardLink = ({
       onClick={(e) =>
         onClick(e, watchLinkAnchorRef as MutableRefObject<HTMLAnchorElement>)
       }
+      onFocus={onFocus}
       href={watchURL}
     >
       {children}
