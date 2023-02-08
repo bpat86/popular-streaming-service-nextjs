@@ -4,6 +4,7 @@ import {
   default as YouTubePlayer,
 } from "react-player/youtube";
 
+import { AnimatePresenceWrapper } from "@/lib/AnimatePresenceWrapper";
 import { MotionDivWrapper } from "@/lib/MotionDivWrapper";
 
 type VideoPlayerProps = {
@@ -15,7 +16,9 @@ type VideoPlayerProps = {
   loop: boolean;
   muted: boolean;
   onDuration: (duration: number) => void;
+  onBuffer: () => void;
   onReady: () => void;
+  onStart: () => void;
   onEnded: () => void;
   onPause: () => void;
   onPlay: () => void;
@@ -36,7 +39,9 @@ const VideoPlayer = forwardRef(
       loop,
       loaded,
       duration,
+      onBuffer,
       onReady,
+      onStart,
       onPlay,
       onPause,
       onEnded,
@@ -50,45 +55,54 @@ const VideoPlayer = forwardRef(
   ) => {
     const playerRef = ref as LegacyRef<YouTubePlayer>;
     const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
-    // Don't render the player while the modal is animating
-    if (!canPlay) return <></>;
+    if (!videoId) return <></>;
     // Render the player
     return (
-      <MotionDivWrapper
-        inherit={false}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1, transition: { delay: 1, duration: 0.6 } }}
-        exit={{ opacity: 0 }}
-        className="absolute inset-0 h-full w-full overflow-hidden"
-      >
-        <div className="relative h-full w-full overflow-hidden">
-          <ReactPlayer
-            ref={playerRef}
-            width="100%"
-            height="100%"
-            id={videoId}
-            url={videoUrl}
-            className="absolute inset-0 h-full w-full bg-black"
-            title=""
-            playing={playing}
-            controls={controls}
-            light={light}
-            loop={loop}
-            playbackRate={playbackRate}
-            volume={volume}
-            muted={muted}
-            onReady={onReady}
-            onStart={() => console.log("onStart")}
-            onPlay={onPlay}
-            onPause={onPause}
-            onBuffer={() => console.log("onBuffer")}
-            onSeek={(e) => console.log("onSeek", e)}
-            onEnded={onEnded}
-            onError={(e) => console.log("onError", e)}
-            onDuration={onDuration}
-          />
-        </div>
-      </MotionDivWrapper>
+      <AnimatePresenceWrapper>
+        {canPlay && (
+          <MotionDivWrapper
+            inherit={false}
+            initial={{ opacity: 0 }}
+            animate={{
+              opacity: 1,
+              transition: {
+                delay: 1,
+                duration: 0.6,
+              },
+            }}
+            exit={{ opacity: 0, transition: { duration: 0.067 } }}
+            className="absolute inset-0 h-full w-full overflow-hidden"
+          >
+            <div className="relative h-full w-full overflow-hidden">
+              <ReactPlayer
+                ref={playerRef}
+                width="100%"
+                height="100%"
+                id={videoId}
+                url={videoUrl}
+                className="absolute inset-0 h-full w-full bg-black"
+                title=""
+                playing={playing}
+                controls={controls}
+                light={light}
+                loop={loop}
+                playbackRate={playbackRate}
+                volume={volume}
+                muted={muted}
+                onReady={onReady}
+                onStart={onStart}
+                onPlay={onPlay}
+                onPause={onPause}
+                onBuffer={onBuffer}
+                onSeek={(e) => console.log("onSeek", e)}
+                onEnded={onEnded}
+                onError={(e) => console.log("onError", e)}
+                onDuration={onDuration}
+              />
+            </div>
+          </MotionDivWrapper>
+        )}
+      </AnimatePresenceWrapper>
     );
   }
 );

@@ -22,6 +22,7 @@ type InfoProps = {
   isMyListRow: boolean;
   inMediaList: boolean;
   isLiked: boolean;
+  isLoading: boolean;
   isDisliked: boolean;
   videoModel: IVideoModel;
 };
@@ -38,6 +39,7 @@ const Info = forwardRef<HTMLDivElement, InfoProps>(
       isMyListRow,
       inMediaList,
       isLiked,
+      isLoading,
       isDisliked,
       videoModel,
     },
@@ -76,7 +78,7 @@ const Info = forwardRef<HTMLDivElement, InfoProps>(
               isDisliked={isDisliked}
               videoModel={videoModel}
             />
-            <Genres genres={genres} />
+            <Genres genres={genres} isLoading={isLoading} />
           </div>
         </div>
       </MotionDivWrapper>

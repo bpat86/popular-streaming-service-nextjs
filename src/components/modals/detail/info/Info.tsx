@@ -4,11 +4,13 @@ import { MotionDivWrapper } from "@/lib/MotionDivWrapper";
 import { IVideoModel } from "@/store/types";
 
 import Cast from "./Cast";
+import Crew from "./Crew";
 import Genres from "./Genres";
 import Synopsis from "./Synopsis";
 
 type InfoProps = {
   cast: IVideoModel["cast"];
+  crew: IVideoModel["crew"];
   genres: IVideoModel["genres"];
   isDefaultModal: boolean;
   isLoading: boolean;
@@ -16,7 +18,7 @@ type InfoProps = {
 };
 
 const Info = forwardRef<HTMLDivElement, InfoProps>(
-  ({ cast, genres, isDefaultModal, isLoading, synopsis }, infoRef) => {
+  ({ cast, crew, genres, isDefaultModal, isLoading, synopsis }, infoRef) => {
     const getAnimationProps = () => {
       return isDefaultModal
         ? {
@@ -27,26 +29,31 @@ const Info = forwardRef<HTMLDivElement, InfoProps>(
             inherit: false,
             initial: { opacity: 0 },
             animate: { opacity: 1 },
-            exit: { opacity: 0 },
+            exit: { display: "none" },
             transition: {
               opacity: {
-                duration: 0.067,
+                duration: 0,
               },
-              duration: 0.067,
+              duration: 0,
             },
           };
     };
 
     return (
-      <MotionDivWrapper {...getAnimationProps()}>
-        <div ref={infoRef} className="preview-modal info p-6 sm:px-12">
+      <>
+        <MotionDivWrapper
+          {...getAnimationProps()}
+          ref={infoRef}
+          className="preview-modal info p-6 sm:px-12"
+        >
           <div className="detail-modal-container flex w-full flex-col text-lg leading-snug text-zinc-400">
-            <Genres genres={genres} />
+            <Genres genres={genres} isLoading={isLoading} />
           </div>
           <Synopsis synopsis={synopsis} />
           <Cast cast={cast} isLoading={isLoading} />
-        </div>
-      </MotionDivWrapper>
+          <Crew crew={crew} isLoading={isLoading} />
+        </MotionDivWrapper>
+      </>
     );
   }
 );

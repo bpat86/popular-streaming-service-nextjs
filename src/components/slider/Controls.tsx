@@ -1,4 +1,3 @@
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import { MouseEvent } from "react";
 
 import { sliderActions } from "@/actions/Actions";
@@ -48,9 +47,31 @@ const SliderControls = ({
         )}
       >
         {moveDirection === sliderActions.MOVE_DIRECTION_PREV ? (
-          <ChevronLeftIcon className="h-7 w-7 scale-100 transform transition duration-75 ease-out hover:scale-150 xl:h-8 xl:w-8" />
+          <svg
+            className="h-9 w-9 scale-100 transform transition duration-75 ease-out hover:scale-150 xl:h-11 xl:w-11"
+            stroke="currentColor"
+            fill="currentColor"
+            strokeWidth="0"
+            viewBox="0 0 24 24"
+            height="1em"
+            width="1em"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12l4.58-4.59z"></path>
+          </svg>
         ) : (
-          <ChevronRightIcon className="h-7 w-7 scale-100 transform transition duration-75 ease-out hover:scale-150 xl:h-8 xl:w-8" />
+          <svg
+            className="h-9 w-9 scale-100 transform transition duration-75 ease-out hover:scale-150 xl:h-11 xl:w-11"
+            stroke="currentColor"
+            fill="currentColor"
+            strokeWidth="0"
+            viewBox="0 0 24 24"
+            height="1em"
+            width="1em"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6-6-6z"></path>
+          </svg>
         )}
       </div>
     </span>

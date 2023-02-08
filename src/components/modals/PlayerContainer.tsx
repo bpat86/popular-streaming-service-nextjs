@@ -83,6 +83,8 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
     const [videoCompleted, setVideoCompleted] = useState<boolean>(false);
     const [videoCanPlayThrough, setVideoCanPlayThrough] =
       useState<boolean>(false);
+    const [videoStarted, setVideoStarted] = useState<boolean>(false);
+    const [videoBuffering, setVideoBuffering] = useState<boolean>(false);
     const [videoHasPlayedAtLeastOnce, setVideoHasPlayedAtLeastOnce] =
       useState<boolean>(false);
     const [muted, setMuted] = useState<boolean>(true);
@@ -101,7 +103,7 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
       setLoop(!loop);
     };
 
-    const handlePlayPause = () => {
+    const handleOnPlayPause = () => {
       setPlaying(!playing);
     };
 
@@ -113,26 +115,35 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
       setMuted(!muted);
     };
 
-    const handlePlayerReady = () => {
+    const handleOnReady = () => {
       handleSeek();
       setVideoCanPlayThrough(true);
     };
 
-    const handlePlay = () => {
+    const handleOnStart = () => {
+      setVideoBuffering(false);
+      setVideoStarted(true);
+    };
+
+    const handleOnBuffer = () => {
+      setVideoBuffering(true);
+    };
+
+    const handleOnPlay = () => {
       setPlaying(true);
     };
 
-    const handlePause = () => {
+    const handleOnPause = () => {
       setPlaying(false);
     };
 
-    const handleEnded = () => {
+    const handleOnEnded = () => {
       setPlaying(false);
       setVideoCompleted(true);
       setVideoHasPlayedAtLeastOnce(true);
     };
 
-    const handleDuration = (duration: number) => {
+    const handleOnDuration = (duration: number) => {
       setDuration(duration);
     };
 
@@ -155,11 +166,7 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
      */
     const renderBoxArt = () => {
       return (
-        <MotionDivWrapper
-          inherit={false}
-          initial={false}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { delay: 1, duration: 0.6 } }}
+        <div
           className="boxart-wrapper"
           style={{
             position: isDetailModal ? "absolute" : "relative",
@@ -168,7 +175,10 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
           {imageKey ? (
             <Image
               priority={true}
-              className={clsxm("boxart-image", [isDisliked && "grayscale"])}
+              className={clsxm(
+                "boxart-image transition delay-100 duration-200 ease-out",
+                [isDisliked && "grayscale"]
+              )}
               src={`https://image.tmdb.org/t/p/${
                 "w780" ?? "original"
               }${imageKey}`}
@@ -179,6 +189,8 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
                   !showBoxArtOnClose &&
                   !videoCompleted &&
                   !willClose &&
+                  !videoBuffering &&
+                  videoStarted &&
                   showVideo &&
                   videoId
                     ? 0
@@ -192,7 +204,7 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
           ) : (
             <></>
           )}
-        </MotionDivWrapper>
+        </div>
       );
     };
 
@@ -204,17 +216,14 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
       return (
         <>
           {isDetailModal && !isDefaultModal && (
-            <MotionDivWrapper
-              inherit={false}
-              initial={false}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0, transition: { delay: 1, duration: 0.6 } }}
-              className="story-art detail-modal relative"
-            >
+            <div className="story-art detail-modal relative">
               {imageKey ? (
                 <Image
                   priority={true}
-                  className={clsxm("boxart-image", [isDisliked && "grayscale"])}
+                  className={clsxm(
+                    "boxart-image transition delay-100 duration-200 ease-out",
+                    [isDisliked && "grayscale"]
+                  )}
                   src={`https://image.tmdb.org/t/p/${
                     "w1280" ?? "original"
                   }${imageKey}`}
@@ -225,6 +234,8 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
                       !showBoxArtOnClose &&
                       !videoCompleted &&
                       !willClose &&
+                      !videoBuffering &&
+                      videoStarted &&
                       showVideo &&
                       videoId
                         ? 0
@@ -238,20 +249,17 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
               ) : (
                 <></>
               )}
-            </MotionDivWrapper>
+            </div>
           )}
           {isDefaultModal && (
-            <MotionDivWrapper
-              inherit={false}
-              initial={false}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0, transition: { delay: 1, duration: 0.6 } }}
-              className="story-art detail-modal relative"
-            >
+            <div className="story-art detail-modal relative">
               {imageKey ? (
                 <Image
                   priority={true}
-                  className={clsxm("boxart-image", [isDisliked && "grayscale"])}
+                  className={clsxm(
+                    "boxart-image transition delay-100 duration-200 ease-out",
+                    [isDisliked && "grayscale"]
+                  )}
                   src={`https://image.tmdb.org/t/p/${
                     "w1280" ?? "original"
                   }${imageKey}`}
@@ -262,6 +270,8 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
                       !showBoxArtOnClose &&
                       !videoCompleted &&
                       !willClose &&
+                      !videoBuffering &&
+                      videoStarted &&
                       showVideo &&
                       videoId
                         ? 0
@@ -275,7 +285,7 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
               ) : (
                 <></>
               )}
-            </MotionDivWrapper>
+            </div>
           )}
         </>
       );
@@ -295,17 +305,8 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
               videoCompleted={videoCompleted}
               videoCanPlayThrough={videoCanPlayThrough}
             >
-              <MotionDivWrapper
-                inherit={false}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{
-                  opacity: { delay: 0.067, duration: 0.117, ease: "linear" },
-                }}
-                className="title-treatment"
-              >
-                <Logo logos={logos} title={title} />
+              <div className="title-treatment">
+                {!isLoading && <Logo logos={logos} title={title} />}
                 {isDetailModal && (
                   <ButtonControls
                     ref={buttonsRef}
@@ -320,7 +321,7 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
                     videoModel={videoModel}
                   />
                 )}
-              </MotionDivWrapper>
+              </div>
               <AnimatePresenceWrapper>
                 {showVideo && (
                   <MediaControls
@@ -355,7 +356,7 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
                 }}
                 className="title-treatment"
               >
-                <Logo logos={logos} title={title} />
+                {!isLoading && <Logo logos={logos} title={title} />}
                 <ButtonControls
                   ref={buttonsRef}
                   isDetailModal={isDetailModal}
@@ -390,45 +391,40 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
 
     return (
       <div className={className}>
-        <AnimatePresenceWrapper>
-          {videoId && (
-            <VideoPlayer
-              ref={playerRef}
-              canPlay={
-                !!(
-                  showVideo &&
-                  !isAnimating &&
-                  !isLoading &&
-                  !showBoxArtOnMount &&
-                  !showBoxArtOnClose &&
-                  !videoCompleted &&
-                  !willClose
-                )
-              }
-              playing={playing}
-              controls={controls}
-              light={light}
-              loop={loop}
-              volume={volume}
-              muted={muted}
-              onReady={handlePlayerReady}
-              // onStart={() => console.log("onStart")}
-              onPlay={handlePlay}
-              onPause={handlePause}
-              // onBuffer={() => console.log("onBuffer")}
-              // onSeek={(e) => console.log("onSeek", e)}
-              onEnded={handleEnded}
-              // onError={(e) => console.log("onError", e)}
-              onDuration={handleDuration}
-              videoId={videoId}
-            />
-          )}
-        </AnimatePresenceWrapper>
-        <AnimatePresenceWrapper>{renderBoxArt()}</AnimatePresenceWrapper>
-        <AnimatePresenceWrapper>{renderStoryArt()}</AnimatePresenceWrapper>
-        <AnimatePresenceWrapper>
-          {renderTitleTreatmentWrapper()}
-        </AnimatePresenceWrapper>
+        {videoId && (
+          <VideoPlayer
+            ref={playerRef}
+            canPlay={
+              !!(
+                videoId &&
+                showVideo &&
+                !isLoading &&
+                !isAnimating &&
+                !showBoxArtOnMount &&
+                !showBoxArtOnClose &&
+                !videoCompleted &&
+                !willClose
+              )
+            }
+            playing={playing}
+            controls={controls}
+            light={light}
+            loop={loop}
+            volume={volume}
+            muted={muted}
+            onReady={handleOnReady}
+            onStart={handleOnStart}
+            onPlay={handleOnPlay}
+            onPause={handleOnPause}
+            onBuffer={handleOnBuffer}
+            onEnded={handleOnEnded}
+            onDuration={handleOnDuration}
+            videoId={videoId}
+          />
+        )}
+        {renderBoxArt()}
+        {renderStoryArt()}
+        {renderTitleTreatmentWrapper()}
       </div>
     );
   }

@@ -1211,7 +1211,7 @@ iframe {
 }
 
 .has-open-jaw {
-  padding: 0 0 40vw;
+  padding: 0 0 34vw;
 }
 
 @media screen and (max-width: 499px) {
@@ -1280,6 +1280,7 @@ iframe {
 .preview-modal.info {
   background-color: var(--color-zinc-900);
   position: relative;
+  will-change: transform;
 }
 
 .preview-modal.info-container {

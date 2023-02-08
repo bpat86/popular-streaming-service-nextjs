@@ -39,22 +39,16 @@ const Billboard = forwardRef<HTMLDivElement, BillboardProps>(
       shallow
     );
 
-    // const [videoCanPlayThrough, setVideoCanPlayThrough] =
-    //   useState<boolean>(false);
-    // const [videoCompleted, setVideoCompleted] = useState<boolean>(false);
-    // const [videoHasPlayedAtLeastOnce, setVideoHasPlayedAtLeastOnce] =
-    //   useState<boolean>(false);
     const [textIsAnimating, setTextIsAnimating] = useState<boolean>(false);
     // const [audioEnabled, setAudioEnabled] = useState<boolean>(false);
     const router = useRouter();
-    const maxVolume = 10;
-    // OLD CODE
-
     // Player state
     const playerRef = useRef<YouTubePlayer>(null);
     const [playerError, setPlayerError] = useState<boolean>(false);
     const [playing, setPlaying] = useState<boolean>(true);
     const [played, setPlayed] = useState<number>(0);
+    const [videoStarted, setVideoStarted] = useState<boolean>(false);
+    const [videoBuffering, setVideoBuffering] = useState<boolean>(false);
     const [videoCompleted, setVideoCompleted] = useState<boolean>(false);
     const [videoCanPlayThrough, setVideoCanPlayThrough] =
       useState<boolean>(false);
@@ -76,11 +70,11 @@ const Billboard = forwardRef<HTMLDivElement, BillboardProps>(
       setLoop(!loop);
     };
 
-    const handlePlayPause = () => {
+    const handleTogglePlaying = () => {
       setPlaying(!playing);
     };
 
-    const handleStop = () => {
+    const handleOnStop = () => {
       setPlaying(false);
     };
 
@@ -88,32 +82,41 @@ const Billboard = forwardRef<HTMLDivElement, BillboardProps>(
       setMuted(!muted);
     };
 
-    const handlePlayerReady = () => {
+    const handleOnReady = () => {
       setPlayerError(false);
       setTextIsAnimating(true);
       setVideoCanPlayThrough(true);
     };
 
-    const handlePlayerError = useCallback(() => {
+    const handleOnStart = () => {
+      setVideoBuffering(false);
+      setVideoStarted(true);
+    };
+
+    const handleOnBuffer = () => {
+      setVideoBuffering(true);
+    };
+
+    const handleOnError = useCallback(() => {
       setPlayerError(true);
     }, []);
 
-    const handlePlay = useCallback(() => {
+    const handleOnPlay = useCallback(() => {
       setPlaying(true);
     }, []);
 
-    const handlePause = useCallback(() => {
+    const handleOnPause = useCallback(() => {
       setPlaying(false);
     }, []);
 
-    const handleEnded = () => {
+    const handleOnEnded = () => {
       setPlaying(false);
       setVideoCompleted(true);
       setVideoHasPlayedAtLeastOnce(true);
       setTextIsAnimating(false);
     };
 
-    const handleDuration = (duration: number) => {
+    const handleOnDuration = (duration: number) => {
       setDuration(duration);
     };
 
@@ -185,15 +188,15 @@ const Billboard = forwardRef<HTMLDivElement, BillboardProps>(
     useLayoutEffect(() => {
       if (!playerRef.current || !videoCanPlayThrough || playerError) return;
       if (inView && !shouldFreeze && !videoCompleted) {
-        handlePlay();
+        handleOnPlay();
       } else {
-        handlePause();
+        handleOnPause();
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
       inView,
-      handlePause,
-      handlePlay,
+      handleOnPause,
+      handleOnPlay,
       shouldFreeze,
       videoCanPlayThrough,
       videoCompleted,
@@ -209,6 +212,8 @@ const Billboard = forwardRef<HTMLDivElement, BillboardProps>(
                 !isDetailModal() &&
                 !wasOpen &&
                 !videoCompleted &&
+                !videoBuffering &&
+                videoStarted &&
                 videoCanPlayThrough
                   ? "dismiss-static"
                   : "",
@@ -226,15 +231,14 @@ const Billboard = forwardRef<HTMLDivElement, BillboardProps>(
                       loop={loop}
                       volume={volume}
                       muted={muted}
-                      onReady={handlePlayerReady}
-                      // onStart={() => console.log("onStart")}
-                      onPlay={handlePlay}
-                      onPause={handlePause}
-                      // onBuffer={() => console.log("onBuffer")}
-                      // onSeek={(e) => console.log("onSeek", e)}
-                      onEnded={handleEnded}
-                      onError={handlePlayerError}
-                      onDuration={handleDuration}
+                      onReady={handleOnReady}
+                      onStart={handleOnStart}
+                      onPlay={handleOnPlay}
+                      onPause={handleOnPause}
+                      onBuffer={handleOnBuffer}
+                      onEnded={handleOnEnded}
+                      onError={handleOnError}
+                      onDuration={handleOnDuration}
                       videoId={model.videoModel.videoKey}
                     />
                   </div>

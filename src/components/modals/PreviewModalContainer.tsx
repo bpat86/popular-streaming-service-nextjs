@@ -1,16 +1,15 @@
 import { useRouter } from "next/router";
 import {
-	cloneElement,
-	forwardRef,
-	MutableRefObject,
-	useCallback,
-	useLayoutEffect
+  cloneElement,
+  forwardRef,
+  MutableRefObject,
+  useCallback,
+  useLayoutEffect,
 } from "react";
 import { shallow } from "zustand/shallow";
 
 import { modalStateActions } from "@/actions/Actions";
 import { AnimatePresenceWrapper } from "@/lib/AnimatePresenceWrapper";
-import { IMedia } from "@/middleware/types";
 import usePreviewModalStore from "@/store/PreviewModalStore";
 import { IPreviewModal } from "@/store/types";
 
@@ -18,7 +17,7 @@ import PreviewModal from "./PreviewModal";
 
 type PreviewModalContainerProps = {
   children: any;
-  mutateSliderData: (videoId: IMedia) => void;
+  mutateSliderData?: IPreviewModal["mutateMedia"];
 };
 
 const PreviewModalContainer = forwardRef(
@@ -234,11 +233,11 @@ const PreviewModalContainer = forwardRef(
     /**
      * Render the preview modal component
      */
-    const renderPreviewModal = (modal: any) => {
+    const renderPreviewModal = (modal: IPreviewModal) => {
       const {
         isOpen,
         modalState,
-        model: { uid },
+        model: { uid } = {},
         videoId,
         videoModel,
       } = modal;

@@ -5,36 +5,33 @@ import { IMediaItem } from "@/pages/api/tmdb/types";
 
 export interface IVideoModel {
   animationContext?: string | undefined;
-  credits?: {
+  cast?: Array<{
+    adult?: boolean;
+    gender?: number | null;
     id?: number;
-    cast?: Array<{
-      adult?: boolean;
-      gender?: number | null;
-      id?: number;
-      known_for_department?: string;
-      name?: string;
-      original_name?: string;
-      popularity?: number;
-      profile_path?: string | null;
-      cast_id?: number;
-      character: string;
-      credit_id: string;
-      order: number;
-    }>;
-    crew?: Array<{
-      adult?: boolean;
-      gender?: number | null;
-      id?: number;
-      known_for_department?: string;
-      name?: string;
-      original_name?: string;
-      popularity?: number;
-      profile_path?: string | null;
-      credit_id?: string;
-      department?: string;
-      job?: string;
-    }>;
-  };
+    known_for_department?: string;
+    name?: string;
+    original_name?: string;
+    popularity?: number;
+    profile_path?: string | null;
+    cast_id?: number;
+    character: string;
+    credit_id: string;
+    order: number;
+  }>;
+  crew?: Array<{
+    adult?: boolean;
+    gender?: number | null;
+    id?: number;
+    known_for_department?: string;
+    name?: string;
+    original_name?: string;
+    popularity?: number;
+    profile_path?: string | null;
+    credit_id?: string;
+    department?: string;
+    job?: string;
+  }>;
   dislikedMediaId?: number;
   genres?: Array<{
     id: number;
@@ -171,6 +168,7 @@ export interface IPreviewModal {
   listContext?: string | undefined;
   modalState?: string | undefined;
   model?: IModel | undefined;
+  mutateMedia?: (data: any) => Promise<void> | undefined;
   onPreviewModalClose?: () => void;
   scrollPosition?: number | undefined;
   sliderRow?: number;

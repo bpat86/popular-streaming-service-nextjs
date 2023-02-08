@@ -28,6 +28,9 @@ const Logo = ({ logos, title }: LogoProps) => {
     return logo.aspect_ratio > 2 ? "wide" : "tall";
   };
 
+  /**
+   * If there is no logo, show the title
+   */
   if (!logos || logos.length === 0) {
     return (
       <>
@@ -36,7 +39,7 @@ const Logo = ({ logos, title }: LogoProps) => {
           inherit={false}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 3, ease: "easeOut" }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
           className="title-treatment-logo mt-auto mb-4 origin-bottom-left text-2xl font-bold leading-tight"
         >
           {title}
@@ -45,6 +48,9 @@ const Logo = ({ logos, title }: LogoProps) => {
     );
   }
 
+  /**
+   * If there is a logo, show it
+   */
   return (
     <MotionDivWrapper
       inherit={false}

@@ -2,12 +2,12 @@ import Image from "next/image";
 
 import { IVideoModel } from "@/store/types";
 
-type CastProps = {
-  cast: IVideoModel["cast"];
+type CrewProps = {
+  crew: IVideoModel["crew"];
   isLoading: boolean;
 };
 
-const Cast = ({ cast, isLoading }: CastProps) => {
+const Crew = ({ crew, isLoading }: CrewProps) => {
   /**
    * Generate a random number between two numbers
    */
@@ -16,15 +16,15 @@ const Cast = ({ cast, isLoading }: CastProps) => {
     return Math.floor(Math.random() * (max - min + 1) + min);
   }
 
-  if (!isLoading && !cast?.length) {
+  if (!isLoading && !crew?.length) {
     return (
       <div className="my-8">
         <div className="mb-6 text-base font-semibold leading-snug tracking-wide text-zinc-400">
-          Cast
+          Crew
         </div>
         <div className="mx-auto">
           <p className="font-medium leading-tight text-zinc-300">
-            No cast information available.
+            No crew information available.
           </p>
         </div>
       </div>
@@ -35,7 +35,7 @@ const Cast = ({ cast, isLoading }: CastProps) => {
     return (
       <div className="my-8">
         <div className="mb-6 text-base font-semibold leading-snug tracking-wide text-zinc-400">
-          Cast
+          Crew
         </div>
         <ul
           role="list"
@@ -66,17 +66,17 @@ const Cast = ({ cast, isLoading }: CastProps) => {
     );
   }
 
-  if (!isLoading && cast?.length) {
+  if (!isLoading && crew?.length) {
     return (
       <div className="my-8">
-        <div className="mb-6 text-base font-semibold leading-snug tracking-wide text-zinc-400">
-          Cast
+        <div className="mb-6 border-t-2 border-zinc-800 pt-8 text-base font-semibold leading-snug tracking-wide text-zinc-400">
+          Crew
         </div>
         <ul
           role="list"
           className="mx-auto grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-4 md:gap-x-6 lg:max-w-5xl lg:gap-x-8 lg:gap-y-8 xl:grid-cols-6"
         >
-          {cast?.slice(0, 20)?.map((person, idx) => (
+          {crew?.slice(0, 20)?.map((person, idx) => (
             <li key={`${person.original_name}-${idx}`}>
               <div className="flex flex-col items-center justify-center space-y-4 text-center">
                 <div className="relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-zinc-700">
@@ -104,9 +104,6 @@ const Cast = ({ cast, isLoading }: CastProps) => {
                       <h3 className="pb-1 font-semibold">
                         {person.original_name}
                       </h3>
-                      {person.character && (
-                        <p className="text-zinc-400">{person.character}</p>
-                      )}
                     </div>
                   </div>
                 )}
@@ -121,4 +118,4 @@ const Cast = ({ cast, isLoading }: CastProps) => {
   return <></>;
 };
 
-export default Cast;
+export default Crew;

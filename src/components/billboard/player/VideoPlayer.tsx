@@ -13,6 +13,8 @@ type VideoPlayerProps = {
   loop: boolean;
   muted: boolean;
   onDuration: (duration: number) => void;
+  onBuffer: () => void;
+  onStart: () => void;
   onReady: () => void;
   onEnded: () => void;
   onError: (error: any) => void;
@@ -35,6 +37,8 @@ const VideoPlayer = forwardRef(
       loop,
       // loaded,
       // duration,
+      onStart,
+      onBuffer,
       onReady,
       // onError,
       onPlay,
@@ -71,11 +75,10 @@ const VideoPlayer = forwardRef(
         volume={volume}
         muted={muted}
         onReady={onReady}
-        // onStart={() => console.log("onStart")}
+        onStart={onStart}
         onPlay={onPlay}
         onPause={onPause}
-        // onBuffer={() => console.log("onBuffer")}
-        // onSeek={(e) => console.log("onSeek", e)}
+        onBuffer={onBuffer}
         onEnded={onEnded}
         onError={onError}
         onDuration={onDuration}

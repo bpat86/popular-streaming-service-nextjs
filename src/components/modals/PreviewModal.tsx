@@ -1,5 +1,4 @@
 import { usePresence } from "framer-motion";
-import produce from "immer";
 import debounce from "lodash/debounce";
 import { useRouter } from "next/router";
 import {
@@ -20,7 +19,6 @@ import { animationStateActions, modalStateActions } from "@/actions/Actions";
 import InteractionContext from "@/context/InteractionContext";
 import clsxm from "@/lib/clsxm";
 import { MotionDivWrapper } from "@/lib/MotionDivWrapper";
-import { IMedia } from "@/middleware/types";
 import usePreviewModalData from "@/middleware/usePreviewModalData";
 import usePreviewModalStore from "@/store/PreviewModalStore";
 import { IPreviewModal, PreviewModalStore } from "@/store/types";
@@ -35,13 +33,13 @@ import PlayerContainer from "./PlayerContainer";
 
 type PreviewModalProps = {
   previewModalState: {
-    isOpen: IPreviewModal["isOpen"];
-    modalState: IPreviewModal["modalState"];
-    model: IPreviewModal["model"];
-    mutateSliderData: IMedia["mutateMedia"];
-    scrollPosition: PreviewModalStore["scrollPosition"];
-    titleCardRect: IPreviewModal["titleCardRect"];
-    videoId: IPreviewModal["videoId"];
+    isOpen?: IPreviewModal["isOpen"];
+    modalState?: IPreviewModal["modalState"];
+    model?: IPreviewModal["model"];
+    mutateSliderData?: IPreviewModal["mutateMedia"];
+    scrollPosition?: PreviewModalStore["scrollPosition"];
+    titleCardRect?: IPreviewModal["titleCardRect"];
+    videoId?: IPreviewModal["videoId"];
   };
 };
 
@@ -147,22 +145,19 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
      * This will act as a dedicated page for link sharing.
      * @param {Object} query
      */
-    const updateRoute = ({
-      id,
-      mediaType,
-    }: {
-      id: number;
-      mediaType: string;
-    }) => {
-      router.push(
-        {
-          pathname: router.pathname,
-          query: { ...router.query, jbv: id, type: mediaType },
-        },
-        undefined,
-        { shallow: true, scroll: false }
-      );
-    };
+    const updateRoute = useCallback(
+      ({ id, mediaType }: { id: number; mediaType: string }) => {
+        router.push(
+          {
+            pathname: router.pathname,
+            query: { ...router.query, jbv: id, type: mediaType },
+          },
+          undefined,
+          { shallow: true, scroll: false }
+        );
+      },
+      [router]
+    );
 
     /**
      * Remove the route query string and set the query state to null
@@ -246,19 +241,79 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
     }, [layoutWrapperRef, restoreScrollPositionOnUnmount]);
 
     /**
+     * Get the detail modal's computed width
+     */
+    const getDetailModalWidth = useCallback(() => {
+      const clientWidth = document.body.clientWidth,
+        width = window.innerWidth - clientWidth,
+        minWidth = Math.min(window.innerHeight, clientWidth);
+      return clientWidth < baseWidth
+        ? 0.98 * minWidth - width
+        : Math.max(0.98 * minWidth - width, baseWidth);
+    }, [baseWidth]);
+
+    /**
+     * Set the detail modal's responsive width
+     */
+    const setResponsiveDetailModalWidth = useCallback(() => {
+      if (
+        modalRef &&
+        modalRef.current &&
+        modalState === modalStateActions.DETAIL_MODAL
+      ) {
+        const clientWidth = document.body.clientWidth,
+          minWidth = clientWidth < baseWidth ? 0 : baseWidth,
+          width = getDetailModalWidth();
+        modalRef.current.style.minWidth = `${minWidth}px`;
+        modalRef.current.style.width = `${width}px`;
+      }
+    }, [getDetailModalWidth, modalRef, modalState, baseWidth]);
+
+    /**
      * Get the most updated values for modalRect.
      * This gets called while animating the "open" modal state.
      */
-
-    const updateModalRect = () => {
+    const updateModalRect = useCallback(() => {
       modalRef.current &&
         setModalRect(modalRef.current?.getBoundingClientRect());
-    };
+    }, [modalRef]);
+
+    /**
+     * Close the modal and reset it's styles and state
+     */
+    const handleCloseModal = useCallback(
+      async ({ closeAll = false, closeWithoutAnimation = false } = {}) => {
+        // Set willClose to true
+        setWillClose(true);
+        // Reset timeout id
+        animationFrameId.current &&
+          cancelAnimationFrame(animationFrameId.current),
+          (animationFrameId.current = 0);
+        // Set preview modal closed
+        usePreviewModalStore.getState().setPreviewModalClose({
+          closeWithoutAnimation,
+          videoId,
+        });
+        // Set `wasOpen` true
+        usePreviewModalStore
+          .getState()
+          .setPreviewModalWasOpen({ wasOpen: true });
+        // Reset the router path to the default path
+        modalState === modalStateActions.DETAIL_MODAL && resetRoute();
+        // Remove the preview modal's box shadow
+        modalRef.current && (modalRef.current.style.boxShadow = "none");
+        // Reset the document body styles if preview modal is a detail modal
+        closeAll &&
+          modalState === modalStateActions.DETAIL_MODAL &&
+          (document.body.style.overflowY = "");
+      },
+      [modalState, videoId, resetRoute]
+    );
 
     /**
      * Compute the framer-motion `variants` for the modal's mini state
      */
-    const getMiniModalAnimationProps = () => {
+    const getMiniModalAnimationProps = useCallback(() => {
       /**
        * Mini modal's mounting/reset state.
        * Some of the previous state's values are needed for the next transition.
@@ -295,9 +350,7 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
           scaleY,
           opacity: 0,
           transition: {
-            default: {
-              duration: 0,
-            },
+            duration: 0,
           },
         };
       }
@@ -316,9 +369,7 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
               opacity: {
                 duration: 0,
               },
-              default: {
-                duration: 0,
-              },
+              duration: 0,
             },
             transitionEnd: {
               zIndex: 3,
@@ -351,10 +402,8 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
                   duration: 0.05,
                   ease: "linear",
                 },
-                default: {
-                  duration: 0.3,
-                  ease: [0.21, 0, 0.07, 1],
-                },
+                duration: 0.3,
+                ease: [0.21, 0, 0.07, 1],
               },
               transitionEnd: {
                 zIndex: 3,
@@ -382,9 +431,7 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
           return {
             opacity: 0,
             transition: {
-              default: {
-                duration: 0,
-              },
+              duration: 0,
             },
           };
         }
@@ -418,31 +465,28 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
               duration: 0.117,
               ease: "linear",
             },
-            default: {
-              duration: 0.3,
-              ease: [0.21, 0, 0.07, 1],
-            },
+            duration: 0.3,
+            ease: [0.21, 0, 0.07, 1],
           },
           transitionEnd: {
             display: "none",
           },
         };
       }
-      const variantObj = new Object();
-      const miniModalVariants = produce<any>(variantObj, (draft) => {
-        draft[animationStateActions.RESET_MINI_MODAL] = {
-          ...resetMiniModal(),
-        };
-        draft[animationStateActions.OPEN_MINI_MODAL] = {
+      // Mini modal's animation states
+      const miniModalVariants = {
+        [animationStateActions.RESET_MINI_MODAL]: resetMiniModal(),
+        [animationStateActions.OPEN_MINI_MODAL]: {
           ...resetMiniModal(),
           ...openMiniModal(),
-        };
-        draft[animationStateActions.CLOSE_MINI_MODAL] = {
+        },
+        [animationStateActions.CLOSE_MINI_MODAL]: {
           ...openMiniModal(),
           ...closeMiniModal(),
-        };
-      });
+        },
+      };
       // console.log("variants", miniModalVariants);
+      // Return the animation props
       return titleCardRect
         ? {
             animate: animationState,
@@ -450,19 +494,23 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
             onAnimationStart: () => {
               setIsAnimating(true);
             },
-            onAnimationComplete: (currentAnimationState: any) => {
+            onAnimationComplete: (
+              currentAnimationState: (typeof animationStateActions)[keyof typeof animationStateActions]
+            ) => {
               if (
                 currentAnimationState ===
                   animationStateActions.RESET_MINI_MODAL &&
                 isPresent &&
                 !willClose.current
               )
-                return (
-                  setAnimationState(animationStateActions.OPEN_MINI_MODAL),
-                  modalRef.current &&
-                    (modalRef.current.style.boxShadow =
-                      "0 3px 10px rgba(0, 0, 0, 0.75)")
-                );
+                flushSync(() => {
+                  return (
+                    setAnimationState(animationStateActions.OPEN_MINI_MODAL),
+                    modalRef.current &&
+                      (modalRef.current.style.boxShadow =
+                        "0 3px 10px rgba(0, 0, 0, 0.75)")
+                  );
+                });
               setIsAnimating(false);
               enableTooltips();
             },
@@ -476,12 +524,27 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
         : {
             exit: {},
           };
-    };
+    }, [
+      animationState,
+      enableTooltips,
+      handleCloseModal,
+      isPresent,
+      modalRect,
+      modalRef,
+      modalState,
+      scaleFactor,
+      scrollPosition,
+      setAnimationState,
+      setIsAnimating,
+      titleCardRect,
+      videoId,
+      willClose,
+    ]);
 
     /**
      * Compute the framer-motion `variants` for the modal's detail state
      */
-    const getDetailModalAnimationProps = () => {
+    const getDetailModalAnimationProps = useCallback(() => {
       /**
        * Detail modal's mounting state.
        * Some of the previous state's values are neededfor the next transition.
@@ -500,9 +563,7 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
             scaleY: 1,
             opacity: 0,
             transition: {
-              default: {
-                duration: 0,
-              },
+              duration: 0,
             },
             transitionEnd: {
               marginBottom: "2em",
@@ -523,9 +584,7 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
             scaleY: 0.8,
             opacity: 0,
             transition: {
-              default: {
-                duration: 0,
-              },
+              duration: 0,
             },
             transitionEnd: {
               marginBottom: "2em",
@@ -555,9 +614,7 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
           opacity: 1,
           transformOrigin: "50% 0%", // "50% 12.5%"
           transition: {
-            default: {
-              duration: 0,
-            },
+            duration: 0,
           },
           transitionEnd: {
             marginBottom: "2em",
@@ -583,13 +640,11 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
                 duration: 0.117,
                 ease: "linear",
               },
-              default: {
-                duration: 0.417,
-                ease:
-                  modalState === modalStateActions.DETAIL_MODAL
-                    ? [0.21, 0, 0.07, 1]
-                    : [0.4, 0, 0.7, 1],
-              },
+              duration: 0.417,
+              ease:
+                modalState === modalStateActions.DETAIL_MODAL
+                  ? [0.21, 0, 0.07, 1]
+                  : [0.4, 0, 0.7, 1],
             },
             transitionEnd: {
               zIndex: 3,
@@ -610,10 +665,8 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
                 duration: 0.117,
                 ease: "linear",
               },
-              default: {
-                duration: 0.417,
-                ease: [0.21, 0, 0.07, 1],
-              },
+              duration: 0.417,
+              ease: [0.21, 0, 0.07, 1],
             },
             transitionEnd: {
               zIndex: 3,
@@ -634,10 +687,8 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
               duration: 0.117,
               ease: "linear",
             },
-            default: {
-              duration: 0.417,
-              ease: [0.21, 0, 0.07, 1],
-            },
+            duration: 0.417,
+            ease: [0.21, 0, 0.07, 1],
           },
           transitionEnd: {
             zIndex: 3,
@@ -663,9 +714,7 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
           return {
             opacity: 0,
             transition: {
-              default: {
-                duration: 0,
-              },
+              duration: 0,
             },
           };
         // If no modal props exist or if watch mode is enabled
@@ -683,10 +732,8 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
                 duration: 0.134,
                 ease: "linear",
               },
-              default: {
-                duration: 0.54,
-                ease: [0.42, 0, 0.58, 1],
-              },
+              duration: 0.54,
+              ease: [0.42, 0, 0.58, 1],
             },
             transitionEnd: {
               display: "none",
@@ -706,32 +753,30 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
           y: titleCardRect.top - modalRect.top,
           x: titleCardX - documentWidth,
           transition: {
-            default: {
-              duration: 0.54,
-              ease: [0.26, 1, 0.48, 1],
-            },
+            duration: 0.54,
+            ease: [0.26, 1, 0.48, 1],
           },
           transitionEnd: {
             display: "none",
           },
         };
       }
-
-      const variantObj = new Object();
-      const detailModalVariants = produce<any>(variantObj, (draft) => {
-        draft[animationStateActions.MOUNT_DETAIL_MODAL] = {
+      // Detail modal's animation states
+      const detailModalVariants = {
+        [animationStateActions.MOUNT_DETAIL_MODAL]: {
           ...mountDetailModal(),
-        };
-        draft[animationStateActions.OPEN_DETAIL_MODAL] = {
+        },
+        [animationStateActions.OPEN_DETAIL_MODAL]: {
           ...mountDetailModal(),
           ...openDetailModal(),
-        };
-        draft[animationStateActions.CLOSE_DETAIL_MODAL] = {
+        },
+        [animationStateActions.CLOSE_DETAIL_MODAL]: {
           ...openDetailModal(),
           ...closeDetailModal(),
-        };
-      });
+        },
+      };
       // console.log("variants", detailModalVariants);
+      // Return the animation props
       return {
         initial: false,
         animate: animationState,
@@ -740,30 +785,45 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
           setIsDetailAnimating(true);
           disableTooltips();
         },
-        onAnimationComplete: (currentAnimationState: any) => {
+        onAnimationComplete: (
+          currentAnimationState: (typeof animationStateActions)[keyof typeof animationStateActions]
+        ) => {
           if (
             currentAnimationState === animationStateActions.MOUNT_DETAIL_MODAL
           )
-            return (
-              window.scrollTo(0, 0),
-              flushSync(() =>
-                setAnimationState(animationStateActions.OPEN_DETAIL_MODAL)
-              ),
-              currentAnimationState ===
-                animationStateActions.OPEN_DETAIL_MODAL &&
-                setResponsiveDetailModalWidth()
-            );
+            flushSync(() => {
+              return (
+                window.scrollTo(0, 0),
+                setAnimationState(animationStateActions.OPEN_DETAIL_MODAL),
+                currentAnimationState ===
+                  animationStateActions.OPEN_DETAIL_MODAL &&
+                  setResponsiveDetailModalWidth()
+              );
+            });
           setIsDetailAnimating(false);
           enableTooltips();
         },
         variants: detailModalVariants,
       };
-    };
+    }, [
+      animationState,
+      getDetailModalWidth,
+      modalState,
+      modalRect,
+      modalRef,
+      titleCardRect,
+      videoId,
+      setAnimationState,
+      setResponsiveDetailModalWidth,
+      disableTooltips,
+      enableTooltips,
+      isWatchModeEnabled,
+    ]);
 
     /**
      * Get the animation props for each animation state
      */
-    const getAnimationProps = () => {
+    const getAnimationProps = useCallback(() => {
       switch (modalState) {
         case modalStateActions.MINI_MODAL: {
           return getMiniModalAnimationProps();
@@ -772,10 +832,10 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
           return getDetailModalAnimationProps();
         }
         default: {
-          return;
+          return {};
         }
       }
-    };
+    }, [getMiniModalAnimationProps, getDetailModalAnimationProps, modalState]);
 
     /**
      * Expand the mini modal to the detail modal and update the router path
@@ -788,20 +848,9 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
     // };
 
     /**
-     * Expand the mini modal to the detail modal when the user clicks the area between the buttons
-     */
-    const handleMetadataAreaClicked = (e: MouseEvent<HTMLDivElement>) => {
-      const button = e.target as HTMLButtonElement;
-      button.closest("button")
-        ? button.closest("[data-uia=expand-to-detail-button]") ||
-          e.preventDefault()
-        : handleViewDetails();
-    };
-
-    /**
      * Update the modal state to the default / detail preview modal view
      */
-    const handleViewDetails = () => {
+    const handleViewDetails = useCallback(() => {
       usePreviewModalStore.getState().updatePreviewModalState({
         individualState: {
           billboardVideoMerchId: modalData?.videoModel.videoId,
@@ -813,56 +862,37 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
         },
       });
       // handleExpandModal(e);
-    };
+    }, [modalData, titleCardRect]);
 
     /**
-     * Close the modal and reset it's styles and state
+     * Expand the mini modal to the detail modal when the user clicks the area between the buttons
      */
-    const handleCloseModal = useCallback(
-      async ({ closeAll = false, closeWithoutAnimation = false } = {}) => {
-        // Set willClose to true
-        setWillClose(true);
-        // Reset timeout id
-        animationFrameId.current &&
-          cancelAnimationFrame(animationFrameId.current),
-          (animationFrameId.current = 0);
-        // Set preview modal closed
-        usePreviewModalStore.getState().setPreviewModalClose({
-          closeWithoutAnimation,
-          videoId,
-        });
-        // Set `wasOpen` true
-        usePreviewModalStore
-          .getState()
-          .setPreviewModalWasOpen({ wasOpen: true });
-        // Reset the router path to the default path
-        modalState === modalStateActions.DETAIL_MODAL && resetRoute();
-        // Remove the preview modal's box shadow
-        modalRef.current && (modalRef.current.style.boxShadow = "none");
-        // Reset the document body styles if preview modal is a detail modal
-        closeAll &&
-          modalState === modalStateActions.DETAIL_MODAL &&
-          (document.body.style.overflowY = "");
+    const handleMetadataAreaClicked = useCallback(
+      (e: MouseEvent<HTMLDivElement>) => {
+        const button = e.target as HTMLButtonElement;
+        button.closest("button")
+          ? button.closest("[data-uia=expand-to-detail-button]") ||
+            e.preventDefault()
+          : handleViewDetails();
       },
-      [modalState, videoId, resetRoute]
+      [handleViewDetails]
     );
 
     /**
      * Determine if the cursor is within an element's bounding rect
      */
-    const isInsideRect = (
-      pageX: number,
-      pageY: number,
-      rect: DOMRect | undefined
-    ) => {
-      return (
-        rect &&
-        pageX >= rect.left &&
-        pageX <= rect.left + rect.width &&
-        pageY >= window.scrollY + rect.top &&
-        pageY <= window.scrollY + rect.top + rect.height
-      );
-    };
+    const isInsideRect = useCallback(
+      (pageX: number, pageY: number, rect: DOMRect | undefined) => {
+        return (
+          rect &&
+          pageX >= rect.left &&
+          pageX <= rect.left + rect.width &&
+          pageY >= window.scrollY + rect.top &&
+          pageY <= window.scrollY + rect.top + rect.height
+        );
+      },
+      []
+    );
 
     /**
      * Manage how the modal is closed based on its current state
@@ -898,53 +928,37 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
               handleExit()),
           window.removeEventListener("mousemove", handleOnMouseMove));
       },
-      [animationState, modalRef, willClose, handleExit, titleCardRect]
+      [
+        animationState,
+        isInsideRect,
+        modalRef,
+        willClose,
+        handleExit,
+        titleCardRect,
+      ]
     );
 
     /**
      * Trigger the modal to close when the close button is clicked
      */
-    const onCloseClick = (e: MouseEvent<HTMLDivElement, MouseEvent>) => {
-      e && e.stopPropagation();
-      handleCloseModal();
-    };
+    const onCloseClick = useCallback(
+      (e: MouseEvent<HTMLDivElement, MouseEvent>) => {
+        e && e.stopPropagation();
+        handleCloseModal();
+      },
+      [handleCloseModal]
+    );
 
     /**
      * Trigger the modal to close when the close button is focused and the user clicks the enter key
      */
-    const onCloseKeyDown = (e: KeyboardEvent<HTMLButtonElement>) => {
-      e.stopPropagation();
-      e.key === "Enter" && handleCloseModal({ closeAll: true });
-    };
-
-    /**
-     * Get the detail modal's computed width
-     */
-    const getDetailModalWidth = () => {
-      const clientWidth = document.body.clientWidth,
-        width = window.innerWidth - clientWidth,
-        minWidth = Math.min(window.innerHeight, clientWidth);
-      return clientWidth < baseWidth
-        ? 0.98 * minWidth - width
-        : Math.max(0.98 * minWidth - width, baseWidth);
-    };
-
-    /**
-     * Set the detail modal's responsive width
-     */
-    const setResponsiveDetailModalWidth = () => {
-      if (
-        modalRef &&
-        modalRef.current &&
-        modalState === modalStateActions.DETAIL_MODAL
-      ) {
-        const clientWidth = document.body.clientWidth,
-          minWidth = clientWidth < baseWidth ? 0 : baseWidth,
-          width = getDetailModalWidth();
-        modalRef.current.style.minWidth = `${minWidth}px`;
-        modalRef.current.style.width = `${width}px`;
-      }
-    };
+    const onCloseKeyDown = useCallback(
+      (e: KeyboardEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
+        e.key === "Enter" && handleCloseModal({ closeAll: true });
+      },
+      [handleCloseModal]
+    );
 
     /**
      * Handle resize actions
@@ -993,7 +1007,7 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
     /**
      * Animate the detail / default modal's mount animation
      */
-    const updateToDetailModal = () => {
+    const updateToDetailModal = useCallback(() => {
       if (modalRef.current && !willClose.current) {
         animationState !== animationStateActions.MOUNT_DETAIL_MODAL &&
           setAnimationState(animationStateActions.MOUNT_DETAIL_MODAL);
@@ -1010,7 +1024,18 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
         setDetailModalParentStyles();
         requestAnimationFrame(() => window.scrollTo(0, 0));
       }
-    };
+    }, [
+      animationState,
+      handleOnMouseMove,
+      modalData?.videoModel?.identifiers,
+      modalRect,
+      modalRef,
+      modalState,
+      setDetailModalParentStyles,
+      titleCardRect,
+      updateModalRect,
+      updateRoute,
+    ]);
 
     /**
      * Animate the mini modal's mount animation
@@ -1091,12 +1116,12 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
     useEffect(() => {
       if (!isPresent) {
         setTimeout(() => {
-          // Remove from the react tree
-          safeToRemove();
           // Set preview modal `wasOpen` false
           usePreviewModalStore
             .getState()
             .setPreviewModalWasOpen({ wasOpen: false });
+          // Remove from the react tree
+          safeToRemove();
         }, 0);
         // Cleanup
         return () => {
@@ -1214,8 +1239,12 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
                   ref={modalInfoRef}
                   key={model.uid}
                   cast={modalData?.videoModel?.cast}
+                  crew={modalData?.videoModel?.crew}
                   genres={modalData?.videoModel?.genres}
-                  isLoading={isDetailAnimating && showBoxArtOnClose}
+                  isLoading={
+                    (!modalDataError && fetchingModalData) ||
+                    (isDetailAnimating && showBoxArtOnClose)
+                  }
                   // isMiniModal={isMiniModal}
                   isDefaultModal={!titleCardRect && isDetailModal}
                   synopsis={modalData?.videoModel?.synopsis}
@@ -1234,6 +1263,7 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
                     inMediaList={modalData?.videoModel?.inMediaList}
                     isMyListRow={modalData?.videoModel?.isMyListRow}
                     isDisliked={modalData?.videoModel?.isDisliked}
+                    isLoading={!modalDataError && fetchingModalData}
                     isLiked={modalData?.videoModel?.isLiked}
                     videoModel={{
                       ...modalData?.videoModel,

@@ -103,7 +103,8 @@ const immerReducer = ({ state, action }: ImmerReducerProps) => {
             individualState: { videoId = undefined } = {},
           },
         } = action;
-        const individual = individualState === undefined ? {} : individualState;
+        const individual =
+          individualState === undefined ? undefined : individualState;
         if (
           !videoId ||
           !previewModalStateById ||
