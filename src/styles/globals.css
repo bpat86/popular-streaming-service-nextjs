@@ -635,27 +635,11 @@ input.input-profile:-webkit-autofill::first-line {
 .jaw-bone-open.has-info-density.has-large-density
   .has-expanded-info-density
   .jawBoneContent {
-  -webkit-transition: 0.4s cubic-bezier(0.5, 0, 0.1, 1);
-  -o-transition: 0.4s cubic-bezier(0.5, 0, 0.1, 1);
-  -moz-transition: 0.4s cubic-bezier(0.5, 0, 0.1, 1);
-  transition: 0.4s cubic-bezier(0.5, 0, 0.1, 1);
+  transition: transform 0.54s cubic-bezier(0.5, 0, 0.1, 1) 0s;
   margin-top: -5px;
   top: -webkit-calc(101%);
   top: -moz-calc(101%);
   top: calc(101%);
-}
-
-.row-container {
-  -webkit-transition: -webkit-transform 0.54s cubic-bezier(0.5, 0, 0.1, 1) 0s;
-  transition: -webkit-transform 0.54s cubic-bezier(0.5, 0, 0.1, 1) 0s;
-  -o-transition: -o-transform 0.54s cubic-bezier(0.5, 0, 0.1, 1) 0s;
-  -moz-transition: transform 0.54s cubic-bezier(0.5, 0, 0.1, 1) 0s,
-    -moz-transform 0.54s cubic-bezier(0.5, 0, 0.1, 1) 0s;
-  transition: transform 0.54s cubic-bezier(0.5, 0, 0.1, 1) 0s;
-  transition: transform 0.54s cubic-bezier(0.5, 0, 0.1, 1) 0s,
-    -webkit-transform 0.54s cubic-bezier(0.5, 0, 0.1, 1) 0s,
-    -moz-transform 0.54s cubic-bezier(0.5, 0, 0.1, 1) 0s,
-    -o-transform 0.54s cubic-bezier(0.5, 0, 0.1, 1) 0s;
 }
 
 /* Slider */
@@ -664,11 +648,13 @@ input.input-profile:-webkit-autofill::first-line {
   outline: 0;
   margin: 3vw 0;
   padding: 0;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
   box-sizing: border-box;
   z-index: 1;
 }
+.row-container {
+  transition: transform 0.54s cubic-bezier(0.5, 0, 0.1, 1) 0s;
+}
+
 .slider-row.title-card:not(.loading-title) {
   display: block;
 }
@@ -1096,8 +1082,6 @@ iframe {
   top: 0;
   left: 0;
   will-change: scroll-position;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
   box-sizing: border-box;
   outline-offset: 2px;
   outline: 2px solid transparent;

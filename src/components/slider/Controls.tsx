@@ -19,14 +19,6 @@ const SliderControls = ({
   moveDirection,
   hasMovedOnce,
 }: SliderControlsProps) => {
-  /**
-   * Handle click event on the slider controls
-   */
-  const handleOnClick = (e: MouseEvent<HTMLSpanElement>) => {
-    if (isAnimating) return;
-    onClick(e);
-  };
-
   return (
     <span
       key={moveDirection}
@@ -36,13 +28,14 @@ const SliderControls = ({
         moveDirection === sliderActions.MOVE_DIRECTION_PREV
           ? "handlePrev active"
           : "handleNext active",
+        isAnimating && "pointer-events-none",
       ])}
       aria-label={`${
         moveDirection === sliderActions.MOVE_DIRECTION_PREV
           ? "See previous titles"
           : "See more titles"
       }`}
-      onClick={handleOnClick}
+      onClick={onClick}
     >
       <div
         className={clsxm(

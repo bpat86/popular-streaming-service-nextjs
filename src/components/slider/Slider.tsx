@@ -421,7 +421,6 @@ const Slider = ({
               const map = getItemRefsMap();
               node ? map.set(itemUid, node) : map.delete(itemUid);
             }}
-            activeRowItemIndex={activeRowItemIndex}
             inViewport={inViewport}
             itemTabbable={itemTabbable}
             listContext={listContext}
@@ -523,7 +522,6 @@ const Slider = ({
   const advancePrev = (e: MouseEvent<HTMLSpanElement>) => {
     // Proceed if the previous button is active and the slider is not currently animating
     if (!isPrevBtnNavActive() || isAnimating) return;
-
     setIsAnimating(true);
     // Get the total number of items
     const totalItemsCount = getTotalItemsCount();
@@ -533,8 +531,8 @@ const Slider = ({
     const amountToOffset = lowestVisibleItemIndex - rowItems;
     lowestVisibleItemIndex === 0 && (rowItems = totalItemsCount - itemsInRow);
     // Get the new slider offset
-    const getNewOffset = getNewSliderOffset(amountToOffset),
-      newOffsetAmount = getNewOffset + getBaseSliderOffset();
+    const getNewOffsetAmount = getNewSliderOffset(amountToOffset),
+      newOffsetAmount = getNewOffsetAmount + getBaseSliderOffset();
     e && "wheel" === e.type
       ? shiftSlider(
           rowItems,
@@ -586,7 +584,8 @@ const Slider = ({
    */
   const advanceNext = (e: MouseEvent<HTMLSpanElement>) => {
     // e && e.preventDefault();
-    if (!isNextBtnNavActive() && isAnimating) return;
+    if (!isNextBtnNavActive() || isAnimating) return;
+    setIsAnimating(true);
     const totalItemsCount = getTotalItemsCount();
     const nextRow = lowestVisibleItemIndex + 2 * itemsInRow;
     // Set initial rowItems to the lowest visible item index plus the number of items in a row
@@ -597,11 +596,10 @@ const Slider = ({
       (rowItems = totalItemsCount - itemsInRow);
     // Offset amount to move the slider
     const amountToOffset = lowestVisibleItemIndex - rowItems,
-      getNewOffset = getNewSliderOffset(amountToOffset),
-      newOffsetAmount = getNewOffset + getBaseSliderOffset();
+      getNewOffsetAmount = getNewSliderOffset(amountToOffset),
+      newOffsetAmount = getNewOffsetAmount + getBaseSliderOffset();
     // If rowItems is equal to the total number of items, set rowItems to 0
     rowItems === totalItemsCount && (rowItems = 0);
-    setIsAnimating(true);
     e && "wheel" === e.type
       ? shiftSlider(
           rowItems,
@@ -638,20 +636,19 @@ const Slider = ({
    */
   const onSliderMove = useCallback(
     (lowestVisibleIdx: number, moveDirection: string) => {
-      setHasMovedOnce(true);
       setLowestVisibleItemIndex(lowestVisibleIdx);
       setSliderMoveDirection(moveDirection);
     },
-    [setHasMovedOnce, setLowestVisibleItemIndex, setSliderMoveDirection]
+    [setLowestVisibleItemIndex, setSliderMoveDirection]
   );
 
   /**
    * Reset the slider base transform values on pageload and after it animates / shifts
    */
   const resetSliderPosition = useCallback(() => {
-    const baseSliderOffset = getBaseSliderOffset();
-    const getNewStyle = getAnimationStyle(baseSliderOffset);
-    sliderRef.current && sliderRef.current.setAttribute("style", getNewStyle);
+    const getNewOffsetAmount = getAnimationStyle(getBaseSliderOffset());
+    sliderRef.current &&
+      sliderRef.current.setAttribute("style", getNewOffsetAmount);
   }, [getAnimationStyle, getBaseSliderOffset]);
 
   /**
@@ -705,27 +702,31 @@ const Slider = ({
       _isMouseEvent: boolean,
       _activeRowSegment: number
     ) => {
-      if (!sliderRef.current || isAnimating) return;
+      if (!sliderRef.current) return;
       const slider = sliderRef.current;
-      const getNewStyle = getAnimationStyle(newOffsetAmount);
+      const getNewOffsetAmount = getAnimationStyle(newOffsetAmount);
       slider.classList.add("animating");
-      slider.setAttribute("style", getNewStyle);
-      slider.addEventListener("transitionend", function transitionEnd(e) {
-        e.target === slider &&
-          slider.removeEventListener("transitionend", transitionEnd),
+      slider.setAttribute("style", getNewOffsetAmount);
+      // Flush the slider updates to the DOM after the animated transition completes
+      ontransitionend = (e) => {
+        if (e.target === slider) {
+          flushSync(() => {
+            resetSliderPosition();
+            setHasMovedOnce(true);
+            onSliderMove(totalItemsCount, action);
+            refocusAfterShift(action);
+          });
           slider.classList.remove("animating");
-        resetSliderPosition();
-        flushSync(() => onSliderMove(totalItemsCount, action));
-        refocusAfterShift(action);
-        setIsAnimating(false);
-      });
+          setIsAnimating(false);
+        }
+      };
     },
     [
       getAnimationStyle,
-      isAnimating,
       onSliderMove,
       refocusAfterShift,
       resetSliderPosition,
+      setHasMovedOnce,
       sliderRef,
     ]
   );

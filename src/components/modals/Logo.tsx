@@ -1,3 +1,4 @@
+import clsxm from "@/lib/clsxm";
 import { MotionDivWrapper } from "@/lib/MotionDivWrapper";
 import { IVideoModel } from "@/store/types";
 
@@ -12,7 +13,8 @@ const Logo = ({ logos, title }: LogoProps) => {
    */
   const getLogoPath = (logos: IVideoModel["logos"]) => {
     if (!logos) return;
-    const logo = logos.find(({ iso_639_1 }) => iso_639_1 === "en") || logos[0];
+    const logo =
+      logos.filter(({ iso_639_1 }) => iso_639_1 === "en")[0] || logos[0];
     return logo.file_path;
   };
 
@@ -34,8 +36,8 @@ const Logo = ({ logos, title }: LogoProps) => {
           inherit={false}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.067, delay: 0.117, ease: "easeOut" }}
-          className="title-treatment-logo mt-auto mb-4 origin-bottom-left text-3xl font-black leading-8"
+          transition={{ duration: 0.5, delay: 3, ease: "easeOut" }}
+          className="title-treatment-logo mt-auto mb-4 origin-bottom-left text-2xl font-bold leading-tight"
         >
           {title}
         </MotionDivWrapper>
@@ -44,18 +46,23 @@ const Logo = ({ logos, title }: LogoProps) => {
   }
 
   return (
-    <>
+    <MotionDivWrapper
+      inherit={false}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+    >
       <span className="sr-only">{title} logo</span>
       <picture>
         <img
-          className={`title-treatment-logo ${
-            getLogoAspectRatio(logos) === "wide" ? "wide" : "tall"
-          }`}
+          className={clsxm("title-treatment-logo", [
+            getLogoAspectRatio(logos) === "wide" ? "wide" : "tall",
+          ])}
           src={`https://image.tmdb.org/t/p/w500${getLogoPath(logos)}`}
-          alt={title}
+          alt={title || ""}
         />
       </picture>
-    </>
+    </MotionDivWrapper>
   );
 };
 

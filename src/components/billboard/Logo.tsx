@@ -11,8 +11,9 @@ const Logo = ({ logos, title }: LogoProps) => {
    */
   const getLogoPath = (logos: LogoProps["logos"]) => {
     if (!logos) return;
-    const logo = logos.find(({ iso_639_1 }) => iso_639_1 === "en") || logos[0];
-    return logo?.file_path;
+    const logo =
+      logos.filter(({ iso_639_1 }) => iso_639_1 === "en")[0] || logos[0];
+    return logo.file_path;
   };
 
   /**
