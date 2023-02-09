@@ -59,7 +59,7 @@ const Info = forwardRef<HTMLDivElement, InfoProps>(
           },
         }}
         transition={{
-          opacity: { delay: 0.043, duration: 0.117, ease: "linear" },
+          opacity: { delay: 0.1, duration: 0.067, ease: "linear" },
         }}
         className="preview-modal info"
         onClick={handleMetadataAreaClicked}

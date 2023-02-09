@@ -37,8 +37,6 @@ const VideoPlayer = forwardRef(
       light,
       muted,
       loop,
-      loaded,
-      duration,
       onBuffer,
       onReady,
       onStart,
@@ -94,9 +92,7 @@ const VideoPlayer = forwardRef(
                 onPlay={onPlay}
                 onPause={onPause}
                 onBuffer={onBuffer}
-                onSeek={(e) => console.log("onSeek", e)}
                 onEnded={onEnded}
-                onError={(e) => console.log("onError", e)}
                 onDuration={onDuration}
               />
             </div>
