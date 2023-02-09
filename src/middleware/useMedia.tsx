@@ -1,7 +1,10 @@
 import axios from "axios";
 import useSWR from "swr";
 
-import { FetcherProps, IMedia, UseMediaProps } from "./types";
+export type FetcherProps = [string, object];
+export type UseMediaProps = {
+  pageAPI: string;
+};
 
 /**
  * Fetcher function
@@ -22,7 +25,7 @@ const fetchWithProps = async (...args: FetcherProps) => {
   return res.data;
 };
 
-export default function useMedia({ pageAPI }: UseMediaProps): IMedia {
+export default function useMedia({ pageAPI }: UseMediaProps) {
   /**
    * useSWR api options
    * https://swr.vercel.app/docs/options
@@ -40,9 +43,10 @@ export default function useMedia({ pageAPI }: UseMediaProps): IMedia {
   const controller = new AbortController();
   const signal = controller.signal;
 
-  // URL to fetch a single title
+  // URL to fetch data from
   const apiURL = `/api/tmdb/${pageAPI}`;
 
+  // Fetch data from the API
   const {
     data: media,
     mutate: mutateMedia,
@@ -54,30 +58,24 @@ export default function useMedia({ pageAPI }: UseMediaProps): IMedia {
     options
   );
 
+  // Request data is still being fetched
   const fetchingMediaData = !media && !mediaError && isValidating;
-  // Abort fetch if the user navigates away
-  if (signal.aborted) {
+
+  // If the request is still validating or is aborted, return undefined
+  if (fetchingMediaData || signal.aborted) {
     return {
-      fetchingMedia: isValidating,
-      media: {},
+      fetchingMedia: fetchingMediaData, // isValidating
+      media: undefined,
       mutateMedia,
       mediaError,
       cancelRequest: () => controller.abort(),
     };
   }
-  if (!fetchingMediaData) {
-    // Return the data, mutate function, and error
-    return {
-      fetchingMedia: isValidating,
-      media,
-      mutateMedia,
-      mediaError,
-      cancelRequest: () => controller.abort(),
-    };
-  }
+
+  // Return the request data
   return {
     fetchingMedia: isValidating,
-    media: {},
+    media,
     mutateMedia,
     mediaError,
     cancelRequest: () => controller.abort(),

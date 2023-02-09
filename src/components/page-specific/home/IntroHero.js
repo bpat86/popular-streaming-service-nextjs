@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import HomeLayout from "@/components/layouts/HomeLayout";
+import HomeLayout from "@/components/pages/layouts/HomeLayout";
 
 import { GetStartedForm } from "../../forms/GetStartedForm";
 import { WelcomeBackForm } from "../../forms/WelcomeBackForm";

@@ -1,6 +1,6 @@
 import { Form, Formik } from "formik";
 
-import Profile from "@/components/layouts/ProfileGateLayout";
+import Profile from "@/components/pages/layouts/ProfileGateLayout";
 
 import SelectAvatar from "./SelectAvatar";
 

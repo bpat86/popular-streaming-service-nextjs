@@ -1,9 +1,9 @@
 import "@/styles/globals.css";
 
-import { Page } from "@/@types/page";
 import { AppProps } from "next/app";
 import { Fragment } from "react";
 
+import { Page } from "@/@types/page";
 import { AuthProvider } from "@/context/AuthContext";
 import CombineContexts from "@/context/CombineContexts";
 import { InteractionProvider } from "@/context/InteractionContext";

@@ -8,10 +8,11 @@ import {
 } from "react";
 
 import Footer from "@/components/footers/MainFooter";
-import PageTransitionsLayout from "@/components/layouts/PageTransitionsLayout";
 import { transitions } from "@/components/motion/transitions";
 import MainNavigation from "@/components/navigation/MainNavigation";
+import PageTransitionsLayout from "@/components/pages/layouts/PageTransitionsLayout";
 import InteractionContext from "@/context/InteractionContext";
+import clsxm from "@/lib/clsxm";
 
 type BrowseLayoutProps = {
   children: ReactNode;
@@ -22,7 +23,6 @@ const BrowseLayout = forwardRef(
   ({ children, title, ...rest }: BrowseLayoutProps, ref) => {
     const layoutWrapperRef = ref as MutableRefObject<HTMLDivElement | null>;
     const { isWatchModeEnabled } = useContext(InteractionContext);
-    const pageTitle = title.split(" ").join("-").toLowerCase();
 
     // Scroll to top on page change
     useEffect(() => {
@@ -43,9 +43,9 @@ const BrowseLayout = forwardRef(
             <div className="main-view">
               <div className="main-view-content is-fullbleed">
                 <main
-                  className={`browse ${pageTitle} relative w-full overflow-hidden ${
-                    title === "My List" ? "mt-12" : ""
-                  }`}
+                  className={clsxm("browse relative w-full overflow-hidden", [
+                    title === "My List" && "mt-12",
+                  ])}
                 >
                   {children}
                 </main>

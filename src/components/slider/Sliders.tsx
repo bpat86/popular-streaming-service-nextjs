@@ -16,7 +16,9 @@ const Sliders = ({ model }: SlidersProps) => {
         if (slider.data.length > 0) {
           return (
             <Row
-              key={`${slider.name}_${slider.id}_${idx}`}
+              key={`${idx}${slider.name.toLowerCase().split(" ").join("")}_${
+                slider.id
+              }`}
               model={slider.data}
               enablePeek={true}
               enableLooping={true}
@@ -31,7 +33,6 @@ const Sliders = ({ model }: SlidersProps) => {
             />
           );
         }
-        return <></>;
       })
     ) : (
       <div className="my-list flex min-h-screen items-center justify-center">

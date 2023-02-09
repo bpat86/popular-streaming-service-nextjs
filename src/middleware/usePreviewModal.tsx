@@ -1,5 +1,4 @@
 import axios from "axios";
-import { useDeferredValue } from "react";
 import useSWR from "swr";
 
 import { getVideoKey } from "@/utils/getVideoKey";
@@ -45,17 +44,18 @@ export default function usePreviewModalData({
     fallbackData: initialData,
   };
 
-  // Abort fetch if the user navigates away
+  // Abort fetch if the user navigates away or if the modal is closed
   const controller = new AbortController();
   const signal = controller.signal;
 
-  // ID and Type of the media to fetch
+  // Get the id and type from the model
   const id = model?.id;
   const type = model?.mediaType;
 
-  // URL to fetch a single title
-  const apiURL = `/api/tmdb/getTitle?id=${id}&type=${type}`;
+  // URL to fetch data from
+  const apiURL = `/api/tmdb/modal?id=${id}&type=${type}`;
 
+  // Fetch data from the API
   const {
     data: { data },
     error: modalDataError,
@@ -120,14 +120,12 @@ export default function usePreviewModalData({
       length: initialData?.videoPlayback?.videoDuration,
     },
   };
-  const deferredPreviewModalData = useDeferredValue(previewModalData);
 
-  /**
-   * Data loading/fetching status
-   */
+  // Request data is still being fetched
   const fetchingModalData = !data && !modalDataError && isValidating;
 
-  if (signal.aborted) {
+  // If the request is still validating or is aborted, return the initial data
+  if (fetchingModalData || modalDataError || signal.aborted) {
     return {
       modalData: initialData,
       fetchingModalData,
@@ -136,21 +134,13 @@ export default function usePreviewModalData({
       cancelRequest: () => controller.abort(),
     };
   }
-  if (!fetchingModalData) {
-    return {
-      modalData: deferredPreviewModalData,
-      fetchingModalData,
-      mutateModalData,
-      modalDataError,
-      cancelRequest: () => controller.abort(),
-    };
-  } else {
-    return {
-      modalData: initialData,
-      fetchingModalData,
-      mutateModalData,
-      modalDataError,
-      cancelRequest: () => controller.abort(),
-    };
-  }
+
+  // Return the request data
+  return {
+    modalData: previewModalData,
+    fetchingModalData,
+    mutateModalData,
+    modalDataError,
+    cancelRequest: () => controller.abort(),
+  };
 }

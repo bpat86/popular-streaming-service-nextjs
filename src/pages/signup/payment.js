@@ -4,7 +4,7 @@ import { useContext } from "react";
 import Stripe from "stripe";
 
 import { PaymentsForm } from "@/components/forms/PaymentsForm";
-import RegistrationLayout from "@/components/layouts/RegistrationLayout";
+import RegistrationLayout from "@/components/pages/layouts/RegistrationLayout";
 import { API_URL } from "@/config/index";
 import AuthContext from "@/context/AuthContext";
 import { withSessionSsr } from "@/middleware/withSession";

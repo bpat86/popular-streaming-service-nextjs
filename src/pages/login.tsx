@@ -4,7 +4,7 @@ import { useContext, useEffect, useState } from "react";
 
 import { AuthContextType } from "@/@types/auth";
 import LoginForm from "@/components/forms/LoginForm";
-import HomeLayout from "@/components/layouts/HomeLayout";
+import HomeLayout from "@/components/pages/layouts/HomeLayout";
 import AuthContext from "@/context/AuthContext";
 import { withSessionSsr } from "@/middleware/withSession";
 import { parseCookies } from "@/utils/parseCookies";

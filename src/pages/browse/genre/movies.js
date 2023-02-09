@@ -1,4 +1,4 @@
-import BrowseContainer from "@/components/layouts/containers/BrowseContainer";
+import BrowseContainer from "@/components/pages/layouts/containers/BrowseContainer";
 import { withSessionSsr } from "@/middleware/withSession";
 
 const MoviesPage = () => {

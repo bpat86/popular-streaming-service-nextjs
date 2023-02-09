@@ -1,45 +1,87 @@
 import debounce from "lodash/debounce";
 import { useRouter } from "next/router";
-import { forwardRef, MutableRefObject, useEffect, useRef } from "react";
+import { useCallback, useContext, useEffect, useRef } from "react";
 
+import { AuthContextType } from "@/@types/auth";
 import BillboardContainer from "@/components/billboard/BillboardContainer";
 import LoadingSpinner from "@/components/loading/LoadingSpinner";
 import PreviewModalContainer from "@/components/modals/PreviewModalContainer";
+import BrowseLayout from "@/components/pages/layouts/BrowseLayout";
+import UserProfiles from "@/components/profile/UserProfiles";
 import Sliders from "@/components/slider/Sliders";
+import AuthContext from "@/context/AuthContext";
+import ProfileContext from "@/context/ProfileContext";
 import useMedia from "@/middleware/useMedia";
+import useProfiles from "@/middleware/useProfiles";
+import useUser from "@/middleware/useUser";
 import usePreviewModalStore from "@/store/PreviewModalStore";
 import { getVideoKey } from "@/utils/getVideoKey";
 
-type MediaContainerProps = {
+interface BrowseContainerProps {
+  initialUser: {
+    activeProfile: {
+      id: string | null;
+    };
+    isLoggedIn: boolean;
+    isRegistered: boolean;
+  };
   pageAPI: string;
-};
+  pageTitle: string;
+}
 
-const MediaContainer = forwardRef(({ pageAPI }: MediaContainerProps, ref) => {
-  const layoutWrapperRef = ref as MutableRefObject<HTMLDivElement | null>;
+const BrowseContainer = ({
+  initialUser,
+  pageAPI,
+  pageTitle,
+}: BrowseContainerProps) => {
+  const timerIdRef = useRef<number>(0);
+  const { logout } = useContext(AuthContext) as AuthContextType;
+  const { activeProfile } = useContext(ProfileContext);
+  const { user } = useUser({ redirectTo: "/" });
+  const { profiles, profileNames, loadingProfiles, mutateProfiles } =
+    useProfiles({ user });
+  const layoutWrapperRef = useRef<HTMLDivElement | null>(null);
   const { fetchingMedia, media, mutateMedia, mediaError } = useMedia({
     pageAPI,
   });
 
   // console.log("media: ", media);
 
-  const timerIdRef = useRef<number>(0);
-  // Router
   const router = useRouter();
+  const activeProfileId = activeProfile?.id ?? null; // initialUser?.activeProfile?.id
+  const isLoggedIn = user?.isLoggedIn || initialUser?.isLoggedIn || false;
+  const userData = {
+    user,
+    logout,
+    isLoggedIn,
+    isActive: user?.isActive,
+    activeProfile: user?.activeProfile,
+  };
+  const profilesData = {
+    profiles,
+    profileNames,
+    mutateProfiles,
+    loadingProfiles,
+  };
+  const pageProps = { ...userData, ...profilesData, profile: activeProfileId };
 
   /**
    * Determine if a preview modal is currently open
    */
-  const isPreviewModalOpen = () => {
+  const isPreviewModalOpen = useCallback(() => {
     const previewModalStateById =
       usePreviewModalStore.getState().previewModalStateById;
-    return Object.values(previewModalStateById).some(({ isOpen }) => isOpen);
-  };
+    return (
+      previewModalStateById &&
+      Object.values(previewModalStateById).some(({ isOpen }) => isOpen)
+    );
+  }, []);
 
   /**
    * Turn pointer events off while scrolling
    */
   const onScroll = debounce(
-    () => {
+    useCallback(() => {
       const style = document.body.style;
       timerIdRef.current && clearTimeout(timerIdRef.current),
         (timerIdRef.current = 0);
@@ -48,7 +90,7 @@ const MediaContainer = forwardRef(({ pageAPI }: MediaContainerProps, ref) => {
         setTimeout(() => {
           style.pointerEvents = "";
         }, 100);
-    },
+    }, [isPreviewModalOpen]),
     100,
     { maxWait: 100, leading: true, trailing: true }
   );
@@ -66,14 +108,21 @@ const MediaContainer = forwardRef(({ pageAPI }: MediaContainerProps, ref) => {
   }, [onScroll]);
 
   /**
-   * Render error message
+   * Show nothing if a user is not yet logged in
    */
-  if (mediaError) {
-    return (
-      <div className="flex min-h-screen w-full flex-col items-center justify-center font-medium text-white">
-        <p>{`${mediaError}`}</p>
-      </div>
-    );
+  if (!isLoggedIn || !user?.isActive) {
+    return <></>;
+  }
+
+  const isShowingProfilesGate = () => {
+    return user?.isActive && isLoggedIn && !activeProfileId;
+  };
+
+  /**
+   * Load the media content once a profile is created or selected
+   */
+  if (isShowingProfilesGate()) {
+    return <UserProfiles user={user} />;
   }
 
   /**
@@ -88,10 +137,27 @@ const MediaContainer = forwardRef(({ pageAPI }: MediaContainerProps, ref) => {
   }
 
   /**
-   * Render media elements
+   * Render error message
    */
+  if (!fetchingMedia && mediaError) {
+    return (
+      <div className="flex min-h-screen w-full flex-col items-center justify-center font-medium text-white">
+        <p>{`${mediaError}`}</p>
+      </div>
+    );
+  }
+
+  /**
+   * Load the media content once a profile is created or selected
+   */
+  console.log("activeProfileId: ", activeProfileId);
   return (
-    <>
+    <BrowseLayout
+      key={activeProfileId}
+      ref={layoutWrapperRef}
+      title={pageTitle}
+      {...pageProps}
+    >
       <BillboardContainer
         model={{
           uid: media?.data?.billboard?.data?.id,
@@ -147,16 +213,13 @@ const MediaContainer = forwardRef(({ pageAPI }: MediaContainerProps, ref) => {
           router.query.jbv ?? isPreviewModalOpen() ? true : undefined
         }
       />
-      {/* Sliders */}
       <Sliders model={media?.data?.sliders} />
-      {/* Preview Modal */}
       <PreviewModalContainer
         ref={layoutWrapperRef}
         mutateSliderData={mutateMedia}
       />
-    </>
+    </BrowseLayout>
   );
-});
+};
 
-MediaContainer.displayName = "MediaContainer";
-export default MediaContainer;
+export default BrowseContainer;

@@ -176,13 +176,6 @@ const Billboard = forwardRef<HTMLDivElement, BillboardProps>(
     };
 
     /**
-     * Listen for when the video finishes
-     */
-    useLayoutEffect(() => {
-      videoCompleted && setVideoCanPlayThrough(false);
-    }, [videoCompleted]);
-
-    /**
      * Autoplay billbaord video on mount and play/pause when in and out of view
      */
     useLayoutEffect(() => {

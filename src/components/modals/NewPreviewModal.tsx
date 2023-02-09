@@ -20,7 +20,7 @@ import InteractionContext from "@/context/InteractionContext";
 // Lib
 import { MotionDivWrapper } from "@/lib/MotionDivWrapper";
 // Middleware
-import usePreviewModalData from "@/middleware/usePreviewModalData";
+import usePreviewModalData from "@/middleware/usePreviewModal";
 // Store
 import usePreviewModalStore from "@/store/PreviewModalStore";
 

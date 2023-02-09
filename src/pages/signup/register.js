@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 
 import { RegisterForm } from "@/components/forms/RegisterForm";
-import RegistrationLayout from "@/components/layouts/RegistrationLayout";
+import RegistrationLayout from "@/components/pages/layouts/RegistrationLayout";
 import AuthContext from "@/context/AuthContext";
 import { withSessionSsr } from "@/middleware/withSession";
 import { parseCookies } from "@/utils/parseCookies";

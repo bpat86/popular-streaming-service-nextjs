@@ -1,6 +1,6 @@
 // Middleware
 
-import BrowseContainer from "@/components/layouts/containers/BrowseContainer";
+import BrowsePage from "@/components/pages/BrowsePage";
 import { withSessionSsr } from "@/middleware/withSession";
 import { parseCookies } from "@/utils/parseCookies";
 
@@ -17,10 +17,14 @@ type IndexProps = {
 };
 
 const Index = ({ initialUser }: IndexProps) => {
+  const pageProps = {
+    page: "browse",
+    title: "Home",
+  };
   return (
-    <BrowseContainer
-      pageAPI="getBrowsePage"
-      pageTitle="Home"
+    <BrowsePage
+      pageAPI={pageProps.page}
+      pageTitle={pageProps.title}
       initialUser={initialUser}
     />
   );

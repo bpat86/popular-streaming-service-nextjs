@@ -2,7 +2,7 @@ import { Field, Form, Formik, useFormikContext } from "formik";
 import { useContext, useEffect } from "react";
 import * as yup from "yup";
 
-import Profile from "@/components/layouts/ProfileGateLayout";
+import Profile from "@/components/pages/layouts/ProfileGateLayout";
 import DeleteConfirm from "@/components/profile/actions/DeleteConfirm";
 import SelectAvatar from "@/components/profile/actions/SelectAvatar";
 import Name from "@/components/profile/fields/Name";

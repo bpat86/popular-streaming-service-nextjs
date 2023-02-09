@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 
-import ProfileGateLayout from "@/components/layouts/ProfileGateLayout";
+import ProfileGateLayout from "@/components/pages/layouts/ProfileGateLayout";
 import { withSessionSsr } from "@/middleware/withSession";
 
 const WhosWatchingPage = (props) => {

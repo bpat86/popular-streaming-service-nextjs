@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react";
 
-import Profile from "@/components/layouts/ProfileGateLayout";
+import Profile from "@/components/pages/layouts/ProfileGateLayout";
 import ProfileContext from "@/context/ProfileContext";
 
 const WhosWatching = ({

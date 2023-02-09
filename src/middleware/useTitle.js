@@ -40,7 +40,7 @@ export default function useTitle(mediaData = {}) {
   /**
    * URL to fetch a single title
    */
-  const apiURL = `/api/tmdb/getTitle?id=${id}&type=${type}`;
+  const apiURL = `/api/tmdb/modal?id=${id}&type=${type}`;
 
   /**
    * Only attempt to fetch data if `data` is not null

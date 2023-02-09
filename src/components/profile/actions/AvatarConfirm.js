@@ -1,7 +1,7 @@
 import { Form, Formik } from "formik";
 import { useEffect } from "react";
 
-import Profile from "@/components/layouts/ProfileGateLayout";
+import Profile from "@/components/pages/layouts/ProfileGateLayout";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 

@@ -29,18 +29,14 @@ const Genres = ({ genres, isLoading }: GenresProps) => {
   if (genres?.length) {
     return (
       <div className="genres text-xs leading-snug text-zinc-200 sm:text-sm xl:text-base">
-        {genres.slice(0, 3)?.map(({ name }) => {
+        {genres.slice(0, 3)?.map(({ name }, idx) => {
           return (
-            <>
-              {name && (
-                <div
-                  key={name}
-                  className="genre-separator overflow-x-auto text-[0.5rem] font-medium leading-snug tracking-wide sm:text-[0.6rem] md:text-[0.8rem] 2xl:text-[0.9rem]"
-                >
-                  {name}
-                </div>
-              )}
-            </>
+            <div
+              key={`${name}-${idx}`}
+              className="genre-separator overflow-x-auto text-[0.5rem] font-medium leading-snug tracking-wide sm:text-[0.6rem] md:text-[0.8rem] 2xl:text-[0.9rem]"
+            >
+              {name}
+            </div>
           );
         })}
       </div>

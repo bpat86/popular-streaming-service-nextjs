@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-import Profile from "@/components/layouts/ProfileGateLayout";
+import Profile from "@/components/pages/layouts/ProfileGateLayout";
 import AvatarConfirm from "@/components/profile/actions/AvatarConfirm";
 
 const SelectAvatar = (props) => {

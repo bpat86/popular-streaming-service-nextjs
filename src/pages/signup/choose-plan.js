@@ -3,7 +3,7 @@ import { useContext, useState } from "react";
 import Stripe from "stripe";
 
 import { ChoosePlanForm } from "@/components/forms/ChoosePlanForm";
-import RegistrationLayout from "@/components/layouts/RegistrationLayout";
+import RegistrationLayout from "@/components/pages/layouts/RegistrationLayout";
 import AuthContext from "@/context/AuthContext";
 import { withSessionSsr } from "@/middleware/withSession";
 

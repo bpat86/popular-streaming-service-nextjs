@@ -3,7 +3,7 @@ import { useContext } from "react";
 import Stripe from "stripe";
 
 import { PlansForm } from "@/components/forms/PlansForm";
-import RegistrationLayout from "@/components/layouts/RegistrationLayout";
+import RegistrationLayout from "@/components/pages/layouts/RegistrationLayout";
 import AuthContext from "@/context/AuthContext";
 import { withSessionSsr } from "@/middleware/withSession";
 

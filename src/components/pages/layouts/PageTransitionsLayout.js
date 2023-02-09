@@ -1,6 +1,5 @@
-import { MotionDivWrapper } from "@/lib/MotionDivWrapper";
-
 import { transitions } from "@/actions/Actions";
+import { MotionDivWrapper } from "@/lib/MotionDivWrapper";
 
 const PageTransitionsLayout = ({ children, variants }) => {
   return (
