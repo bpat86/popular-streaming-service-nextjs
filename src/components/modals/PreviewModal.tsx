@@ -8,7 +8,6 @@ import {
   MutableRefObject,
   useCallback,
   useContext,
-  useEffect,
   useLayoutEffect,
   useRef,
   useState,
@@ -83,7 +82,8 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
     const modalInfoRef = useRef<HTMLDivElement>(null);
     const mediaButtonsRef = useRef<HTMLDivElement>(null);
     const animationFrameId = useRef<number>(0);
-    const willClose = useRef<boolean>(false);
+    // const willClose = useRef<boolean>(false);
+    const [willClose, setWillClose] = useState<boolean>(false);
     const {
       modalData,
       fetchingModalData,
@@ -102,9 +102,9 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
     /**
      * Set willClose to true when the modal is closed
      */
-    const setWillClose = (value: boolean) => {
-      willClose.current = value;
-    };
+    // const setWillClose = (value: boolean) => {
+    //   willClose = value;
+    // };
 
     /**
      * Redirect to watch mode screen
@@ -179,7 +179,7 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
     /**
      * Set Detail Modal Parent styles
      */
-    const setDetailModalParentStyles = useCallback(() => {
+    const setDetailModalParentStyles = () => {
       const layoutRef = layoutWrapperRef.current;
       const mainNavigation = document.querySelector(
         ".main-navigation-content"
@@ -204,12 +204,12 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
           (layoutRef.style.position = "fixed"),
           layoutRef.setAttribute("isDetailModalRootStyleSet", "true");
       }
-    }, [layoutWrapperRef, previewModalState, scrollPosition]);
+    };
 
     /**
      * Reset scroll position on unmount
      */
-    const restoreScrollPositionOnUnmount = useCallback(() => {
+    const restoreScrollPositionOnUnmount = () => {
       window.scrollTo(
         0,
         (null == previewModalState
@@ -219,12 +219,12 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
       usePreviewModalStore.getState().updatePreviewModalState({
         scrollPosition: undefined,
       });
-    }, [previewModalState]);
+    };
 
     /**
      * Reset detail modal parent styles on unmount
      */
-    const resetDetailModalParentStyles = useCallback(() => {
+    const resetDetailModalParentStyles = () => {
       const layoutRef = layoutWrapperRef.current;
       const mainNavigation = document.querySelector(
         ".main-navigation-content"
@@ -240,7 +240,7 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
           restoreScrollPositionOnUnmount(),
           layoutRef.removeAttribute("isDetailModalRootStyleSet"));
       }
-    }, [layoutWrapperRef, restoreScrollPositionOnUnmount]);
+    };
 
     /**
      * Get the most updated values for modalRect.
@@ -386,12 +386,7 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
           };
         }
         // Hide modal if conditions aren't met
-        if (
-          !modalRect ||
-          !modalRef.current ||
-          !titleCardRect ||
-          !willClose.current
-        )
+        if (!modalRect || !modalRef.current || !titleCardRect || !willClose)
           return {};
         // Render normally
         const scaleX = 1 / scaleFactor,
@@ -419,9 +414,6 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
               duration: 0.3,
               ease: [0.21, 0, 0.07, 1],
             },
-          },
-          transitionEnd: {
-            display: "none",
           },
         };
       }
@@ -452,7 +444,7 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
                 currentAnimationState ===
                   animationStateActions.RESET_MINI_MODAL &&
                 isPresent &&
-                !willClose.current
+                !willClose
               )
                 return (
                   setAnimationState(animationStateActions.OPEN_MINI_MODAL),
@@ -817,30 +809,32 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
      * Close the modal and reset it's styles and state
      */
     const handleCloseModal = useCallback(
-      async ({ closeAll = false, closeWithoutAnimation = false } = {}) => {
-        // Set willClose to true
-        setWillClose(true);
-        // Reset timeout id
-        animationFrameId.current &&
-          cancelAnimationFrame(animationFrameId.current),
-          (animationFrameId.current = 0);
-        // Set preview modal closed
-        usePreviewModalStore.getState().setPreviewModalClose({
-          closeWithoutAnimation,
-          videoId,
+      ({ closeAll = false, closeWithoutAnimation = false } = {}) => {
+        flushSync(() => {
+          // Set willClose to true
+          setWillClose(true);
+          // Reset timeout id
+          animationFrameId.current &&
+            cancelAnimationFrame(animationFrameId.current),
+            (animationFrameId.current = 0);
+          // Set preview modal closed
+          usePreviewModalStore.getState().setPreviewModalClose({
+            closeWithoutAnimation,
+            videoId,
+          });
+          // Set `wasOpen` true
+          usePreviewModalStore
+            .getState()
+            .setPreviewModalWasOpen({ wasOpen: true });
+          // Reset the router path to the default path
+          modalState === modalStateActions.DETAIL_MODAL && resetRoute();
+          // Remove the preview modal's box shadow
+          modalRef.current && (modalRef.current.style.boxShadow = "none");
+          // Reset the document body styles if preview modal is a detail modal
+          closeAll &&
+            modalState === modalStateActions.DETAIL_MODAL &&
+            (document.body.style.overflowY = "");
         });
-        // Set `wasOpen` true
-        usePreviewModalStore
-          .getState()
-          .setPreviewModalWasOpen({ wasOpen: true });
-        // Reset the router path to the default path
-        modalState === modalStateActions.DETAIL_MODAL && resetRoute();
-        // Remove the preview modal's box shadow
-        modalRef.current && (modalRef.current.style.boxShadow = "none");
-        // Reset the document body styles if preview modal is a detail modal
-        closeAll &&
-          modalState === modalStateActions.DETAIL_MODAL &&
-          (document.body.style.overflowY = "");
       },
       [modalState, videoId, resetRoute]
     );
@@ -883,7 +877,7 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
       ({ pageX, pageY }: { pageX: number; pageY: number }) => {
         // console.log("mouse move ", modalData?.videoModel?.title);
         animationState !== animationStateActions.OPEN_MINI_MODAL ||
-          willClose.current ||
+          willClose ||
           (titleCardRect &&
             (isInsideRect(pageX, pageY, titleCardRect) ||
               isInsideRect(
@@ -896,7 +890,7 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
               handleExit()),
           window.removeEventListener("mousemove", handleOnMouseMove));
       },
-      [animationState, modalRef, willClose, handleExit, titleCardRect]
+      [animationState, willClose, titleCardRect, handleExit]
     );
 
     /**
@@ -930,7 +924,7 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
     /**
      * Set the detail modal's responsive width
      */
-    const setResponsiveDetailModalWidth = () => {
+    const setResponsiveDetailModalWidth = useCallback(() => {
       if (
         modalRef &&
         modalRef.current &&
@@ -942,13 +936,13 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
         modalRef.current.style.minWidth = `${minWidth}px`;
         modalRef.current.style.width = `${width}px`;
       }
-    };
+    }, [modalRef, modalState, baseWidth]);
 
     /**
      * Handle resize actions
      */
     const handleResizeWindow = debounce(
-      () => {
+      useCallback(() => {
         switch (modalState) {
           case modalStateActions.MINI_MODAL: {
             handleCloseModal();
@@ -959,7 +953,7 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
             break;
           }
         }
-      },
+      }, [modalState, handleCloseModal, setResponsiveDetailModalWidth]),
       100,
       { leading: true, trailing: true }
     );
@@ -992,7 +986,7 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
      * Animate the detail / default modal's mount animation
      */
     const updateToDetailModal = () => {
-      if (modalRef.current && !willClose.current) {
+      if (modalRef.current && !willClose) {
         animationState !== animationStateActions.MOUNT_DETAIL_MODAL &&
           setAnimationState(animationStateActions.MOUNT_DETAIL_MODAL);
         updateRoute(modalData?.videoModel?.identifiers);
@@ -1014,7 +1008,7 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
      * Animate the mini modal's mount animation
      */
     const updateToMiniModal = () => {
-      if (modalRef.current && titleCardRect && !willClose.current) {
+      if (modalRef.current && titleCardRect && !willClose) {
         const modalWidth = Math.round(titleCardRect.width * scaleFactor);
         (modalRef.current.style.width = `${modalWidth}px`),
           disableTooltips(),
@@ -1086,16 +1080,17 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
      * Remove of the preview modal from the react tree (explicitly)
      * Reset detail modal parent layout styles
      */
-    useEffect(() => {
+
+    // Cleanup
+    useLayoutEffect(() => {
       if (!isPresent) {
         setTimeout(() => {
-          // Remove from the react tree
+          // Remove preview modal from the react tree
           safeToRemove();
-          // Set preview modal `wasOpen` false
           usePreviewModalStore
             .getState()
             .setPreviewModalWasOpen({ wasOpen: false });
-        }, 0);
+        }, 233);
         // Cleanup
         return () => {
           // Cancel pending requests
@@ -1107,6 +1102,7 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
           isWatchModeEnabled() && disableWatchMode();
         };
       }
+
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isPresent]);
 
@@ -1121,15 +1117,12 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
           // Mini modal
           (!isDefaultModal &&
             !isDetailModal &&
-            !willClose.current &&
+            !willClose &&
             (isAnimating ||
               animationState !== animationStateActions.OPEN_MINI_MODAL)) ||
           // Detail modal
-          (isDetailModal &&
-            isDetailAnimating &&
-            !titleCardRect &&
-            !willClose.current),
-        showBoxArtOnClose = !isDefaultModal && willClose.current,
+          (isDetailModal && isDetailAnimating && !titleCardRect && !willClose),
+        showBoxArtOnClose = !isDefaultModal && willClose,
         showVideo =
           // Mini modal
           !!(!isAnimating && videoId) ||
@@ -1198,7 +1191,7 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
                   mutateModalData,
                   mutateSliderData,
                 }}
-                willClose={willClose.current || !isPresent}
+                willClose={willClose || !isPresent}
                 videoPlayback={modalData?.videoPlayback?.start || 0}
               />
               {isDetailModal && (

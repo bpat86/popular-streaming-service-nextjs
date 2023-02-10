@@ -91,7 +91,7 @@ const TitleCardContainer = forwardRef(
     ) => {
       const { isModalOpen } = scopeRef.current;
       const mouseEnter =
-        e && e.currentTarget && titleCardRef.current?.contains(e.currentTarget);
+        e.currentTarget && titleCardRef.current?.contains(e.currentTarget);
       // Only visible titles can display a preview modal
       if (!itemTabbable || isModalOpen) return;
       // Process the mouse enter event
@@ -127,8 +127,7 @@ const TitleCardContainer = forwardRef(
       const mouseLeave =
         (e && !e.relatedTarget) ||
         (e.relatedTarget && e.relatedTarget.location) ||
-        (e.relatedTarget &&
-          !titleCardRef.current?.contains(e.relatedTarget as Node));
+        (e.relatedTarget && !titleCardRef.current?.contains(e.relatedTarget));
       // Process the mouse leave event
       mouseLeave && handleLeave();
     };
@@ -268,8 +267,8 @@ const TitleCardContainer = forwardRef(
         | KeyboardEvent<HTMLDivElement | HTMLAnchorElement>,
       titleCardRef: MutableRefObject<HTMLDivElement>
     ) => {
-      e.stopPropagation();
       if ((clearDelays(), isPreviewModalOpen())) return;
+      // clearDelays();
       openPreviewModal({
         titleCardRef: titleCardRef as MutableRefObject<HTMLDivElement>,
         openDetailModal: true,
