@@ -62,8 +62,6 @@ const Slider = ({
   toggleExpandedInfoDensity,
 }: SliderProps) => {
   const [isAnimating, setIsAnimating] = useState<boolean>(false);
-  const [sliderMoveDirection, setSliderMoveDirection] =
-    useState<MoveDirectionProps>(sliderActions.SLIDER_NOT_SLIDING);
   const [lowestVisibleItemIndex, setLowestVisibleItemIndex] =
     useState<number>(0);
   const [_activeRowItemIndex, setActiveRowItemIndex] = useState<number>(0);
@@ -639,16 +637,12 @@ const Slider = ({
   };
 
   /**
-   * Synchronously update slider state when it moves
+   * Synchronously update slider state when it shifts
    */
-  const onSliderMove = (
-    lowestVisibleIdx: number,
-    moveDirection: MoveDirectionProps
-  ) => {
+  const onSliderMove = (lowestVisibleIdx: number) => {
     flushSync(() => {
       setHasMovedOnce(true);
       setLowestVisibleItemIndex(lowestVisibleIdx);
-      setSliderMoveDirection(moveDirection);
     });
   };
 
@@ -711,13 +705,13 @@ const Slider = ({
     // Add the 'animating' class to the slider and set the new offset amount
     slider.classList.add("animating");
     slider.setAttribute("style", getNewOffsetAmount);
-    // Flush the slider state updates and refocus the slider item after the slider shifts
+    // When the slider animation ends, reset the slider position and refocus the slider item
     ontransitionend = (e) => {
       if (e.target === slider) {
-        slider.classList.remove("animating");
         resetSliderPosition();
-        onSliderMove(totalItemsCount, moveDirection);
+        onSliderMove(totalItemsCount); // Uses flushSync to update state; TODO: Refactor this
         refocusAfterShift(moveDirection);
+        slider.classList.remove("animating");
       }
     };
   };
