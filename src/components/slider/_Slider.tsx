@@ -13,7 +13,7 @@ import { flushSync } from "react-dom";
 import { sliderActions } from "@/actions/Actions";
 import SliderItem from "@/components/slider/_SliderItem";
 //
-import Controls from "@/components/slider/Controls";
+import Controls from "@/components/slider/controls/Controls";
 import LoadingItem from "@/components/slider/LoadingItem";
 import PaginationIndicator from "@/components/slider/PaginationIndicator";
 import TitleCardContainer from "@/components/slider/title-card/TitleCardContainer";

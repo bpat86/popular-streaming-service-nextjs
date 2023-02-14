@@ -877,7 +877,8 @@ input.input-profile:-webkit-autofill::first-line {
   @apply transform opacity-0 transition duration-200 ease-out;
 }
 
-.slider:hover .handle svg {
+.slider:hover .handle svg,
+.slider .handle:focus svg {
   @apply text-zinc-300 opacity-100;
 }
 .slider:hover .handle .left svg,
@@ -886,7 +887,9 @@ input.input-profile:-webkit-autofill::first-line {
 }
 
 .slider:hover .handle .left:hover svg,
-.slider:hover .handle .right:hover svg {
+.slider:hover .handle .right:hover svg,
+.slider:hover .handle:focus .left svg,
+.slider:hover .handle:focus .right svg {
   @apply scale-125 transform text-zinc-100 transition duration-200 ease-out;
 }
 

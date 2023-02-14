@@ -1,6 +1,7 @@
 import {
   Children,
   cloneElement,
+  KeyboardEvent,
   MouseEvent,
   ReactElement,
   useRef,
@@ -9,39 +10,15 @@ import {
 import { flushSync } from "react-dom";
 
 import { sliderActions } from "@/actions/Actions";
-import Controls from "@/components/slider/Controls";
+import Controls from "@/components/slider/controls/Controls";
 import LoadingItem from "@/components/slider/LoadingItem";
 import PaginationIndicator from "@/components/slider/PaginationIndicator";
 import SliderItem from "@/components/slider/SliderItem";
 import TitleCardContainer from "@/components/slider/title-card/TitleCardContainer";
 import clsxm from "@/lib/clsxm";
-import { IMediaItemWithUserPreferences } from "@/pages/api/tmdb/types";
 import usePreviewModalStore from "@/store/PreviewModalStore";
 
-type SliderProps = {
-  rowNum: number;
-  sliderNum: number;
-  sliderName: string;
-  enablePeek: boolean;
-  totalItems: number;
-  itemsInRow: number;
-  enableLooping: boolean;
-  isMyListRow: boolean;
-  listContext: string;
-  model: IMediaItemWithUserPreferences[];
-  myListRowItemsLength: number;
-  hasMovedOnce: boolean;
-  setHasMovedOnce: (hasMovedOnce: boolean) => void;
-  previewModalEnabled: boolean;
-  rowHasExpandedInfoDensity: boolean;
-  toggleExpandedInfoDensity: (arg0: boolean) => void;
-};
-
-type MoveDirectionProps =
-  | typeof sliderActions.MOVE_DIRECTION_NEXT
-  | typeof sliderActions.MOVE_DIRECTION_PREV
-  | typeof sliderActions.SLIDER_NOT_SLIDING
-  | typeof sliderActions.SLIDER_SLIDING;
+import { MoveDirectionProps, SliderProps } from "./types";
 
 const Slider = ({
   rowNum,
@@ -539,7 +516,9 @@ const Slider = ({
   /**
    * Move the slider backwards when the Previous button is clicked
    */
-  const advancePrev = (e: MouseEvent<HTMLSpanElement>) => {
+  const advancePrev = (
+    e: MouseEvent<HTMLSpanElement> | KeyboardEvent<HTMLSpanElement>
+  ) => {
     // Proceed if the previous button is active and the slider is not currently animating
     if (!isPrevBtnNavActive() || isAnimating) return;
     setIsAnimating(true);
@@ -553,19 +532,7 @@ const Slider = ({
     // Get the new slider offset
     const getNewOffsetAmount = getNewSliderOffset(amountToOffset),
       newOffsetAmount = getNewOffsetAmount + getBaseSliderOffset();
-    e && "wheel" === e.type
-      ? shiftSlider(
-          rowItems,
-          newOffsetAmount,
-          sliderActions.MOVE_DIRECTION_PREV,
-          {
-            x: e.clientX,
-            y: e.clientY,
-          },
-          false,
-          getActiveRowSegment(totalItemsCount, itemsInRow, rowItems)
-        )
-      : e && "keydown" === e.type
+    e && "keydown" === e.type
       ? shiftSlider(
           rowItems,
           newOffsetAmount,
@@ -587,7 +554,9 @@ const Slider = ({
   /**
    * Move the slider forward when the Next button is clicked
    */
-  const advanceNext = (e: MouseEvent<HTMLSpanElement>) => {
+  const advanceNext = (
+    e: MouseEvent<HTMLSpanElement> | KeyboardEvent<HTMLSpanElement>
+  ) => {
     // e && e.preventDefault();
     if (!isNextBtnNavActive() || isAnimating) return;
     setIsAnimating(true);
@@ -605,19 +574,7 @@ const Slider = ({
       newOffsetAmount = getNewOffsetAmount + getBaseSliderOffset();
     // If rowItems is equal to the total number of items, set rowItems to 0
     rowItems === totalItemsCount && (rowItems = 0);
-    e && "wheel" === e.type
-      ? shiftSlider(
-          rowItems,
-          newOffsetAmount,
-          sliderActions.MOVE_DIRECTION_NEXT,
-          {
-            x: e.clientX,
-            y: e.clientY,
-          },
-          false,
-          getActiveRowSegment(totalItemsCount, itemsInRow, rowItems)
-        )
-      : e && "keydown" === e.type
+    e && "keydown" === e.type
       ? shiftSlider(
           rowItems,
           newOffsetAmount,
@@ -684,7 +641,7 @@ const Slider = ({
         setIsAnimating(false);
         clearIntervals();
         node.focus();
-      }, 200);
+      }, 300);
     }
   };
 
@@ -709,7 +666,7 @@ const Slider = ({
     ontransitionend = (e) => {
       if (e.target === slider) {
         resetSliderPosition();
-        onSliderMove(totalItemsCount); // Uses flushSync to update state; TODO: Refactor this
+        onSliderMove(totalItemsCount); // Uses flushSync
         refocusAfterShift(moveDirection);
         slider.classList.remove("animating");
       }
@@ -728,6 +685,7 @@ const Slider = ({
               isAnimating={isAnimating}
               moveDirection={sliderActions.MOVE_DIRECTION_PREV}
               onClick={advancePrev}
+              onKeyDown={advancePrev}
             />
           )}
         {getTotalPages() > 1 && (
@@ -754,6 +712,7 @@ const Slider = ({
               isAnimating={isAnimating}
               moveDirection={sliderActions.MOVE_DIRECTION_NEXT}
               onClick={advanceNext}
+              onKeyDown={advanceNext}
             />
           )}
       </div>
