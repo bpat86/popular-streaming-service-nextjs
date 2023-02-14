@@ -267,8 +267,9 @@ const TitleCardContainer = forwardRef(
         | KeyboardEvent<HTMLDivElement | HTMLAnchorElement>,
       titleCardRef: MutableRefObject<HTMLDivElement>
     ) => {
-      if ((clearDelays(), isPreviewModalOpen())) return;
-      // clearDelays();
+      e.preventDefault();
+      if (isPreviewModalOpen()) return;
+      clearDelays();
       openPreviewModal({
         titleCardRef: titleCardRef as MutableRefObject<HTMLDivElement>,
         openDetailModal: true,

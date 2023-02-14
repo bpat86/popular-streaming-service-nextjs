@@ -1,10 +1,8 @@
-import { KeyboardEvent, MouseEvent } from "react";
-
 import { MotionDivWrapper } from "@/lib/MotionDivWrapper";
 
 type CloseButtonProps = {
-  onClick: (e: MouseEvent<HTMLDivElement, MouseEvent>) => void;
-  onKeyDown: (e: KeyboardEvent<HTMLButtonElement>) => void;
+  onClick: () => void;
+  onKeyDown: () => void;
 };
 
 const CloseButton = ({ onClick, onKeyDown }: CloseButtonProps) => {

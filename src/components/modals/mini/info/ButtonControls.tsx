@@ -2,6 +2,7 @@ import { ChevronUpIcon } from "@heroicons/react/24/outline";
 import { forwardRef, memo, MouseEvent, MutableRefObject } from "react";
 
 import Tooltip from "@/components/tooltips/Tooltip";
+import UnstyledButton from "@/components/ui/buttons/UnstyledButton";
 import { IVideoModel } from "@/store/types";
 
 import DislikeMediaButton from "../../buttons/DislikeMediaButton";
@@ -83,7 +84,7 @@ const ButtonControls = memo(
             onClick={handleWatchNowClick}
             tabIndex={0}
           >
-            <button
+            <UnstyledButton
               type="button"
               className="play focus:focus-outline flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-white font-bold text-black shadow-sm transition duration-300 ease-out hover:opacity-90 sm:h-8 sm:w-8 md:py-0 md:text-xl lg:h-9 lg:w-9 2xl:h-11 2xl:w-11"
               tabIndex={-1}
@@ -99,7 +100,7 @@ const ButtonControls = memo(
                   points="9.33 6.69 9.33 19.39 19.3 13.04 9.33 6.69"
                 />
               </svg>
-            </button>
+            </UnstyledButton>
           </WatchLink>
           <MediaListButton {...addToListProps} />
           <LikeMediaButton {...likedMediaProps} />
@@ -108,7 +109,7 @@ const ButtonControls = memo(
             text={mediaType === "tv" ? "Episodes & info" : "More info"}
             className="ml-auto"
           >
-            <button
+            <UnstyledButton
               aria-label="More info"
               data-uia="expand-to-detail-button"
               type="button"
@@ -117,7 +118,7 @@ const ButtonControls = memo(
             >
               <span className="sr-only">Episodes and More Information</span>
               <ChevronUpIcon className="h-6 w-6" aria-hidden="true" />
-            </button>
+            </UnstyledButton>
           </Tooltip>
         </div>
       );

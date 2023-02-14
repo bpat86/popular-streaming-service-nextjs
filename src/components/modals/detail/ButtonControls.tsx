@@ -4,7 +4,7 @@ import { IVideoModel, PreviewModalStore } from "@/store/types";
 
 import DislikeMediaButton from "../buttons/DislikeMediaButton";
 import LikeMediaButton from "../buttons/LikeMediaButton";
-import AddToListButton from "../buttons/MediaListButton";
+import MediaListButton from "../buttons/MediaListButton";
 import { WatchLink } from "../WatchLink";
 
 type ButtonControlsProps = {
@@ -37,7 +37,6 @@ const ButtonControls = forwardRef(
       isMyListRow,
       inMediaList,
       isDetailModal,
-      handleWatchNow,
       videoModel,
     };
     const likedMediaProps = {
@@ -86,7 +85,7 @@ const ButtonControls = forwardRef(
             {isDetailModal && <span className="ml-1 mr-2">Play</span>}
           </button>
         </WatchLink>
-        <AddToListButton {...addToListProps} />
+        <MediaListButton {...addToListProps} />
         <LikeMediaButton {...likedMediaProps} />
         <DislikeMediaButton {...likedMediaProps} />
       </div>

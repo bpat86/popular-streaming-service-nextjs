@@ -3,7 +3,6 @@ import {
   cloneElement,
   MouseEvent,
   ReactElement,
-  useCallback,
   useRef,
   useState,
 } from "react";
@@ -38,6 +37,12 @@ type SliderProps = {
   toggleExpandedInfoDensity: (arg0: boolean) => void;
 };
 
+type MoveDirectionProps =
+  | typeof sliderActions.MOVE_DIRECTION_NEXT
+  | typeof sliderActions.MOVE_DIRECTION_PREV
+  | typeof sliderActions.SLIDER_NOT_SLIDING
+  | typeof sliderActions.SLIDER_SLIDING;
+
 const Slider = ({
   rowNum,
   sliderNum,
@@ -57,15 +62,11 @@ const Slider = ({
   toggleExpandedInfoDensity,
 }: SliderProps) => {
   const [isAnimating, setIsAnimating] = useState<boolean>(false);
-  const [sliderMoveDirection, setSliderMoveDirection] = useState<
-    | typeof sliderActions.MOVE_DIRECTION_NEXT
-    | typeof sliderActions.MOVE_DIRECTION_PREV
-    | typeof sliderActions.SLIDER_NOT_SLIDING
-    | typeof sliderActions.SLIDER_SLIDING
-  >(sliderActions.SLIDER_NOT_SLIDING);
+  const [sliderMoveDirection, setSliderMoveDirection] =
+    useState<MoveDirectionProps>(sliderActions.SLIDER_NOT_SLIDING);
   const [lowestVisibleItemIndex, setLowestVisibleItemIndex] =
     useState<number>(0);
-  const [activeRowItemIndex, setActiveRowItemIndex] = useState<number>(0);
+  const [_activeRowItemIndex, setActiveRowItemIndex] = useState<number>(0);
   const sliderRef = useRef<HTMLDivElement | null>(null);
   const sliderItemsRef = useRef<Map<string, HTMLDivElement> | null>(null);
   const wrappedSliderItemsRef = useRef<Map<string, {}> | null>(null);
@@ -74,24 +75,24 @@ const Slider = ({
   /**
    * Get the slider items ref map
    */
-  const getItemRefsMap = useCallback(() => {
+  const getItemRefsMap = () => {
     if (!sliderItemsRef.current) {
       // Initialize the Map on first usage.
       sliderItemsRef.current = new Map();
     }
     return sliderItemsRef.current;
-  }, []);
+  };
 
   /**
    * Get the wrapped slider items ref map
    */
-  const getWrappedItemRefsMap = useCallback(() => {
+  const getWrappedItemRefsMap = () => {
     if (!wrappedSliderItemsRef.current) {
       // Initialize the Map on first usage.
       wrappedSliderItemsRef.current = new Map();
     }
     return wrappedSliderItemsRef.current;
-  }, []);
+  };
 
   /**
    * Determine if a preview modal is currently open
@@ -129,9 +130,9 @@ const Slider = ({
   /**
    * Compute the SliderItem width based on row items visible
    */
-  const getSliderItemsWidth = useCallback(() => {
+  const getSliderItemsWidth = () => {
     return 100 / itemsInRow;
-  }, [itemsInRow]);
+  };
 
   /**
    * Compute the highest index needed to make the slider appear seamless.
@@ -153,70 +154,60 @@ const Slider = ({
   /**
    * Compute the total number of items in the slider.
    */
-  const getTotalItemsCount = useCallback(() => {
+  const getTotalItemsCount = () => {
     return totalItems;
-  }, [totalItems]);
+  };
 
   /**
    * Compute the total number of pages in the slider.
    */
-  const getTotalPages = useCallback(() => {
+  const getTotalPages = () => {
     const totalItemsCount = getTotalItemsCount();
     return Math.ceil(totalItemsCount / itemsInRow);
-  }, [getTotalItemsCount, itemsInRow]);
+  };
 
   /**
    * Compute the page number for a given index.
    */
-  const getPageNumber = useCallback(
-    (idx: number) => {
-      return Math.ceil(idx / itemsInRow);
-    },
-    [itemsInRow]
-  );
+  const getPageNumber = (idx: number) => {
+    return Math.ceil(idx / itemsInRow);
+  };
 
   /**
    * Compute the offset for the slider based on the lowest visible item index.
    */
-  const getBaseSliderOffset = useCallback(() => {
+  const getBaseSliderOffset = () => {
     const itemsWidth = getSliderItemsWidth();
     let offset = 0;
-    const direction =
-      sliderMoveDirection === sliderActions.MOVE_DIRECTION_PREV
-        ? (!!-1 as any)
-        : (!!1 as any);
-    return (
+    // If the slider has moved once, looping is enabled, and is in first row position
+    // Or the lowest visible item is in the second row
+    if (
       getTotalPages() > 1 &&
-        (((hasMovedOnce && enableLooping && lowestVisibleItemIndex === 0) ||
-          lowestVisibleItemIndex >= itemsInRow) &&
-          (offset = -100),
-        hasMovedOnce &&
-          (enableLooping || lowestVisibleItemIndex > itemsInRow) &&
-          (offset -= itemsWidth),
-        lowestVisibleItemIndex > 0 &&
-          lowestVisibleItemIndex < itemsInRow &&
-          (offset -= lowestVisibleItemIndex * itemsWidth)),
-      (offset *= direction)
-    );
-  }, [
-    getTotalPages,
-    getSliderItemsWidth,
-    hasMovedOnce,
-    enableLooping,
-    lowestVisibleItemIndex,
-    itemsInRow,
-    sliderMoveDirection,
-  ]);
+      ((hasMovedOnce && enableLooping && lowestVisibleItemIndex === 0) ||
+        lowestVisibleItemIndex >= itemsInRow)
+    ) {
+      offset = -100;
+    }
+    // If the slider has moved once and is not looping
+    if (
+      hasMovedOnce &&
+      (enableLooping || lowestVisibleItemIndex > itemsInRow)
+    ) {
+      offset -= itemsWidth;
+    }
+    // If the lowest visible item is in the first row
+    if (lowestVisibleItemIndex > 0 && lowestVisibleItemIndex < itemsInRow) {
+      offset -= lowestVisibleItemIndex * itemsWidth;
+    }
+    // Return the offset
+    return offset;
+  };
 
   /**
    * Compute the new offset amount based on the new lowest visible item index.
    */
   const getNewSliderOffset = (newOffset: number) => {
-    const direction =
-      sliderMoveDirection === sliderActions.MOVE_DIRECTION_PREV
-        ? (!!-1 as any)
-        : (!!1 as any);
-    return newOffset * getSliderItemsWidth() * direction;
+    return newOffset * getSliderItemsWidth();
   };
 
   /**
@@ -224,8 +215,8 @@ const Slider = ({
    */
   const renderSliderItems = () => {
     const totalItemsCount = getTotalItemsCount();
-    // Create a pre-filled array of slider item elements
-    const sliderItemsArr: ReactElement[] = Array.from(
+    // Create a pre-filled array of default slider item elements
+    const sliderItemChildren: ReactElement[] = Array.from(
       { length: model.length },
       (_, i) => {
         return (
@@ -238,11 +229,14 @@ const Slider = ({
       visibleItems: ReactElement[] = [],
       itemsRange = 0;
     /**
-     * Append empty loading items to the end of the slider if the total number of items to fill the row
+     * Append empty loading items to the end of the slider if the slider is not full.
      */
-    if (sliderItemsArr && sliderItemsArr.length) {
+    if (sliderItemChildren && sliderItemChildren.length) {
       itemsRange = getHighestIndex() - getLowestIndex();
-      visibleItems = sliderItemsArr.slice(getLowestIndex(), getHighestIndex());
+      visibleItems = sliderItemChildren.slice(
+        getLowestIndex(),
+        getHighestIndex()
+      );
       for (
         let idx = 0;
         visibleItems.length < itemsRange &&
@@ -258,37 +252,46 @@ const Slider = ({
         );
       }
       /**
-       * Append the first page of results to the end of the slider
+       * If looping is disabled or the slider only has one page,
+       * return the slider items without any modifications.
        */
-      enableLooping &&
-        getTotalPages() > 1 &&
-        getHighestIndex() - lowestVisibleItemIndex <= itemsInRow * 2 &&
-        // If the last page of the slider is visible, we need to append the first page of results to the end of the slider
-        ((offscreenItems =
-          lowestVisibleItemIndex + itemsInRow === totalItemsCount
-            ? sliderItemsArr.slice(0, itemsInRow + 1)
-            : sliderItemsArr.slice(0, 1)),
-        // Clone slider item component and append latest items with mapped props to the sequence
-        (offscreenItems = cloneItemsWithNewKeys(offscreenItems, "_appended")),
-        // Combine arrays
-        (visibleItems = visibleItems.concat(offscreenItems)));
+      if (getTotalPages() < 0 || !enableLooping) {
+        return wrapSliderItems(visibleItems, lowestIndex);
+      }
       /**
-       * If the slider has moved at least once and first page of results is visible,
-       * we need to prepend the last page of results to the beginning of the slider
+       * If the slider has more than one page and the last pages of the slider are active,
+       * track the offscreen items and append them to the slider sequence.
        */
-      hasMovedOnce &&
-        lowestVisibleItemIndex - itemsInRow <= 0 &&
-        ((offscreenItems =
-          lowestVisibleItemIndex === 0
-            ? sliderItemsArr.slice(-itemsInRow - 1)
-            : sliderItemsArr.slice(-1)),
-        (lowestIndex += offscreenItems.length), // Update the lowest index
-        // Clone slider item component and prepend latest items with mapped props to the sequence
-        (offscreenItems = cloneItemsWithNewKeys(offscreenItems, "_prepended")),
+      if (getHighestIndex() - lowestVisibleItemIndex <= itemsInRow * 2) {
+        /**
+         * If last pages of the slider are active, track the offscreen items and append them to the slider
+         */
+        offscreenItems =
+          lowestVisibleItemIndex + itemsInRow === totalItemsCount
+            ? sliderItemChildren.slice(0, itemsInRow + 1)
+            : sliderItemChildren.slice(0, 1);
+        // Clone slider item component with new keys
+        offscreenItems = cloneItemsWithNewKeys(offscreenItems, "_appended");
         // Combine arrays
-        (visibleItems = offscreenItems.concat(visibleItems)));
+        visibleItems = visibleItems.concat(offscreenItems);
+      }
+      /**
+       * If the slider has moved once and the first pages of the slider are active,
+       * track the offscreen items and prepend them to the slider sequence.
+       */
+      if (hasMovedOnce && lowestVisibleItemIndex - itemsInRow <= 0) {
+        offscreenItems =
+          lowestVisibleItemIndex === 0
+            ? sliderItemChildren.slice(-itemsInRow - 1)
+            : sliderItemChildren.slice(-1);
+        lowestIndex += offscreenItems.length;
+        // Clone slider item component and prepend latest items with mapped props to the sequence
+        offscreenItems = cloneItemsWithNewKeys(offscreenItems, "_prepended");
+        // Combine arrays
+        visibleItems = offscreenItems.concat(visibleItems);
+      }
     }
-    // Return the wrapped items
+    // Wrap default slider items with props
     return wrapSliderItems(visibleItems, lowestIndex);
   };
 
@@ -320,18 +323,23 @@ const Slider = ({
       const uid = Number(`${rowNum}${model?.id}${idx}`);
       let itemPosition = "",
         itemTabbable = false;
-      // Assign item position based on its index
-      idx === lowestIndex
-        ? ((itemPosition = "leftEdge"), (itemTabbable = true))
-        : idx === lowestIndex - 1
-        ? (itemPosition = "leftPeek")
-        : idx === visibleItemIdx + 1
-        ? (itemPosition = "rightPeek")
-        : idx === visibleItemIdx
-        ? ((itemPosition = "rightEdge"), (itemTabbable = true))
-        : idx >= lowestIndex &&
-          idx <= visibleItemIdx &&
-          ((itemPosition = "middle"), (itemTabbable = true));
+      /**
+       * Set the item's position and tabbable state
+       */
+      if (idx === lowestIndex) {
+        itemPosition = "leftEdge";
+        itemTabbable = true;
+      } else if (idx === lowestIndex - 1) {
+        itemPosition = "leftPeek";
+      } else if (idx === visibleItemIdx + 1) {
+        itemPosition = "rightPeek";
+      } else if (idx === visibleItemIdx) {
+        itemPosition = "rightEdge";
+        itemTabbable = true;
+      } else if (idx >= lowestIndex && idx <= visibleItemIdx) {
+        itemPosition = "middle";
+        itemTabbable = true;
+      }
       // Get the item's unique ID
       const itemUid = key ? `${key}slider-item` : `item_${idx}`;
       // Get the item's DOM node
@@ -441,39 +449,38 @@ const Slider = ({
   /**
    * Get the slider items currently in wrappedItemRefsMap
    */
-  const getSliderItems = useCallback(
-    (items: Array<{ uid: string; inViewport: boolean }>) => {
-      const visible = new Map();
-      items.forEach(({ uid }: { uid: string }) => {
-        visible.set(uid, getItemRefsMap().get(uid));
-      });
-      // console.log("visible: ", visible);
-      return visible;
-    },
-    [getItemRefsMap]
-  );
+  const getSliderItems = (
+    items: Array<{ uid: string; inViewport: boolean }>
+  ) => {
+    const visible = new Map();
+    items.forEach(({ uid }: { uid: string }) => {
+      visible.set(uid, getItemRefsMap().get(uid));
+    });
+    // console.log("visible: ", visible);
+    return visible;
+  };
 
   /**
    * Get the slider items that currently visible in the viewport
    */
-  const getVisibleSliderItems = useCallback(() => {
+  const getVisibleSliderItems = () => {
     return getSliderItems(
       (Array.from(getWrappedItemRefsMap().values()) as []).filter(
         ({ inViewport }) => inViewport
       )
     );
-  }, [getSliderItems, getWrappedItemRefsMap]);
+  };
 
   /**
    * Set the .slider-content animation `style` attribute
    */
-  const getAnimationStyle = useCallback((translateX: number) => {
+  const getAnimationStyle = (translateX: number) => {
     return [
       `-webkit-transform: translate3d(${translateX}%, 0px, 0px)`,
       `-ms-transform: translate3d(${translateX}%, 0px, 0px)`,
       `transform: translate3d(${translateX}%, 0px, 0px)`,
     ].join(";");
-  }, []);
+  };
 
   /**
    * Set the initial .slider-content animation `style` attribute
@@ -502,11 +509,26 @@ const Slider = ({
   };
 
   /**
+   * Determine if slider has additional next pages
+   */
+  const hasMoreNextPages = () => {
+    const currentVisibleIdx = lowestVisibleItemIndex + itemsInRow;
+    return enableLooping || currentVisibleIdx < getTotalItemsCount();
+  };
+
+  /**
    * Determine if slider has previous pages
    */
   const hasMorePrevPages = () => {
-    const potentialPrevPages = lowestVisibleItemIndex - itemsInRow;
-    return enableLooping || potentialPrevPages > -itemsInRow;
+    const currentVisibleIdx = lowestVisibleItemIndex - itemsInRow;
+    return enableLooping || currentVisibleIdx > -itemsInRow;
+  };
+
+  /**
+   * Determine if slider next button is active / visible
+   */
+  const isNextBtnNavActive = () => {
+    return getTotalPages() > 1 && hasMoreNextPages();
   };
 
   /**
@@ -565,21 +587,6 @@ const Slider = ({
   };
 
   /**
-   * Determine if slider has additional next pages
-   */
-  const hasMoreNextPages = () => {
-    const potentialNext = lowestVisibleItemIndex + itemsInRow;
-    return enableLooping || potentialNext < getTotalItemsCount();
-  };
-
-  /**
-   * Determine if slider next button is active / visible
-   */
-  const isNextBtnNavActive = () => {
-    return getTotalPages() > 1 && hasMoreNextPages();
-  };
-
-  /**
    * Move the slider forward when the Next button is clicked
    */
   const advanceNext = (e: MouseEvent<HTMLSpanElement>) => {
@@ -632,104 +639,88 @@ const Slider = ({
   };
 
   /**
-   * Set hasMovedOnce to true, lowest visible index state, slider move direction
+   * Synchronously update slider state when it moves
    */
-  const onSliderMove = useCallback(
-    (lowestVisibleIdx: number, moveDirection: string) => {
+  const onSliderMove = (
+    lowestVisibleIdx: number,
+    moveDirection: MoveDirectionProps
+  ) => {
+    flushSync(() => {
+      setHasMovedOnce(true);
       setLowestVisibleItemIndex(lowestVisibleIdx);
       setSliderMoveDirection(moveDirection);
-    },
-    [setLowestVisibleItemIndex, setSliderMoveDirection]
-  );
+    });
+  };
 
   /**
    * Reset the slider base transform values on pageload and after it animates / shifts
    */
-  const resetSliderPosition = useCallback(() => {
+  const resetSliderPosition = () => {
     const getNewOffsetAmount = getAnimationStyle(getBaseSliderOffset());
     sliderRef.current &&
       sliderRef.current.setAttribute("style", getNewOffsetAmount);
-  }, [getAnimationStyle, getBaseSliderOffset]);
+  };
+
+  /**
+   * Clear the slider focus interval ID
+   */
+  const clearIntervals = () => {
+    sliderIntervalIdRef.current &&
+      (clearInterval(sliderIntervalIdRef.current),
+      (sliderIntervalIdRef.current = null));
+  };
 
   /**
    * Refocus visible slider item after the slider shifts
    */
-  const refocusAfterShift = useCallback(
-    (
-      action:
-        | typeof sliderActions.MOVE_DIRECTION_NEXT
-        | typeof sliderActions.MOVE_DIRECTION_PREV
-    ) => {
-      const visibleItems = getVisibleSliderItems();
-      const visibleItemsValues = Array.from(visibleItems.values());
-      // console.log("itemToFocus 1: ", visibleItems);
-      // console.log("itemToFocus 2: ", Array.from(visibleItems.values()));
-      let itemToFocus: HTMLDivElement, itemIdx;
-      visibleItemsValues.length > 1 &&
-        (itemIdx =
-          action === sliderActions.MOVE_DIRECTION_NEXT
-            ? 1
-            : visibleItemsValues.length - 2);
-      // console.log("itemToFocus 1: ", visibleItemsValues),
-      // console.log("itemToFocus 2: ", visibleItemsValues[itemIdx]),
-      itemIdx &&
-        (itemToFocus = visibleItemsValues[itemIdx]) &&
-        itemToFocus &&
-        (sliderIntervalIdRef.current = window.setInterval(() => {
-          sliderIntervalIdRef.current &&
-            clearInterval(sliderIntervalIdRef.current),
-            (
-              itemToFocus.querySelector(".slider-refocus") as HTMLAnchorElement
-            ).focus();
-        }, 300));
-    },
-    [getVisibleSliderItems]
-  );
+  const refocusAfterShift = (moveDirection: MoveDirectionProps) => {
+    const visibleItems = getVisibleSliderItems(),
+      visibleItemsValues = Array.from(visibleItems.values()),
+      itemIdx =
+        moveDirection === sliderActions.MOVE_DIRECTION_NEXT
+          ? 1
+          : visibleItemsValues.length - 2,
+      itemToFocus = visibleItemsValues[itemIdx];
+    // If the item to focus is not null, set the interval to refocus the item
+    if (itemToFocus) {
+      const node = itemToFocus.querySelector(
+        ".slider-refocus"
+      ) as HTMLAnchorElement;
+      sliderIntervalIdRef.current = window.setInterval(() => {
+        setIsAnimating(false);
+        clearIntervals();
+        node.focus();
+      }, 200);
+    }
+  };
 
   /**
    * Handle the slider movement and animation
    */
-  const shiftSlider = useCallback(
-    (
-      totalItemsCount: number,
-      newOffsetAmount: number,
-      action:
-        | typeof sliderActions.MOVE_DIRECTION_NEXT
-        | typeof sliderActions.MOVE_DIRECTION_PREV
-        | typeof sliderActions.SLIDER_NOT_SLIDING
-        | typeof sliderActions.SLIDER_SLIDING,
-      _coordinates: { x: number; y: number } | null,
-      _isMouseEvent: boolean,
-      _activeRowSegment: number
-    ) => {
-      if (!sliderRef.current) return;
-      const slider = sliderRef.current;
-      const getNewOffsetAmount = getAnimationStyle(newOffsetAmount);
-      slider.classList.add("animating");
-      slider.setAttribute("style", getNewOffsetAmount);
-      // Flush the slider updates to the DOM after the animated transition completes
-      ontransitionend = (e) => {
-        if (e.target === slider) {
-          flushSync(() => {
-            resetSliderPosition();
-            setHasMovedOnce(true);
-            onSliderMove(totalItemsCount, action);
-            refocusAfterShift(action);
-          });
-          slider.classList.remove("animating");
-          setIsAnimating(false);
-        }
-      };
-    },
-    [
-      getAnimationStyle,
-      onSliderMove,
-      refocusAfterShift,
-      resetSliderPosition,
-      setHasMovedOnce,
-      sliderRef,
-    ]
-  );
+  const shiftSlider = (
+    totalItemsCount: number,
+    newOffsetAmount: number,
+    moveDirection: MoveDirectionProps,
+    _coordinates: { x: number; y: number } | null,
+    _isMouseEvent: boolean,
+    _activeRowSegment: number
+  ) => {
+    if (!sliderRef.current) return;
+    const slider = sliderRef.current;
+    const getNewOffsetAmount = getAnimationStyle(newOffsetAmount);
+    // Add the 'animating' class to the slider and set the new offset amount
+    slider.classList.add("animating");
+    slider.setAttribute("style", getNewOffsetAmount);
+    // Flush the slider state updates and refocus the slider item after the slider shifts
+    ontransitionend = (e) => {
+      if (e.target === slider) {
+        slider.classList.remove("animating");
+        resetSliderPosition();
+        onSliderMove(totalItemsCount, moveDirection);
+        refocusAfterShift(moveDirection);
+      }
+    };
+  };
 
   return (
     <div className="row-content slider-hover-trigger-layer w-full overflow-x-visible whitespace-nowrap">

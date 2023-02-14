@@ -1,6 +1,7 @@
 import { Variants } from "framer-motion";
 import { useContext, useEffect, useState } from "react";
 
+import UnstyledButton from "@/components/ui/buttons/UnstyledButton";
 import ProfileContext from "@/context/ProfileContext";
 import { MotionDivWrapper } from "@/lib/MotionDivWrapper";
 import { IVideoModel } from "@/store/types";
@@ -20,16 +21,14 @@ const DislikeMediaButton = ({
 }: DislikeMediaButtonProps) => {
   const { addToDislikedMedia, removeFromDislikedMedia } =
     useContext(ProfileContext);
-  const [isDislikedState, setIsDislikedState] = useState<boolean>(
-    isDisliked || false
-  );
+  const [isSet, setIsSet] = useState<boolean>(isDisliked || false);
   const [clicked, setClicked] = useState(false);
 
   /**
    * Optimistically show the updated button state in the ui
    */
   useEffect(() => {
-    setIsDislikedState(isDisliked || false);
+    setIsSet(isDisliked || false);
   }, [isDisliked]);
 
   /**
@@ -42,71 +41,62 @@ const DislikeMediaButton = ({
   }, [clicked]);
 
   /**
-   * Animate the button icon when clicked
-   */
-  const animationProps = {
-    initial: { y: 0, scale: 1 },
-    bounce: { y: -3, scale: 1.3 },
-    bounceBack: { y: 0, scale: 1 },
-    transition: { duration: 0.2, ease: "easeOut" },
-  };
-
-  /**
    * Add item to user's media list
    */
   const clickAddToDislikedMedia = () => {
-    const mediaItemData = {
+    setClicked(true);
+    setIsSet(true);
+    addToDislikedMedia({
       mediaData: videoModel,
       mutateModalData: videoModel?.mutateModalData,
       mutateSliderData: videoModel?.mutateSliderData,
-    };
-    setClicked(true);
-    setIsDislikedState(true);
-    addToDislikedMedia(mediaItemData);
+    });
   };
 
   /**
    * Remove item from user's media list
    */
   const clickRemoveFromDislikedMedia = () => {
-    const mediaItemData = {
+    setIsSet(false);
+    removeFromDislikedMedia({
       mediaData: videoModel,
       mutateModalData: videoModel?.mutateModalData,
       mutateSliderData: videoModel?.mutateSliderData,
-    };
-    setIsDislikedState(false);
-    removeFromDislikedMedia(mediaItemData);
+    });
+  };
+
+  /**
+   * Animate the button icon when clicked
+   */
+  const variants = {
+    initial: { y: 0, scale: 1 },
+    bounce: { y: -3, scale: 1.3 },
+    bounceBack: { y: 0, scale: 1 },
+    transition: { duration: 0.2, ease: "easeOut" },
   };
 
   return (
-    <Tooltip
-      text={isDislikedState ? "Rated" : "Not for me"}
-      className="relative"
-    >
-      <button
+    <Tooltip text={isSet ? "Rated" : "Not for me"} className="relative">
+      <UnstyledButton
         type="button"
-        aria-label={isDislikedState ? "Rated" : "Not for me"}
+        aria-label={isSet ? "Rated" : "Not for me"}
         className={
           detailView
             ? "relative mx-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-white border-opacity-50 bg-transparent font-bold text-white transition duration-150 ease-out hover:border-opacity-100 hover:bg-white hover:bg-opacity-50 focus:border-opacity-100 focus:bg-white focus:bg-opacity-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white sm:h-8 sm:w-8 md:text-xl lg:h-9 lg:w-9 2xl:h-11 2xl:w-11"
             : "relative mx-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-white border-opacity-50 bg-transparent font-bold text-white transition duration-150 ease-out hover:border-opacity-100 hover:bg-white hover:bg-opacity-50 focus:border-opacity-100 focus:bg-white focus:bg-opacity-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white sm:h-8 sm:w-8 md:text-xl lg:h-9 lg:w-9 2xl:h-11 2xl:w-11"
         }
         onClick={() =>
-          isDislikedState
-            ? clickRemoveFromDislikedMedia()
-            : clickAddToDislikedMedia()
+          isSet ? clickRemoveFromDislikedMedia() : clickAddToDislikedMedia()
         }
       >
-        <span className="sr-only">
-          {isDislikedState ? "Rated" : "Not for me"}
-        </span>
+        <span className="sr-only">{isSet ? "Rated" : "Not for me"}</span>
         <MotionDivWrapper
           className="absolute inset-0 flex items-center justify-center"
           initial="intitial"
           animate={clicked ? "bounce" : "bounceBack"}
-          variants={animationProps as Variants}
+          variants={variants as Variants}
         >
-          {isDislikedState ? (
+          {isSet ? (
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="mt-[2px] h-[1.35rem] w-[1.35rem]"
@@ -132,7 +122,7 @@ const DislikeMediaButton = ({
             </svg>
           )}
         </MotionDivWrapper>
-      </button>
+      </UnstyledButton>
     </Tooltip>
   );
 };

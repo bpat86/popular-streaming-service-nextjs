@@ -1,6 +1,7 @@
 import { Variants } from "framer-motion";
 import { useContext, useEffect, useState } from "react";
 
+import UnstyledButton from "@/components/ui/buttons/UnstyledButton";
 import ProfileContext from "@/context/ProfileContext";
 import { MotionDivWrapper } from "@/lib/MotionDivWrapper";
 import { IVideoModel } from "@/store/types";
@@ -20,14 +21,14 @@ const LikeMediaButton = ({
 }: LikeMediaButtonProps) => {
   const { addToLikedMedia, removeFromLikedMedia } = useContext(ProfileContext);
 
-  const [isLikedState, setIsLikedState] = useState<boolean>(isLiked || false);
+  const [isSet, setIsSet] = useState<boolean>(isLiked || false);
   const [clicked, setClicked] = useState(false);
 
   /**
    * Optimistically show the updated button state in the ui
    */
   useEffect(() => {
-    setIsLikedState(isLiked || false);
+    setIsSet(isLiked || false);
   }, [isLiked]);
 
   /**
@@ -40,66 +41,62 @@ const LikeMediaButton = ({
   }, [clicked]);
 
   /**
-   * Animate the button icon when clicked
-   */
-  const animationProps = {
-    initial: { y: 0, scale: 1 },
-    bounce: { y: -3, scale: 1.3 },
-    bounceBack: { y: 0, scale: 1 },
-    transition: { duration: 0.2, ease: "easeOut" },
-  };
-
-  /**
    * Add item to user's media list
    */
   const clickAddToLikedMedia = () => {
-    const mediaItemData = {
+    setClicked(true);
+    setIsSet(true);
+    addToLikedMedia({
       mediaData: videoModel,
       mutateModalData: videoModel?.mutateModalData,
       mutateSliderData: videoModel?.mutateSliderData,
-    };
-    setClicked(true);
-    setIsLikedState(true);
-    addToLikedMedia(mediaItemData);
+    });
   };
 
   /**
    * Remove item from user's media list
    */
   const clickRemoveFromLikedMedia = () => {
-    const mediaItemData = {
+    setIsSet(false);
+    removeFromLikedMedia({
       mediaData: videoModel,
       mutateModalData: videoModel?.mutateModalData,
       mutateSliderData: videoModel?.mutateSliderData,
-    };
-    setIsLikedState(false);
-    removeFromLikedMedia(mediaItemData);
+    });
+  };
+
+  /**
+   * Animate the button icon when clicked
+   */
+  const variants = {
+    initial: { y: 0, scale: 1 },
+    bounce: { y: -3, scale: 1.3 },
+    bounceBack: { y: 0, scale: 1 },
+    transition: { duration: 0.2, ease: "easeOut" },
   };
 
   return (
-    <Tooltip text={isLikedState ? "Rated" : "I like this"} className="relative">
-      <button
+    <Tooltip text={isSet ? "Rated" : "I like this"} className="relative">
+      <UnstyledButton
         type="button"
-        aria-label={isLikedState ? "Rated" : "I like this"}
+        aria-label={isSet ? "Rated" : "I like this"}
         className={
           detailView
             ? "relative mx-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-white border-opacity-50 bg-transparent font-bold text-white transition duration-150 ease-out hover:border-opacity-100 hover:bg-white hover:bg-opacity-50 focus:border-opacity-100 focus:bg-white focus:bg-opacity-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white sm:h-8 sm:w-8 md:text-xl lg:h-9 lg:w-9 2xl:h-11 2xl:w-11"
             : "relative mx-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-white border-opacity-50 bg-transparent font-bold text-white transition duration-150 ease-out hover:border-opacity-100 hover:bg-white hover:bg-opacity-50 focus:border-opacity-100 focus:bg-white focus:bg-opacity-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white sm:h-8 sm:w-8 md:text-xl lg:h-9 lg:w-9 2xl:h-11 2xl:w-11"
         }
         onClick={() =>
-          isLikedState ? clickRemoveFromLikedMedia() : clickAddToLikedMedia()
+          isSet ? clickRemoveFromLikedMedia() : clickAddToLikedMedia()
         }
       >
-        <span className="sr-only">
-          {isLikedState ? "Rated" : "I like this"}
-        </span>
+        <span className="sr-only">{isSet ? "Rated" : "I like this"}</span>
         <MotionDivWrapper
           className="absolute inset-0 flex items-center justify-center"
           initial="intitial"
           animate={clicked ? "bounce" : "bounceBack"}
-          variants={animationProps as Variants}
+          variants={variants as Variants}
         >
-          {isLikedState ? (
+          {isSet ? (
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="-mt-[2px] h-[1.35rem] w-[1.35rem]"
@@ -125,7 +122,7 @@ const LikeMediaButton = ({
             </svg>
           )}
         </MotionDivWrapper>
-      </button>
+      </UnstyledButton>
     </Tooltip>
   );
 };

@@ -1,5 +1,4 @@
 import {
-  FocusEvent,
   KeyboardEvent,
   MouseEvent,
   MutableRefObject,
@@ -19,7 +18,7 @@ type TitleCardProps = {
   imageKey: string;
   itemTabbable: boolean;
   inViewport?: boolean;
-  onFocus: (e: FocusEvent<HTMLAnchorElement>) => void;
+  onFocus: () => void;
   onMouseEnter: (
     e: MouseEvent<HTMLDivElement>,
     ref: MutableRefObject<HTMLDivElement>

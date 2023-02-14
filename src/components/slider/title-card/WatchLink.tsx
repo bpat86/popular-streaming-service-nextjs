@@ -1,12 +1,12 @@
-import Link from "next/link";
 import {
-  FocusEvent,
   KeyboardEvent,
   MouseEvent,
   MutableRefObject,
   ReactNode,
   useRef,
 } from "react";
+
+import UnstyledLink from "@/components/ui/links/UnstyledLink";
 
 type TitleCardLinkProps = {
   children: ReactNode;
@@ -16,7 +16,7 @@ type TitleCardLinkProps = {
     e: MouseEvent<HTMLAnchorElement> | KeyboardEvent<HTMLAnchorElement>,
     ref: MutableRefObject<HTMLAnchorElement>
   ) => void;
-  onFocus: (e: FocusEvent<HTMLAnchorElement>) => void;
+  onFocus: () => void;
   watchURL: string;
 };
 
@@ -30,7 +30,7 @@ const TitleCardLink = ({
 }: TitleCardLinkProps) => {
   const watchLinkAnchorRef = useRef<HTMLAnchorElement | null>(null);
   return (
-    <Link
+    <UnstyledLink
       ref={watchLinkAnchorRef}
       className={className}
       tabIndex={itemTabbable ? 0 : -1}
@@ -42,7 +42,7 @@ const TitleCardLink = ({
       href={watchURL}
     >
       {children}
-    </Link>
+    </UnstyledLink>
   );
 };
 

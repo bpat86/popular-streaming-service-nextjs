@@ -1,9 +1,24 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  MutableRefObject,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
-export const useElementRect = (props) => {
-  const { textChange, stateChange, ref: passedInRef } = props;
+export const useElementRect = <
+  T extends {
+    textChange?: string;
+    stateChange?: boolean;
+    ref?: MutableRefObject<HTMLDivElement | null>;
+  }
+>({
+  textChange,
+  stateChange,
+  ref: passedInRef,
+}: T) => {
   const [elementRect, setElementRect] = useState({});
-  const elementRef = useRef();
+  const elementRef = useRef<HTMLDivElement>(null);
 
   const handleElementRect = useCallback(() => {
     /**
@@ -13,14 +28,12 @@ export const useElementRect = (props) => {
       ? setElementRect(
           passedInRef && passedInRef.current
             ? passedInRef.current.getBoundingClientRect()
-            : {},
-          []
+            : {}
         )
       : setElementRect(
           elementRef && elementRef.current
-            ? elementRef.current.getBoundingClientRect()
-            : {},
-          []
+            ? (elementRef.current as HTMLDivElement).getBoundingClientRect()
+            : {}
         );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [passedInRef, textChange]);

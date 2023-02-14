@@ -1,6 +1,7 @@
 import { Variants } from "framer-motion";
 import { useContext, useEffect, useState } from "react";
 
+import UnstyledButton from "@/components/ui/buttons/UnstyledButton";
 import ProfileContext from "@/context/ProfileContext";
 import { MotionDivWrapper } from "@/lib/MotionDivWrapper";
 import { IVideoModel } from "@/store/types";
@@ -9,7 +10,7 @@ import Tooltip from "../../tooltips/Tooltip";
 
 type MediaListButtonProps = {
   detailView?: boolean;
-  handleCloseModal: () => void;
+  handleCloseModal?: () => void;
   inMediaList: IVideoModel["inMediaList"];
   isMyListRow?: IVideoModel["isMyListRow"];
   videoModel: IVideoModel;
@@ -23,16 +24,14 @@ const MediaListButton = ({
   videoModel,
 }: MediaListButtonProps) => {
   const { addMediaToList, removeMediaFromList } = useContext(ProfileContext);
-  const [inMediaListState, setInMediaListState] = useState<boolean>(
-    inMediaList || false
-  );
+  const [isSet, setIsSet] = useState<boolean>(inMediaList || false);
   const [clicked, setClicked] = useState<boolean>(false);
 
   /**
    * Optimistically show the updated button state in the ui
    */
   useEffect(() => {
-    setInMediaListState(inMediaList || false);
+    setIsSet(inMediaList || false);
   }, [inMediaList]);
 
   /**
@@ -45,73 +44,73 @@ const MediaListButton = ({
   }, [clicked]);
 
   /**
+   * Add item to user's media list
+   */
+  function handleAddMediaToList() {
+    setClicked(true);
+    setIsSet(true);
+    addMediaToList({
+      mediaData: videoModel,
+      mutateModalData: videoModel?.mutateModalData,
+      mutateSliderData: videoModel?.mutateSliderData,
+    });
+  }
+
+  /**
+   * Remove item from user's media list
+   */
+  function handleRemoveMediaFromList() {
+    setIsSet(false);
+    removeMediaFromList({
+      mediaData: videoModel,
+      mutateModalData: videoModel?.mutateModalData,
+      mutateSliderData: videoModel?.mutateSliderData,
+    });
+    !detailView &&
+      isMyListRow &&
+      handleCloseModal &&
+      setTimeout(() => handleCloseModal(), 100);
+  }
+
+  function handleClick() {
+    isSet ? handleRemoveMediaFromList() : handleAddMediaToList();
+  }
+
+  /**
    * Animate the button icon when clicked
    */
-  const animationProps = {
+  const variants: Variants = {
     initial: { y: 0, scale: 1 },
     bounce: { y: -1, scale: 1.1 },
     bounceBack: { y: 0, scale: 1 },
     transition: { duration: 0.2, ease: "easeOut" },
   };
 
-  /**
-   * Add item to user's media list
-   */
-  const clickAddMediaToList = () => {
-    const mediaItemData = {
-      mediaData: videoModel,
-      mutateModalData: videoModel?.mutateModalData,
-      mutateSliderData: videoModel?.mutateSliderData,
-    };
-    setClicked(true);
-    setInMediaListState(true);
-    addMediaToList(mediaItemData);
-  };
-
-  /**
-   * Remove item from user's media list
-   */
-  const clickRemoveMediaFromList = () => {
-    const mediaItemData = {
-      mediaData: videoModel,
-      mutateModalData: videoModel?.mutateModalData,
-      mutateSliderData: videoModel?.mutateSliderData,
-    };
-    setInMediaListState(false);
-    removeMediaFromList(mediaItemData);
-    !detailView &&
-      isMyListRow &&
-      handleCloseModal &&
-      setTimeout(() => handleCloseModal(), 100);
-  };
-
   return (
     <Tooltip
-      text={inMediaListState ? "Remove from My List" : "Add to My List"}
+      text={isSet ? "Remove from My List" : "Add to My List"}
       className="relative"
     >
-      <button
+      <UnstyledButton
         type="button"
-        aria-label={inMediaListState ? "Remove from My List" : "Add to My List"}
+        aria-label={isSet ? "Remove from My List" : "Add to My List"}
         className={
           detailView
             ? "relative mx-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-white border-opacity-50 bg-transparent font-bold text-white transition duration-150 ease-out hover:border-opacity-100 hover:bg-white hover:bg-opacity-50 focus:border-opacity-100 focus:bg-white focus:bg-opacity-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white sm:h-8 sm:w-8 md:text-xl lg:h-9 lg:w-9 2xl:h-11 2xl:w-11"
             : "relative mx-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-white border-opacity-50 bg-transparent font-bold text-white transition duration-150 ease-out hover:border-opacity-100 hover:bg-white hover:bg-opacity-50 focus:border-opacity-100 focus:bg-white focus:bg-opacity-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white sm:h-8 sm:w-8 md:text-xl lg:h-9 lg:w-9 2xl:h-11 2xl:w-11"
         }
-        onClick={() =>
-          inMediaListState ? clickRemoveMediaFromList() : clickAddMediaToList()
-        }
+        onClick={handleClick}
       >
         <span className="sr-only">
-          {inMediaListState ? "Remove from My List" : "Add to My List"}
+          {isSet ? "Remove from My List" : "Add to My List"}
         </span>
         <MotionDivWrapper
           className="absolute inset-0 flex items-center justify-center"
           initial="intitial"
           animate={clicked ? "bounce" : "bounceBack"}
-          variants={animationProps as Variants}
+          variants={variants}
         >
-          {inMediaListState ? (
+          {isSet ? (
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className={
@@ -149,7 +148,7 @@ const MediaListButton = ({
             </svg>
           )}
         </MotionDivWrapper>
-      </button>
+      </UnstyledButton>
     </Tooltip>
   );
 };
