@@ -665,10 +665,14 @@ input.input-profile:-webkit-autofill::first-line {
 .slider-row.title-card .slider-refocus {
   display: block;
 }
-
+.slider-row.title-card .slider-refocus:focus-visible {
+  outline: auto;
+  outline-thickness: 2px;
+  outline-color: white;
+}
 .js-focus-visible :focus:not([data-focus-visible-added]) {
-  /* outline: none; */
-  outline: 2px solid white;
+  /* outline: 2px solid white; */
+  outline: none;
 }
 .slider-row.title-card.expanded {
   /* pointer-events: none; */
@@ -687,8 +691,6 @@ input.input-profile:-webkit-autofill::first-line {
 .slider .slider-mask {
   overflow-x: hidden;
   padding-bottom: 1px;
-  /* content-visibility: auto;
-  contain-intrinsic-size: 1px 5000px; */
 }
 .slider .handle {
   position: absolute;
@@ -730,6 +732,10 @@ input.input-profile:-webkit-autofill::first-line {
   -moz-border-radius-bottomright: 0.2vw;
   border-bottom-right-radius: 0.2vw;
   left: 0;
+}
+.handle.handlePrev:focus-visible,
+.handle.handleNext:focus-visible {
+  outline: auto;
 }
 .slider .handle.handlePrev .indicator-icon,
 .slider .handle.handleNext .indicator-icon {

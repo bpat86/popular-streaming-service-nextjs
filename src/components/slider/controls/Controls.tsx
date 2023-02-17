@@ -17,20 +17,16 @@ const SliderControls = ({
   /**
    * Handle click events
    */
-  function handleOnClick(e: MouseEvent<HTMLSpanElement>) {
-    if (!isAnimating) {
-      onClick(e);
-    }
-  }
+  const handleOnClick = (e: MouseEvent<HTMLSpanElement>) => onClick(e);
 
   /**
    * Handle keyboard events
    */
-  function handleOnKeyDown(e: KeyboardEvent<HTMLSpanElement>) {
+  const handleOnKeyDown = (e: KeyboardEvent<HTMLSpanElement>) => {
     if (e.key === "Enter" && !isAnimating) {
       onKeyDown(e);
     }
-  }
+  };
 
   return (
     <span

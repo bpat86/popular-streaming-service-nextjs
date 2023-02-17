@@ -1,24 +1,19 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { MutableRefObject, useCallback, useEffect, useState } from "react";
 
-import { useElementRect } from "./useElementRect";
-
-export const useHover = () => {
-  const [hovered, setIntendedHover] = useState<boolean>(false);
-  const elementRef = useRef(null);
-  /**
-   * The useElementRect Hook returns the hovered element's bounding rect.
-   * It accepts a conditional variable and an optional element ref.
-   */
-  const [elementRect] = useElementRect({
-    stateChange: hovered as boolean,
-    ref: elementRef,
-  });
+export const useHover = <
+  T extends {
+    ref?: MutableRefObject<HTMLDivElement | null>;
+  }
+>({
+  ref,
+}: T) => {
+  const [hover, setHover] = useState<boolean>(false);
 
   /**
    * If the user hovers for the full duration of the `delay` value
    */
   const handleMouseEnter = useCallback(() => {
-    setIntendedHover(true);
+    setHover(true);
   }, []);
 
   /**
@@ -26,11 +21,11 @@ export const useHover = () => {
    * hovers out before `delay`.
    */
   const handleMouseLeave = useCallback(() => {
-    setIntendedHover(false);
+    setHover(false);
   }, []);
 
   useEffect(() => {
-    const element = elementRef.current;
+    const element = ref?.current;
     if (element) {
       (element as HTMLDivElement).addEventListener(
         "mouseover",
@@ -51,7 +46,7 @@ export const useHover = () => {
         );
       };
     }
-  }, [elementRef, handleMouseEnter, handleMouseLeave]);
+  }, [ref, handleMouseEnter, handleMouseLeave]);
 
-  return [elementRef, elementRect, hovered] as const;
+  return [hover] as const;
 };

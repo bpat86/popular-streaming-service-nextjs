@@ -436,6 +436,7 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
             exit: animationStateActions.CLOSE_MINI_MODAL,
             onAnimationStart: () => {
               setIsAnimating(true);
+              // disableTooltips();
             },
             onAnimationComplete: (
               currentAnimationState: (typeof animationStateActions)[keyof typeof animationStateActions]

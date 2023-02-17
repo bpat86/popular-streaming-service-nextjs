@@ -1,9 +1,11 @@
+import { debounce } from "lodash";
 import {
   Children,
   cloneElement,
   KeyboardEvent,
   MouseEvent,
   ReactElement,
+  useEffect,
   useRef,
   useState,
 } from "react";
@@ -15,9 +17,12 @@ import LoadingItem from "@/components/slider/LoadingItem";
 import PaginationIndicator from "@/components/slider/PaginationIndicator";
 import SliderItem from "@/components/slider/SliderItem";
 import TitleCardContainer from "@/components/slider/title-card/TitleCardContainer";
+import useWindowResize from "@/hooks/useWindowResize";
 import clsxm from "@/lib/clsxm";
+import { MotionDivWrapper } from "@/lib/MotionDivWrapper";
 import usePreviewModalStore from "@/store/PreviewModalStore";
 
+import EventStopper from "./EventStopper";
 import { MoveDirectionProps, SliderProps } from "./types";
 
 const Slider = ({
@@ -26,7 +31,7 @@ const Slider = ({
   sliderName,
   enablePeek,
   totalItems,
-  itemsInRow,
+  // itemsInRow,
   enableLooping,
   isMyListRow,
   listContext,
@@ -39,6 +44,8 @@ const Slider = ({
   toggleExpandedInfoDensity,
 }: SliderProps) => {
   const [isAnimating, setIsAnimating] = useState<boolean>(false);
+  const [isPanning, setIsPanning] = useState<boolean>(false);
+  const [itemsInRow, setItemsInRow] = useState<number>(6);
   const [lowestVisibleItemIndex, setLowestVisibleItemIndex] =
     useState<number>(0);
   const [_activeRowItemIndex, setActiveRowItemIndex] = useState<number>(0);
@@ -46,6 +53,29 @@ const Slider = ({
   const sliderItemsRef = useRef<Map<string, HTMLDivElement> | null>(null);
   const wrappedSliderItemsRef = useRef<Map<string, {}> | null>(null);
   const sliderIntervalIdRef = useRef<number | null>(null);
+  const { isXl, isLg, isMd, isSm } = useWindowResize();
+
+  /**
+   * Set default slider items count
+   */
+  const handleWindowResize = debounce(() => {
+    if (isXl) {
+      setItemsInRow(6);
+    }
+    if (isLg) {
+      setItemsInRow(5);
+    }
+    if (isMd) {
+      setItemsInRow(4);
+    }
+    if (isSm) {
+      setItemsInRow(3);
+    }
+  }, 100);
+
+  useEffect(() => {
+    handleWindowResize();
+  }, [isXl, isLg, isMd, isSm, handleWindowResize]);
 
   /**
    * Get the slider items ref map
@@ -470,20 +500,6 @@ const Slider = ({
   };
 
   /**
-   * Get the total number of pages
-   */
-  const getActiveRowSegment = (
-    totalItemsCount: number,
-    items: number,
-    rowItems: number
-  ) => {
-    const pages = items / totalItemsCount,
-      segments = rowItems / totalItemsCount,
-      rowSegments = segments / pages;
-    return Math.ceil(rowSegments);
-  };
-
-  /**
    * Determine if slider has additional next pages
    */
   const hasMoreNextPages = () => {
@@ -532,23 +548,12 @@ const Slider = ({
     // Get the new slider offset
     const getNewOffsetAmount = getNewSliderOffset(amountToOffset),
       newOffsetAmount = getNewOffsetAmount + getBaseSliderOffset();
-    e && "keydown" === e.type
-      ? shiftSlider(
-          rowItems,
-          newOffsetAmount,
-          sliderActions.MOVE_DIRECTION_PREV,
-          null,
-          true,
-          getActiveRowSegment(totalItemsCount, itemsInRow, rowItems)
-        )
-      : shiftSlider(
-          rowItems,
-          newOffsetAmount,
-          sliderActions.MOVE_DIRECTION_PREV,
-          null,
-          false,
-          getActiveRowSegment(totalItemsCount, itemsInRow, rowItems)
-        );
+    // Shift the slider from a keyboard event
+    if (e && e.type === "keydown") {
+      shiftSlider(rowItems, newOffsetAmount, sliderActions.MOVE_DIRECTION_PREV);
+    }
+    // Shift the slider from a click event
+    shiftSlider(rowItems, newOffsetAmount, sliderActions.MOVE_DIRECTION_PREV);
   };
 
   /**
@@ -574,23 +579,12 @@ const Slider = ({
       newOffsetAmount = getNewOffsetAmount + getBaseSliderOffset();
     // If rowItems is equal to the total number of items, set rowItems to 0
     rowItems === totalItemsCount && (rowItems = 0);
-    e && "keydown" === e.type
-      ? shiftSlider(
-          rowItems,
-          newOffsetAmount,
-          sliderActions.MOVE_DIRECTION_NEXT,
-          null,
-          true,
-          getActiveRowSegment(totalItemsCount, itemsInRow, rowItems)
-        )
-      : shiftSlider(
-          rowItems,
-          newOffsetAmount,
-          sliderActions.MOVE_DIRECTION_NEXT,
-          null,
-          false,
-          getActiveRowSegment(totalItemsCount, itemsInRow, rowItems)
-        );
+    // Shift the slider from a keyboard event
+    if (e && e.type === "keydown") {
+      shiftSlider(rowItems, newOffsetAmount, sliderActions.MOVE_DIRECTION_NEXT);
+    }
+    // Shift the slider from a click event
+    shiftSlider(rowItems, newOffsetAmount, sliderActions.MOVE_DIRECTION_NEXT);
   };
 
   /**
@@ -641,7 +635,7 @@ const Slider = ({
         setIsAnimating(false);
         clearIntervals();
         node.focus();
-      }, 300);
+      }, 200);
     }
   };
 
@@ -651,10 +645,7 @@ const Slider = ({
   const shiftSlider = (
     totalItemsCount: number,
     newOffsetAmount: number,
-    moveDirection: MoveDirectionProps,
-    _coordinates: { x: number; y: number } | null,
-    _isMouseEvent: boolean,
-    _activeRowSegment: number
+    moveDirection: MoveDirectionProps
   ) => {
     if (!sliderRef.current) return;
     const slider = sliderRef.current;
@@ -671,6 +662,32 @@ const Slider = ({
         slider.classList.remove("animating");
       }
     };
+  };
+
+  /**
+   * Shift the slider when the user swipes left or right
+   */
+  const onPan = (
+    e: MouseEvent<HTMLDivElement> & TouchEvent,
+    {
+      offset,
+      velocity,
+    }: {
+      offset: { x: number; y: number };
+      velocity: { x: number; y: number };
+    }
+  ) => {
+    const swipeConfidenceThreshold = 10000;
+    const swipePower = (offset: number, velocity: number) => {
+      return Math.abs(offset) * velocity;
+    };
+    const swipe = swipePower(offset.x, velocity.x);
+    if (isPreviewModalOpen()) return;
+    if (swipe < -swipeConfidenceThreshold) {
+      advanceNext(e);
+    } else if (swipe > swipeConfidenceThreshold) {
+      advancePrev(e);
+    }
   };
 
   return (
@@ -694,15 +711,22 @@ const Slider = ({
             totalPages={getTotalPages()}
           />
         )}
-        <div className={clsxm("slider-mask", [enablePeek && "show-peek"])}>
-          <div
-            ref={sliderRef}
-            className="slider-content row-with-x-columns"
-            style={getReactAnimationStyle(getBaseSliderOffset())}
-          >
-            {renderSliderItems()}
-          </div>
-        </div>
+        <MotionDivWrapper
+          className={clsxm("slider-mask touch-none", [
+            enablePeek && "show-peek",
+          ])}
+          onPan={onPan}
+        >
+          <EventStopper>
+            <div
+              ref={sliderRef}
+              className="slider-content row-with-x-columns"
+              style={getReactAnimationStyle(getBaseSliderOffset())}
+            >
+              {renderSliderItems()}
+            </div>
+          </EventStopper>
+        </MotionDivWrapper>
         {/* Next button */}
         {totalItems > itemsInRow &&
           !(isPreviewModalOpen() && rowHasExpandedInfoDensity) && (

@@ -1,5 +1,5 @@
 import debounce from "lodash/debounce";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 // Hooks
 import useWindowResize from "@/hooks/useWindowResize";
@@ -43,23 +43,20 @@ const SliderRow = ({
   /**
    * Set default slider items count
    */
-  const handleWindowResize = debounce(
-    useCallback(() => {
-      if (isXl) {
-        setItemsInRow(6);
-      }
-      if (isLg) {
-        setItemsInRow(5);
-      }
-      if (isMd) {
-        setItemsInRow(4);
-      }
-      if (isSm) {
-        setItemsInRow(3);
-      }
-    }, [isXl, isLg, isMd, isSm]),
-    100
-  );
+  const handleWindowResize = debounce(() => {
+    if (isXl) {
+      setItemsInRow(6);
+    }
+    if (isLg) {
+      setItemsInRow(5);
+    }
+    if (isMd) {
+      setItemsInRow(4);
+    }
+    if (isSm) {
+      setItemsInRow(3);
+    }
+  }, 100);
 
   /**
    * Set the default slider items count
@@ -71,9 +68,9 @@ const SliderRow = ({
   /**
    * Toggle the expanded info density state
    */
-  const toggleExpandedInfoDensity = useCallback((isExpanded: boolean) => {
+  const toggleExpandedInfoDensity = (isExpanded: boolean) => {
     setRowHasExpandedInfoDensity(isExpanded);
-  }, []);
+  };
 
   return (
     <div className="slider-row title-card">

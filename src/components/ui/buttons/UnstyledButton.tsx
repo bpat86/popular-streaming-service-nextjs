@@ -12,12 +12,11 @@ export interface UnstyledButtonProps
 const UnstyledButton = ({
   children,
   className,
-  onClick,
   type,
   ...restProps
 }: UnstyledButtonProps) => {
   return (
-    <button type={type} className={className} onClick={onClick} {...restProps}>
+    <button type={type} className={className} {...restProps}>
       {children}
     </button>
   );

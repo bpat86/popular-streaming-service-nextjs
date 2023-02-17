@@ -171,7 +171,7 @@ const TitleCardContainer = forwardRef(
     ) => {
       const { isHovering, isModalOpen } = scopeRef.current;
       if (!hoverTimeoutIdRef.current && !isModalOpen && isHovering) {
-        const delay = usePreviewModalStore.getState().wasOpen ? 200 : 400;
+        const delay = usePreviewModalStore.getState().wasOpen ? 200 : 500;
         hoverTimeoutIdRef.current = window.setTimeout(() => {
           return openPreviewModal({
             titleCardRef: titleCardRef as MutableRefObject<HTMLDivElement>,
