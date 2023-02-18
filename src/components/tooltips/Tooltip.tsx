@@ -2,6 +2,7 @@ import { ReactNode, useContext, useRef } from "react";
 
 import InteractionContext from "@/context/InteractionContext";
 import { useHover } from "@/hooks/useHover";
+import { AnimatePresenceWrapper } from "@/lib/AnimatePresenceWrapper";
 import clsxm from "@/lib/clsxm";
 
 import TooltipContainer from "./TooltipContainer";
@@ -26,11 +27,13 @@ const Tooltip = ({
   // Render the tooltip
   return (
     <div ref={wrapperRef} className={clsxm("relative", className)}>
-      {isHovering && tooltipsAreEnabled() && (
-        <TooltipContainer key={text} ref={wrapperRef} showCaret={showCaret}>
-          {text}
-        </TooltipContainer>
-      )}
+      <AnimatePresenceWrapper>
+        {isHovering && tooltipsAreEnabled() && (
+          <TooltipContainer key={text} ref={wrapperRef} showCaret={showCaret}>
+            {text}
+          </TooltipContainer>
+        )}
+      </AnimatePresenceWrapper>
       {children}
     </div>
   );

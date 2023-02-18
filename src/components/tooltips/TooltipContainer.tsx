@@ -26,7 +26,9 @@ const TooltipContainer = forwardRef(
         !wrapperRect ||
         !portalRect
       )
-        return { opacity: 0 };
+        return {
+          opacity: 0,
+        };
       // Get wrapper and tooltip container dimensions and offsets
       const topOffset = wrapperRect.top + window.scrollY,
         rightOffset = document.body.clientWidth - portalRect.right,
@@ -49,7 +51,7 @@ const TooltipContainer = forwardRef(
           x: `${leftX}px`,
           zIndex: 9999999,
           width: `${portalRect.width}px`,
-          opacity: 1,
+          opacity: portalRect.x ? 1 : 0,
         };
       }
       // Return the styles if the tooltip is offscreen to the right
@@ -59,7 +61,7 @@ const TooltipContainer = forwardRef(
           x: `${rightX}px`,
           zIndex: 9999999,
           width: `${portalRect.width}px`,
-          opacity: 1,
+          opacity: portalRect.x ? 1 : 0,
         };
       }
       // Return the default tooltip styles
@@ -68,7 +70,7 @@ const TooltipContainer = forwardRef(
         x: `${x}px`,
         zIndex: 9999999,
         width: `${portalRect.width}px`,
-        opacity: 1,
+        opacity: portalRect.x ? 1 : 0,
       };
     };
 
@@ -104,7 +106,7 @@ const TooltipContainer = forwardRef(
         return {
           x: `${leftX}px`,
           width: `${wrapperRect.width}px`,
-          opacity: 1,
+          opacity: portalRect.x ? 1 : 0,
         };
       }
       // Return the styles if the tooltip is offscreen to the right
@@ -112,13 +114,13 @@ const TooltipContainer = forwardRef(
         return {
           x: `${-rightX}px`,
           width: `${wrapperRect.width}px`,
-          opacity: 1,
+          opacity: portalRect.x ? 1 : 0,
         };
       }
       // Return the default caret styles
       return {
         width: `${wrapperRect.width}px`,
-        opacity: 1,
+        opacity: portalRect.x ? 1 : 0,
       };
     };
 
