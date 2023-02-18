@@ -44,7 +44,6 @@ const Slider = ({
   toggleExpandedInfoDensity,
 }: SliderProps) => {
   const [isAnimating, setIsAnimating] = useState<boolean>(false);
-  const [isPanning, setIsPanning] = useState<boolean>(false);
   const [itemsInRow, setItemsInRow] = useState<number>(6);
   const [lowestVisibleItemIndex, setLowestVisibleItemIndex] =
     useState<number>(0);

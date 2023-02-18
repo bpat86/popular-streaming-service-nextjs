@@ -326,7 +326,7 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
         if (modalRect) {
           const leftOffset = titleCardRect.left + window.scrollX,
             widthOffset = (modalRect.width - titleCardRect.width) / 2,
-            screenEdgeDistance = leftOffset - widthOffset < 48,
+            screenEdgeDistance = leftOffset - widthOffset < 60,
             left =
               document.body.clientWidth -
                 (leftOffset + titleCardRect.width + widthOffset) <

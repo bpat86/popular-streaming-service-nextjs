@@ -1,19 +1,15 @@
 import { MutableRefObject, useCallback, useEffect, useState } from "react";
 
-export const useHover = <
-  T extends {
-    ref?: MutableRefObject<HTMLDivElement | null>;
-  }
->({
-  ref,
-}: T) => {
-  const [hover, setHover] = useState<boolean>(false);
+export const useHover = <T extends MutableRefObject<HTMLDivElement | null>>(
+  ref: T
+) => {
+  const [isHovering, setIsHovering] = useState<boolean>(false);
 
   /**
    * If the user hovers for the full duration of the `delay` value
    */
   const handleMouseEnter = useCallback(() => {
-    setHover(true);
+    setIsHovering(true);
   }, []);
 
   /**
@@ -21,11 +17,11 @@ export const useHover = <
    * hovers out before `delay`.
    */
   const handleMouseLeave = useCallback(() => {
-    setHover(false);
+    setIsHovering(false);
   }, []);
 
   useEffect(() => {
-    const element = ref?.current;
+    const element = ref.current;
     if (element) {
       (element as HTMLDivElement).addEventListener(
         "mouseover",
@@ -48,5 +44,5 @@ export const useHover = <
     }
   }, [ref, handleMouseEnter, handleMouseLeave]);
 
-  return [hover] as const;
+  return isHovering;
 };
