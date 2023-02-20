@@ -80,8 +80,11 @@ async function getBillboardMedia({
  * Fetch the active profile's media list items.
  * This function will return an array of objects.
  */
-function getProfileMediaList({ profile }: { profile: any }) {
-  const { mediaList } = profile;
+function getProfileMediaList({
+  profile: { mediaList },
+}: {
+  profile: { mediaList: any };
+}) {
   let profileMediaList = [] as IMediaItemWithUserPreferences[];
   // Add the liked items into a new media array and assign new keys
   mediaList?.map(
@@ -113,8 +116,6 @@ function getProfileMediaList({ profile }: { profile: any }) {
 /**
  * Fetch the active profile's liked media items.
  * This function will return an array of objects.
- * @param {Object} profile
- * @returns
  */
 function getProfileLikedMedia({
   profile: { likedMedia },
@@ -152,8 +153,6 @@ function getProfileLikedMedia({
 /**
  * Fetch the active profile's disliked media items.
  * This function will return an array of objects.
- * @param {Object} profile
- * @returns
  */
 function getProfileDislikedMedia({
   profile: { dislikedMedia },

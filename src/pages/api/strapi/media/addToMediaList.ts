@@ -1,8 +1,7 @@
 import axios from "axios";
 
-import { withSessionRoute } from "@/middleware/withSession";
-
 import { API_URL } from "@/config/index";
+import { withSessionRoute } from "@/middleware/withSession";
 
 export default withSessionRoute(async (req, res) => {
   if (req.method === "POST") {
@@ -49,7 +48,7 @@ export default withSessionRoute(async (req, res) => {
       if (addMediaToListResponse.status === 200) {
         res.status(200).json(data);
       }
-    } catch (error) {
+    } catch (error: any) {
       // Send error repsonses to the frontend for user feedback
       res.status(error.response.data.error.status).json({
         message: error.response.data.error.message,

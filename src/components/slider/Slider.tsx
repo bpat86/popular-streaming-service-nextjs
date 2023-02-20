@@ -259,7 +259,7 @@ const Slider = ({
        * If looping is disabled or the slider only has one page,
        * return the slider items without any modifications.
        */
-      if (getTotalPages() < 0 || !enableLooping) {
+      if (getTotalPages() <= 1 || !enableLooping) {
         return wrapSliderItems(visibleItems, lowestIndex);
       }
       /**

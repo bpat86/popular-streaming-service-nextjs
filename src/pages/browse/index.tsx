@@ -1,4 +1,4 @@
-// Middleware
+import { SWRConfig } from "swr";
 
 import BrowsePage from "@/components/pages/BrowsePage";
 import { withSessionSsr } from "@/middleware/withSession";
@@ -22,11 +22,13 @@ const Index = ({ initialUser }: IndexProps) => {
     title: "Home",
   };
   return (
-    <BrowsePage
-      pageAPI={pageProps.page}
-      pageTitle={pageProps.title}
-      initialUser={initialUser}
-    />
+    <SWRConfig value={{ provider: () => new Map() }}>
+      <BrowsePage
+        pageAPI={pageProps.page}
+        pageTitle={pageProps.title}
+        initialUser={initialUser}
+      />
+    </SWRConfig>
   );
 };
 export default Index;

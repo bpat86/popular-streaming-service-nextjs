@@ -4,16 +4,17 @@ import TooltipPortal from "@/components/tooltips/TooltipPortal";
 import { useRect } from "@/hooks/useRect";
 import { MotionDivWrapper } from "@/lib/MotionDivWrapper";
 
-interface TooltipContainerProps {
+type TooltipContainerProps = {
   children: string | ReactNode;
   showCaret: boolean;
-}
+};
 
 const TooltipContainer = forwardRef(
   ({ children, showCaret }: TooltipContainerProps, ref) => {
     const wrapperRef = ref as RefObject<HTMLDivElement>;
     const portalRef = useRef<HTMLDivElement>(null);
-    const wrapperRect = useRect(wrapperRef);
+    const wrapperRect = wrapperRef.current?.getBoundingClientRect();
+    // const wrapperRect = useRect(wrapperRef);
     const portalRect = useRect(portalRef);
 
     /**
