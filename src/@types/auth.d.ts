@@ -33,7 +33,7 @@ export type AuthContextType = {
   registrationStepFive: (user: IUser) => void;
   registrationCompleted: (user: IUser) => void;
   login: (user: IUser) => void;
-  logout: () => void;
+  logout: () => Promise<void>;
   isLoggedIn: () => Promise<void>;
   createOrder: (user: IUser) => void;
 };

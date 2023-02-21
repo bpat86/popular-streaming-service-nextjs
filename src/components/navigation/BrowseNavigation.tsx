@@ -1,4 +1,3 @@
-// Hooks
 import {
   motion,
   useMotionTemplate,

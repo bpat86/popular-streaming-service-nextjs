@@ -29,7 +29,8 @@
     "src/components/slider/title-card/TitleCard.tsx",
     "src/components/slider/Slider.tsx",
     "src/pages/_app.tsx",
-    "src/middleware/withSession.ts"
+    "src/middleware/withSession.ts",
+    "src/components/navigation/HomeNavigation.js"
   ],
   "exclude": ["node_modules"],
   "moduleResolution": ["node_modules", ".next", "node"]

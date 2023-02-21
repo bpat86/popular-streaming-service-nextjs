@@ -5,7 +5,7 @@ import { createContext, ReactNode, useState } from "react";
 import { AuthContextType, IUser } from "@/@types/auth";
 import { NEXT_URL } from "@/config/index";
 
-const AuthContext = createContext<AuthContextType | null>(null);
+const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
 type AuthProviderProps = {
   children: ReactNode;
