@@ -9,7 +9,7 @@ import {
 
 import Footer from "@/components/footers/MainFooter";
 import { transitions } from "@/components/motion/transitions";
-import MainNavigation from "@/components/navigation/MainNavigation";
+import BrowseNavigation from "@/components/navigation/BrowseNavigation";
 import PageTransitionsLayout from "@/components/pages/layouts/PageTransitionsLayout";
 import InteractionContext from "@/context/InteractionContext";
 import clsxm from "@/lib/clsxm";
@@ -39,7 +39,7 @@ const BrowseLayout = forwardRef(
           variants={isWatchModeEnabled() && transitions.fadeOutZoomIn}
         >
           <div ref={layoutWrapperRef} className="bd">
-            <MainNavigation {...rest} />
+            <BrowseNavigation {...rest} />
             <div className="main-view">
               <div className="main-view-content is-fullbleed">
                 <main

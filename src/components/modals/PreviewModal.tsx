@@ -181,9 +181,6 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
      */
     const setDetailModalParentStyles = () => {
       const layoutRef = layoutWrapperRef.current;
-      const mainNavigation = document.querySelector(
-        ".main-navigation-content"
-      ) as HTMLDivElement;
       const mainViewContent = document.querySelector(
         ".main-view-content"
       ) as HTMLDivElement;
@@ -197,9 +194,6 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
             scrollPosition: scrollPos,
           }),
           mainViewContent?.classList.add("has-open-jaw"),
-          (mainNavigation.style.backgroundColor = "rgb(20, 20, 20)"),
-          (mainNavigation.style.top = "0px"),
-          (mainNavigation.style.position = "fixed"),
           (layoutRef.style.top = `-${scrollPos}px`),
           (layoutRef.style.position = "fixed"),
           layoutRef.setAttribute("isDetailModalRootStyleSet", "true");
@@ -226,16 +220,12 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
      */
     const resetDetailModalParentStyles = () => {
       const layoutRef = layoutWrapperRef.current;
-      const mainNavigation = document.querySelector(
-        ".main-navigation-content"
-      ) as HTMLDivElement;
       const mainViewContent = document.querySelector(
         ".main-view-content"
       ) as HTMLDivElement;
       if (layoutRef && layoutRef.hasAttribute("isDetailModalRootStyleSet")) {
         mainViewContent.classList.remove("has-open-jaw"),
-          ((mainNavigation.style.backgroundColor = ""),
-          (layoutRef.style.top = ""),
+          ((layoutRef.style.top = ""),
           (layoutRef.style.position = "static"),
           restoreScrollPositionOnUnmount(),
           layoutRef.removeAttribute("isDetailModalRootStyleSet"));

@@ -1,10 +1,4 @@
-import {
-  KeyboardEvent,
-  MouseEvent,
-  MutableRefObject,
-  ReactNode,
-  useRef,
-} from "react";
+import { KeyboardEvent, MouseEvent, ReactNode, useRef } from "react";
 
 import UnstyledLink from "@/components/ui/links/UnstyledLink";
 
@@ -13,8 +7,7 @@ type TitleCardLinkProps = {
   className?: string;
   itemTabbable?: boolean;
   onClick: (
-    e: MouseEvent<HTMLAnchorElement> | KeyboardEvent<HTMLAnchorElement>,
-    ref: MutableRefObject<HTMLAnchorElement>
+    e: MouseEvent<HTMLAnchorElement> | KeyboardEvent<HTMLAnchorElement>
   ) => void;
   onFocus: () => void;
   watchURL: string;
@@ -35,9 +28,7 @@ const TitleCardLink = ({
       className={className}
       tabIndex={itemTabbable ? 0 : -1}
       aria-hidden={itemTabbable ? false : true}
-      onClick={(e) =>
-        onClick(e, watchLinkAnchorRef as MutableRefObject<HTMLAnchorElement>)
-      }
+      onClick={onClick}
       onFocus={onFocus}
       href={watchURL}
     >

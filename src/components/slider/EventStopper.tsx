@@ -7,9 +7,18 @@ type EventStopperProps = {
 const EventStopper = ({ children }: EventStopperProps) => {
   return (
     <div
-      onPointerDownCapture={(e) => e.preventDefault()}
-      onTouchStartCapture={(e) => e.preventDefault()}
-      onMouseDownCapture={(e) => e.preventDefault()}
+      onPointerDownCapture={(e) => {
+        e.preventDefault();
+        e.preventDefault();
+      }}
+      onTouchStartCapture={(e) => {
+        e.preventDefault();
+        e.preventDefault();
+      }}
+      onMouseDownCapture={(e) => {
+        e.preventDefault();
+        e.preventDefault();
+      }}
     >
       {children}
     </div>

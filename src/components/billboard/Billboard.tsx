@@ -254,7 +254,7 @@ const Billboard = forwardRef<HTMLDivElement, BillboardProps>(
                 </div>
                 <div className="embedded-components button-layer">
                   <AnimatePresenceWrapper>
-                    {!(isDetailModal() && !videoCompleted) && (
+                    {!(isDetailModal() && !videoCompleted) && videoStarted && (
                       <MediaControls
                         audioEnabled={audioEnabled()}
                         replayVideo={replayVideo}
@@ -274,7 +274,10 @@ const Billboard = forwardRef<HTMLDivElement, BillboardProps>(
               <Info
                 ref={infoRef}
                 canAnimate={
-                  videoCanPlayThrough && !videoCompleted && textIsAnimating
+                  !videoCompleted &&
+                  videoStarted &&
+                  videoCanPlayThrough &&
+                  textIsAnimating
                 }
                 videoPlayback={getVideoPlayback()}
                 handleWatchNow={handleWatchNow}

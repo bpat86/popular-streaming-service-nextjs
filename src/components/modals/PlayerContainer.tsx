@@ -323,7 +323,7 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
                 )}
               </div>
               <AnimatePresenceWrapper>
-                {showVideo && (
+                {videoStarted && showVideo && (
                   <MediaControls
                     audioEnabled={audioEnabled()}
                     isDetailModal={isDetailModal}
@@ -371,7 +371,7 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
                 />
               </MotionDivWrapper>
               <AnimatePresenceWrapper>
-                {showVideo && (
+                {videoStarted && showVideo && (
                   <MediaControls
                     audioEnabled={audioEnabled()}
                     isDetailModal={isDetailModal}

@@ -4,7 +4,7 @@ const LoadingItem = ({ width }: { width?: number }) => {
       className="slider-item slider-item-"
       // style={{ width: `${width}%` }}
     >
-      <div className="boxart-size-16x9 slider-refocus bg-zinc-800"></div>
+      <div className="boxart-size-16x9 slider-refocus bg-zinc-800" />
     </div>
   );
 };

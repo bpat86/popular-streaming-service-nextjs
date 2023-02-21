@@ -128,6 +128,7 @@ const Slider = ({
    * Handle the slider item focus event
    */
   const handleRowItemFocus = (idx: number) => {
+    // console.log("handleRowItemFocus", idx);
     setActiveRowItemIndex(idx);
   };
 
@@ -726,6 +727,7 @@ const Slider = ({
             </div>
           </EventStopper>
         </MotionDivWrapper>
+
         {/* Next button */}
         {totalItems > itemsInRow &&
           !(isPreviewModalOpen() && rowHasExpandedInfoDensity) && (

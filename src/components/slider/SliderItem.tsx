@@ -27,18 +27,19 @@ const SliderItem = ({
   const animationProps = () => {
     if (isAnimating) return {};
     return {
+      initial: false,
       exit: {
         scaleX: 0,
         scaleY: 0,
         opacity: 0,
         transition: {
-          delay: 0.12,
+          delay: 0.1,
           opacity: {
             delay: 0.3,
-            duration: 0.36,
+            duration: 0.4,
             ease: "linear",
           },
-          duration: 0.36,
+          duration: 0.4,
           ease: [0.21, 0, 0.07, 1],
         },
       },
@@ -53,7 +54,7 @@ const SliderItem = ({
           : `slider-item-`,
         itemPosition && `${itemPosition}`,
       ])}
-      // {...animationProps()}
+      {...animationProps()}
     >
       {fullDataLoaded ? (
         children
