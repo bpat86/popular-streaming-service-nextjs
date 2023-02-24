@@ -59,39 +59,33 @@ const CTAButtons = ({
             mediaId: `${model?.videoModel?.identifiers?.mediaType}-${model?.videoModel?.identifiers?.id}`,
           },
         }}
-        legacyBehavior={true}
-        prefetch={false}
+        className="focus:focus-outline flex items-center justify-center rounded-md"
+        onClick={handleWatchNowClick}
+        tabIndex={0}
       >
-        <a
-          className="focus:focus-outline flex items-center justify-center rounded-md"
-          onClick={handleWatchNowClick}
-          tabIndex={0}
-          role="link"
+        <button
+          type="button"
+          className="play focus:focus-outline flex h-8 items-center justify-center rounded-md bg-white px-2 text-xs font-bold text-black shadow-sm transition duration-300 ease-out hover:bg-opacity-80 sm:h-9 sm:text-sm md:py-0 lg:h-12 lg:px-3 lg:text-lg 2xl:h-12 2xl:px-5 2xl:text-xl"
+          tabIndex={-1}
         >
-          <button
-            type="button"
-            className="play focus:focus-outline flex h-8 items-center justify-center rounded-md bg-white px-2 text-xs font-bold text-black shadow-sm transition duration-300 ease-out hover:bg-opacity-80 sm:h-9 sm:text-sm md:py-0 lg:h-10 lg:px-3 lg:text-lg 2xl:h-12 2xl:px-5 2xl:text-xl"
-            tabIndex={-1}
+          <span className="sr-only">Watch now</span>
+          <svg
+            className="h-7 w-7 sm:h-8 sm:w-8 lg:h-9 lg:w-9 2xl:h-11 2xl:w-11"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 26 26"
           >
-            <span className="sr-only">Watch now</span>
-            <svg
-              className="h-7 w-7 sm:h-8 sm:w-8 lg:h-9 lg:w-9 2xl:h-11 2xl:w-11"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 26 26"
-            >
-              <polygon
-                className="play-btn__svg"
-                points="9.33 6.69 9.33 19.39 19.3 13.04 9.33 6.69"
-              />
-            </svg>
-            <span className="ml-1 mr-1 2xl:mr-2">Play</span>
-          </button>
-        </a>
+            <polygon
+              className="play-btn__svg"
+              points="9.33 6.69 9.33 19.39 19.3 13.04 9.33 6.69"
+            />
+          </svg>
+          <span className="ml-1 mr-1 2xl:mr-2">Play</span>
+        </button>
       </Link>
       <button
         type="button"
         data-uia="billboard-show-more-info"
-        className="focus:focus-outline ml-4 flex h-8 items-center justify-center rounded-md bg-zinc-500 bg-opacity-60 px-2 text-xs font-bold text-white shadow-sm transition duration-300 ease-out hover:bg-opacity-70 sm:h-9 sm:text-sm md:py-0 lg:h-10 lg:px-3 lg:text-lg 2xl:h-12 2xl:px-5 2xl:text-xl"
+        className="focus:focus-outline ml-4 flex h-8 items-center justify-center rounded-md bg-zinc-500 bg-opacity-60 px-2 text-xs font-bold text-white shadow-sm transition duration-300 ease-out hover:bg-opacity-70 sm:h-9 sm:text-sm md:py-0 lg:h-12 lg:px-3 lg:text-lg 2xl:h-12 2xl:px-5 2xl:text-xl"
         onClick={handleClick}
       >
         <span className="sr-only">More Info</span>

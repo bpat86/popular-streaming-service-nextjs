@@ -1,3 +1,5 @@
+import { MouseEvent } from "react";
+
 import clsxm from "@/lib/clsxm";
 import { MotionDivWrapper } from "@/lib/MotionDivWrapper";
 import { MotionPathWrapper } from "@/lib/MotionPathWrapper";
@@ -24,6 +26,12 @@ const MediaControls = ({
   videoCanPlayThrough,
   videoHasPlayedAtLeastOnce,
 }: MediaControlsProps) => {
+  const handleClick = (e: MouseEvent<Element>) => {
+    e.stopPropagation();
+    !videoCompleted && videoCanPlayThrough
+      ? toggleAudio()
+      : videoHasPlayedAtLeastOnce && replayVideo();
+  };
   return (
     <MotionDivWrapper
       initial={{ opacity: 0 }}
@@ -53,11 +61,7 @@ const MediaControls = ({
               ) && "hidden",
             ]
           )}
-          onClick={() =>
-            !videoCompleted && videoCanPlayThrough
-              ? toggleAudio()
-              : videoHasPlayedAtLeastOnce && replayVideo()
-          }
+          onClick={handleClick}
           tabIndex={0}
         >
           <>

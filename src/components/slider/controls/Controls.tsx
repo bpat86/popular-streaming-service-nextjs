@@ -10,6 +10,7 @@ const SliderControls = ({
   enablePeek,
   hasMovedOnce,
   isAnimating,
+  modalOpen,
   moveDirection,
   onClick,
   onKeyDown,
@@ -51,12 +52,12 @@ const SliderControls = ({
           "flex h-full w-full cursor-pointer items-center justify-center transition duration-100 ease-out",
           [
             enablePeek
-              ? "bg-black bg-opacity-50 group-hover:bg-opacity-80 group-focus:bg-opacity-80"
-              : "bg-transparent group-hover:bg-black group-hover:bg-opacity-80 group-focus:bg-black group-focus:bg-opacity-80",
+              ? "bg-zinc-900 bg-opacity-50 group-hover:bg-opacity-75 group-focus:bg-opacity-75"
+              : "group-hover:bg-bg-zinc-900 bg-transparent group-hover:bg-opacity-75 group-focus:bg-zinc-900 group-focus:bg-opacity-75",
           ]
         )}
       >
-        <Icon moveDirection={moveDirection} />
+        {!modalOpen && <Icon moveDirection={moveDirection} />}
       </div>
     </span>
   );

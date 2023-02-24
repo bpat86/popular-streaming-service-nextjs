@@ -7,7 +7,6 @@ import { IMediaItemWithUserPreferences } from "@/pages/api/tmdb/types";
 type SliderItemProps = {
   children: ReactNode;
   model: IMediaItemWithUserPreferences;
-  isAnimating: boolean;
   fullDataLoaded: boolean;
   inViewport: boolean;
   itemPosition: string;
@@ -16,36 +15,10 @@ type SliderItemProps = {
 
 const SliderItem = ({
   children,
-  isAnimating,
   fullDataLoaded,
   itemPosition,
   itemPositionIdx,
 }: Partial<SliderItemProps>) => {
-  /**
-   * Shrink removal animation when item is removed from user list
-   */
-  const animationProps = () => {
-    if (isAnimating) return {};
-    return {
-      initial: false,
-      exit: {
-        scaleX: 0,
-        scaleY: 0,
-        opacity: 0,
-        transition: {
-          delay: 0.1,
-          opacity: {
-            delay: 0.3,
-            duration: 0.4,
-            ease: "linear",
-          },
-          duration: 0.4,
-          ease: [0.21, 0, 0.07, 1],
-        },
-      },
-    };
-  };
-
   return (
     <MotionDivWrapper
       className={clsxm("slider-item", [
@@ -54,7 +27,6 @@ const SliderItem = ({
           : `slider-item-`,
         itemPosition && `${itemPosition}`,
       ])}
-      {...animationProps()}
     >
       {fullDataLoaded ? (
         children

@@ -30,6 +30,7 @@ export type MoveDirectionProps =
 
 export type SliderControlsProps = {
   enablePeek: boolean;
+  modalOpen: boolean;
   hasMovedOnce: boolean;
   isAnimating: boolean;
   moveDirection: string;

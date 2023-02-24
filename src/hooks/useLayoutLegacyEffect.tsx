@@ -11,8 +11,7 @@ const useLayoutLegacyEffect = (cb: () => void, deps: string[]) => {
     }
 
     return cb();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, deps);
+  }, [deps, cb]);
 };
 
 export default useLayoutLegacyEffect;

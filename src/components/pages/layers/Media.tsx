@@ -1,6 +1,6 @@
 import debounce from "lodash/debounce";
 import { useRouter } from "next/router";
-import { forwardRef, MutableRefObject, useEffect, useRef } from "react";
+import { forwardRef, MutableRefObject, useLayoutEffect, useRef } from "react";
 
 import BillboardContainer from "@/components/billboard/BillboardContainer";
 import LoadingSpinner from "@/components/loading/LoadingSpinner";
@@ -48,9 +48,9 @@ const Media = forwardRef(({ pageAPI }: MediaContainerProps, ref) => {
         (timerIdRef.current = 0);
       isPreviewModalOpen() ||
         (style.pointerEvents !== "none" && (style.pointerEvents = "none")),
-        setTimeout(() => {
+        (timerIdRef.current = window.setTimeout(() => {
           style.pointerEvents = "";
-        }, 100);
+        }, 100));
     },
     100,
     { maxWait: 100, leading: true, trailing: true }
@@ -59,7 +59,7 @@ const Media = forwardRef(({ pageAPI }: MediaContainerProps, ref) => {
   /**
    * Disable hover while scrolling
    */
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (typeof window !== "undefined") {
       window.addEventListener("scroll", onScroll);
       return () => {
@@ -74,7 +74,7 @@ const Media = forwardRef(({ pageAPI }: MediaContainerProps, ref) => {
   if (mediaError) {
     return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center font-medium text-white">
-        <p>{`${mediaError}`}</p>
+        <p>{mediaError.toString()}</p>
       </div>
     );
   }
@@ -84,7 +84,7 @@ const Media = forwardRef(({ pageAPI }: MediaContainerProps, ref) => {
    */
   if (!media || fetchingMedia) {
     return (
-      <div className="flex min-h-screen w-full">
+      <div className="mt-[68px] min-h-screen w-full">
         <LoadingSpinner />
       </div>
     );

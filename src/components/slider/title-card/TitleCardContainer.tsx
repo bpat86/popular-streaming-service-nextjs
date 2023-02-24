@@ -55,12 +55,7 @@ const TitleCardContainer = forwardRef(
      * Determine if a preview modal is currently open
      */
     const isPreviewModalOpen = () => {
-      const previewModalStateById =
-        usePreviewModalStore.getState().previewModalStateById;
-      return !!(
-        previewModalStateById &&
-        Object.values(previewModalStateById).some(({ isOpen }) => isOpen)
-      );
+      return usePreviewModalStore.getState().isPreviewModalOpen();
     };
 
     /**
@@ -127,7 +122,8 @@ const TitleCardContainer = forwardRef(
       const mouseLeave =
         !e.relatedTarget ||
         e.relatedTarget.location ||
-        (e.relatedTarget && !titleCardRef.current?.contains(e.relatedTarget));
+        (titleCardRef.current &&
+          !titleCardRef.current.contains(e.relatedTarget));
       // Process the mouse leave event
       if (mouseLeave) {
         handleLeave();
@@ -141,8 +137,11 @@ const TitleCardContainer = forwardRef(
       e: MouseEvent<HTMLDivElement>,
       titleCardRef: RefObject<HTMLDivElement>
     ) => {
-      const { isHovering } = scopeRef.current;
-      isHovering || isPreviewModalOpen() || handleMouseEnter(e, titleCardRef);
+      const { isHovering, isModalOpen } = scopeRef.current;
+      isHovering ||
+        isModalOpen ||
+        isPreviewModalOpen() ||
+        handleMouseEnter(e, titleCardRef);
     };
 
     /**
@@ -157,24 +156,25 @@ const TitleCardContainer = forwardRef(
      * Clear the delays and hover state on mouse leave.
      */
     const handleLeave = () => {
+      clearDelays();
       scopeRef.current = {
         ...scopeRef.current,
         isHovering: false,
         isModalOpen: false,
       };
-      clearDelays();
     };
 
     /**
      * Queue the preview modal to open.
      */
     const queuePreviewModalOpen = (titleCardRef: RefObject<HTMLDivElement>) => {
+      let delay;
       const { isHovering, isModalOpen } = scopeRef.current;
-      if (!hoverTimeoutIdRef.current && !isModalOpen && isHovering) {
-        const delay = usePreviewModalStore.getState().wasOpen ? 100 : 400;
+      if (isHovering && !isModalOpen && !hoverTimeoutIdRef.current) {
+        delay = usePreviewModalStore.getState().wasOpen ? 100 : 400;
         hoverTimeoutIdRef.current = window.setTimeout(() => {
-          return openPreviewModal({
-            titleCardRef: titleCardRef as RefObject<HTMLDivElement>,
+          openPreviewModal({
+            titleCardRef,
           });
         }, delay);
       }
@@ -195,24 +195,24 @@ const TitleCardContainer = forwardRef(
         window.addEventListener("resize", () => {
           handleWindowResize(titleCardRef.current);
         });
-      }
-      // Close all previously open preview modals
-      if (isPreviewModalOpen()) {
-        const previewModalStateById =
-          usePreviewModalStore.getState().previewModalStateById;
-        return (
-          previewModalStateById &&
-            Object.values(previewModalStateById)
-              .filter(({ isOpen }) => isOpen)
-              .map(({ videoId }) => videoId)
-              .forEach((videoId) => {
-                usePreviewModalStore.getState().setPreviewModalClose({
-                  closeWithoutAnimation: true,
-                  videoId,
-                });
-              }),
-          queuePreviewModalOpen(titleCardRef as RefObject<HTMLDivElement>)
-        );
+        // Close all previously open preview modals
+        if (isPreviewModalOpen()) {
+          const previewModalStateById =
+            usePreviewModalStore.getState().previewModalStateById;
+          return (
+            previewModalStateById &&
+              Object.values(previewModalStateById)
+                .filter(({ isOpen }) => isOpen)
+                .map(({ videoId }) => videoId)
+                .forEach((videoId) => {
+                  usePreviewModalStore.getState().setPreviewModalClose({
+                    closeWithoutAnimation: true,
+                    videoId,
+                  });
+                }),
+            queuePreviewModalOpen(titleCardRef)
+          );
+        }
       }
       // Open this titleCard as a preview modal
       !openDetailModal && (scopeRef.current.isModalOpen = true),
@@ -265,9 +265,15 @@ const TitleCardContainer = forwardRef(
         | KeyboardEvent<HTMLDivElement | HTMLAnchorElement>,
       titleCardRef: RefObject<HTMLDivElement>
     ) => {
-      if ((e.preventDefault(), clearDelays(), isPreviewModalOpen())) return;
+      if ((e.preventDefault(), !itemTabbable)) return;
+      if (
+        (e.preventDefault(),
+        hoverTimeoutIdRef.current && clearTimeout(hoverTimeoutIdRef.current),
+        isPreviewModalOpen())
+      )
+        return;
       openPreviewModal({
-        titleCardRef: titleCardRef as RefObject<HTMLDivElement>,
+        titleCardRef,
         openDetailModal: true,
       });
     };
@@ -275,12 +281,11 @@ const TitleCardContainer = forwardRef(
     return (
       <div ref={sliderItemRef} className="title-card-container">
         <TitleCard
-          key={`title-card-${model.uid}`}
+          // key={`title-card-${model.uid}`}
           className="title-card"
           id={model.videoModel.titleCardId}
           isDisliked={model.videoModel.isDisliked}
           imageKey={model.videoModel.imageKey}
-          inViewport={inViewport}
           itemTabbable={itemTabbable}
           onFocus={onFocus}
           onKeyDown={handleKeyDown}

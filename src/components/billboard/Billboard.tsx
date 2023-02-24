@@ -237,6 +237,7 @@ const Billboard = forwardRef<HTMLDivElement, BillboardProps>(
                   </div>
                 </div>
               )}
+
               <div className="motion-background-component bottom-layer full-screen">
                 <div className="hero-image-wrapper">
                   <Image
@@ -249,8 +250,11 @@ const Billboard = forwardRef<HTMLDivElement, BillboardProps>(
                     sizes="(max-width: 768px) 100vw, 50vw"
                     alt={model?.videoModel?.title || ""}
                   />
-                  <div className="trailer-vignette vignette-layer"></div>
-                  <div className="hero-vignette vignette-layer"></div>
+                  <div className="absolute -inset-px bg-zinc-900/40" />
+                  <div className="absolute -inset-px bg-gradient-to-b from-transparent via-transparent  to-zinc-900" />
+                  <div className="absolute -inset-px hidden bg-gradient-to-l from-transparent via-transparent to-zinc-900 lg:block" />
+                  <div className="trailer-vignette vignette-layer" />
+                  <div className="hero-vignette vignette-layer" />
                 </div>
                 <div className="embedded-components button-layer">
                   <AnimatePresenceWrapper>

@@ -1,5 +1,3 @@
-import { SWRConfig } from "swr";
-
 import BrowsePage from "@/components/pages/BrowsePage";
 import { withSessionSsr } from "@/middleware/withSession";
 import { parseCookies } from "@/utils/parseCookies";
@@ -22,13 +20,12 @@ const Index = ({ initialUser }: IndexProps) => {
     title: "Home",
   };
   return (
-    <SWRConfig value={{ provider: () => new Map() }}>
-      <BrowsePage
-        pageAPI={pageProps.page}
-        pageTitle={pageProps.title}
-        initialUser={initialUser}
-      />
-    </SWRConfig>
+    <BrowsePage
+      key={pageProps.page}
+      pageAPI={pageProps.page}
+      pageTitle={pageProps.title}
+      initialUser={initialUser}
+    />
   );
 };
 export default Index;

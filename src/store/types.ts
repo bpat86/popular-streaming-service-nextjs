@@ -39,9 +39,9 @@ export interface IVideoModel {
   }>;
   id?: number;
   identifiers?: {
-    uid: string;
-    id: number;
-    mediaType: string;
+    uid?: string | string[] | undefined;
+    id?: number;
+    mediaType?: string | string[] | undefined;
   };
   imageKey?: string;
   inMediaList?: boolean;
@@ -59,7 +59,7 @@ export interface IVideoModel {
     iso_639_1: string;
   }>;
   mediaListId?: number;
-  mediaType?: string;
+  mediaType?: string | string[] | undefined;
   mutateModalData?: (data: IPreviewModal) => void;
   mutateSliderData?: (data: any) => void;
   overview?: string | undefined;
@@ -78,8 +78,8 @@ export interface IVideoModel {
   title?: string;
   titleCardId?: string;
   titleCardRef?: MutableRefObject<HTMLDivElement> | undefined;
-  videoId?: string;
-  videoKey?: string;
+  videoId?: string | undefined;
+  videoKey?: string | undefined;
   videos?: {
     results: Array<{
       id?: string;
@@ -102,11 +102,11 @@ export interface IVideoModel {
 
 export interface IModel {
   animationContext?: string | undefined;
-  uid?: string;
+  uid?: string | string[] | undefined;
   id?: number;
   isMyListRow?: boolean;
   listContext?: string;
-  mediaType?: string;
+  mediaType?: string | string[] | undefined;
   model?: IMediaItem;
   rankNum?: number;
   rect?: DOMRect | undefined;
@@ -116,8 +116,8 @@ export interface IModel {
   sliderName?: string;
   titleCardRef?: MutableRefObject<HTMLDivElement> | undefined;
   imageKey?: string;
-  videoId?: string;
-  videoKey?: string;
+  videoId?: string | undefined;
+  videoKey?: string | undefined;
   videoModel?: IVideoModel;
   videos?: {
     results: Array<{
@@ -139,6 +139,9 @@ export interface IPreviewModal {
   animationContext?: string | undefined;
   billboardVideoMerchId?: string | undefined;
   closeWithoutAnimation?: boolean;
+  queryData?: {
+    [key: string]: any;
+  };
   individualState?: {
     billboardVideoMerchId?: string | undefined;
     closeWithoutAnimation?: boolean;
@@ -147,7 +150,7 @@ export interface IPreviewModal {
     isMyListRow?: boolean;
     listContext?: string | undefined;
     modalState?: string | undefined;
-    model: IModel | undefined;
+    model?: IModel | undefined;
     onPreviewModalClose?: () => void;
     scrollPosition?: number | undefined;
     sliderRow?: number;
@@ -198,6 +201,8 @@ export interface IInitialState {
 // Create the store.
 export interface PreviewModalStore extends IInitialState {
   isDetailModal: () => boolean;
+  isPreviewModalOpen: () => boolean;
+  previewModalStateByIdValues: () => IPreviewModal[] | undefined | null;
   setPreviewModalOpen: (payload: IPreviewModal) => void;
   setPreviewModalWasOpen: (payload: IInitialState) => void;
   setPreviewModalClose: (payload: IPreviewModal) => void;

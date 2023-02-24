@@ -1,5 +1,11 @@
 import Image from "next/image";
-import { forwardRef, MutableRefObject, useRef, useState } from "react";
+import {
+  forwardRef,
+  MouseEvent,
+  MutableRefObject,
+  useRef,
+  useState,
+} from "react";
 // import YouTube, { YouTubeProps } from "react-youtube";
 import { default as YouTubePlayer } from "react-player/youtube";
 
@@ -16,7 +22,7 @@ import VideoPlayer from "./player/VideoPlayer";
 
 type WatchNowProps = {
   id: number;
-  mediaType: string;
+  mediaType?: string;
 };
 
 type PlayerContainerProps = {
@@ -26,7 +32,7 @@ type PlayerContainerProps = {
   videoId?: string;
   imageKey?: string;
   title?: string;
-  identifiers?: any;
+  identifiers: IVideoModel["identifiers"];
   isMyListRow?: IVideoModel["isMyListRow"];
   inMediaList?: IVideoModel["inMediaList"];
   isAnimating?: boolean;
@@ -55,6 +61,7 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
       imageKey,
       title,
       identifiers,
+      identifiers: { mediaType, id } = {},
       isMyListRow,
       inMediaList,
       isAnimating,
@@ -159,6 +166,19 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
 
     const audioEnabled = () => {
       return muted;
+    };
+
+    /**
+     * Open a video in watch now mode
+     */
+    const handleWatchNowClick = (e: MouseEvent<Element>) => {
+      e.preventDefault();
+      if (mediaType && id) {
+        handleWatchNow({
+          id: Number(id),
+          mediaType: mediaType.toString(),
+        });
+      }
     };
 
     /**
@@ -390,7 +410,7 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
     };
 
     return (
-      <div className={className}>
+      <div className={className} onClick={handleWatchNowClick}>
         {videoId && (
           <VideoPlayer
             ref={playerRef}

@@ -1,10 +1,15 @@
 import Head from "next/head";
+import { ReactNode } from "react";
 
+import Footer from "@/components/footers/MainFooter";
 import AccountNavigation from "@/components/navigation/AccountNavigation";
 
-import Footer from "../registration/Footer";
+type MyAccountLayoutProps = {
+  title: string;
+  children: ReactNode;
+};
 
-const MyAccountLayout = (props) => {
+const MyAccountLayout = (props: MyAccountLayoutProps) => {
   const { title, children } = props;
 
   return (

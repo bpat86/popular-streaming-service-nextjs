@@ -21,7 +21,7 @@ type ButtonControlsProps = {
 const ButtonControls = forwardRef(
   (
     {
-      identifiers,
+      identifiers: { mediaType, id } = {},
       isMyListRow,
       inMediaList,
       isLiked,
@@ -50,7 +50,7 @@ const ButtonControls = forwardRef(
      */
     const handleWatchNowClick = (e: MouseEvent<Element>) => {
       e.preventDefault();
-      handleWatchNow(identifiers); // uid, id, mediaType
+      handleWatchNow({ id: Number(id), mediaType: mediaType?.toString() }); // uid, id, mediaType
     };
 
     return (
@@ -60,7 +60,7 @@ const ButtonControls = forwardRef(
           href={{
             pathname: "/watch/[mediaId]",
             query: {
-              mediaId: `${identifiers?.mediaType}-${identifiers?.id}`,
+              mediaId: `${mediaType?.toString()}-${id?.toString()}`,
             },
           }}
           onClick={handleWatchNowClick}

@@ -1,7 +1,5 @@
 import Image from "next/image";
 
-import clsxm from "@/lib/clsxm";
-
 type BoxArtProps = {
   alt?: string;
   className: string;
@@ -12,7 +10,7 @@ type BoxArtProps = {
 const BoxArt = ({ alt = "", className, imageKey, priority }: BoxArtProps) => {
   return (
     <Image
-      className={clsxm(className)}
+      className={className}
       src={`https://image.tmdb.org/t/p/${"w780" || "original"}${imageKey}`}
       alt={alt}
       sizes="(max-width: 768px) 100vw,

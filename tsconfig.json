@@ -30,7 +30,8 @@
     "src/components/slider/Slider.tsx",
     "src/pages/_app.tsx",
     "src/middleware/withSession.ts",
-    "src/components/navigation/HomeNavigation.js"
+    "src/components/navigation/HomeNavigation.js",
+    "src/middleware/useTitle.js"
   ],
   "exclude": ["node_modules"],
   "moduleResolution": ["node_modules", ".next", "node"]

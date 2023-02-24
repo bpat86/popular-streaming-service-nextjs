@@ -81,7 +81,7 @@ export const BrowseNavigation = ({
             )})`,
           }}
         >
-          <div className="max-w-screen-3xl relative mx-auto flex h-[68px] items-center justify-between px-6 sm:px-12 md:justify-start md:space-x-10">
+          <div className="relative mx-auto flex h-[68px] items-center justify-between px-6 sm:px-12 md:justify-start md:space-x-10">
             <div className="flex justify-start">
               <UnstyledLink href="/browse">
                 <Logo className="h-6 w-auto cursor-pointer text-netflix-red" />

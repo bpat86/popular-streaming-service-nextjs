@@ -33,13 +33,13 @@ import PlayerContainer from "./PlayerContainer";
 
 type PreviewModalProps = {
   previewModalState: {
-    isOpen: IPreviewModal["isOpen"];
-    modalState: IPreviewModal["modalState"];
-    model: IPreviewModal["model"];
-    mutateSliderData: IMedia["mutateMedia"];
-    scrollPosition: PreviewModalStore["scrollPosition"];
-    titleCardRect: IPreviewModal["titleCardRect"];
-    videoId: IPreviewModal["videoId"];
+    isOpen?: IPreviewModal["isOpen"];
+    modalState?: IPreviewModal["modalState"];
+    model?: IPreviewModal["model"];
+    mutateSliderData?: IMedia["mutateMedia"];
+    scrollPosition?: PreviewModalStore["scrollPosition"];
+    titleCardRect?: IPreviewModal["titleCardRect"];
+    videoId?: IPreviewModal["videoId"];
   };
 };
 
@@ -81,7 +81,8 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
     const modalRef = useRef<HTMLDivElement>(null);
     const modalInfoRef = useRef<HTMLDivElement>(null);
     const mediaButtonsRef = useRef<HTMLDivElement>(null);
-    const animationFrameId = useRef<number>(0);
+    const animationFrameId = useRef<number | null>(null);
+    const timerId = useRef<number | null>(null);
     // const willClose = useRef<boolean>(false);
     const [willClose, setWillClose] = useState<boolean>(false);
     const {
@@ -813,12 +814,6 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
             closeWithoutAnimation,
             videoId,
           });
-          // Set `wasOpen` true
-          usePreviewModalStore
-            .getState()
-            .setPreviewModalWasOpen({ wasOpen: true });
-          // Reset the router path to the default path
-          modalState === modalStateActions.DETAIL_MODAL && resetRoute();
           // Remove the preview modal's box shadow
           modalRef.current && (modalRef.current.style.boxShadow = "none");
           // Reset the document body styles if preview modal is a detail modal
@@ -827,7 +822,7 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
             (document.body.style.overflowY = "");
         });
       },
-      [modalState, videoId, resetRoute]
+      [modalState, videoId]
     );
 
     /**
@@ -887,7 +882,7 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
     /**
      * Trigger the modal to close when the close button is clicked
      */
-    const onCloseClick = (e: MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const onCloseClick = (e: MouseEvent<HTMLDivElement>) => {
       e && e.stopPropagation();
       handleCloseModal();
     };
@@ -895,7 +890,7 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
     /**
      * Trigger the modal to close when the close button is focused and the user clicks the enter key
      */
-    const onCloseKeyDown = (e: KeyboardEvent<HTMLButtonElement>) => {
+    const onCloseKeyDown = (e: KeyboardEvent) => {
       e.stopPropagation();
       e.key === "Enter" && handleCloseModal({ closeAll: true });
     };
@@ -1075,20 +1070,27 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
     // Cleanup
     useLayoutEffect(() => {
       if (!isPresent) {
-        setTimeout(() => {
-          // Remove preview modal from the react tree
-          safeToRemove();
-          usePreviewModalStore
-            .getState()
-            .setPreviewModalWasOpen({ wasOpen: false });
-        }, 233);
+        !timerId.current &&
+          (timerId.current = window.setTimeout(() => {
+            // Remove preview modal from the react tree
+            safeToRemove();
+            // Set was open state to false
+            usePreviewModalStore
+              .getState()
+              .setPreviewModalWasOpen({ wasOpen: false });
+          }, 0));
         // Cleanup
         return () => {
+          // Cancel pending timeouts
+          timerId.current && clearTimeout(timerId.current),
+            (timerId.current = null);
           // Cancel pending requests
           cancelRequest();
           // Remove detail modal parent styles
           modalState === modalStateActions.DETAIL_MODAL &&
             resetDetailModalParentStyles();
+          // Reset the router path to the default path
+          modalState === modalStateActions.DETAIL_MODAL && resetRoute();
           // Disable watch mode
           isWatchModeEnabled() && disableWatchMode();
         };
@@ -1194,7 +1196,7 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
               {isDetailModal && model ? (
                 <DetailInfo
                   ref={modalInfoRef}
-                  key={model.uid}
+                  key={`${model.uid}`}
                   cast={modalData?.videoModel?.cast}
                   crew={modalData?.videoModel?.crew}
                   genres={modalData?.videoModel?.genres}

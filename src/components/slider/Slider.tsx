@@ -10,6 +10,7 @@ import {
   useState,
 } from "react";
 import { flushSync } from "react-dom";
+import { useInView } from "react-intersection-observer";
 
 import { sliderActions } from "@/actions/Actions";
 import Controls from "@/components/slider/controls/Controls";
@@ -31,7 +32,6 @@ const Slider = ({
   sliderName,
   enablePeek,
   totalItems,
-  // itemsInRow,
   enableLooping,
   isMyListRow,
   listContext,
@@ -53,6 +53,9 @@ const Slider = ({
   const wrappedSliderItemsRef = useRef<Map<string, {}> | null>(null);
   const sliderIntervalIdRef = useRef<number | null>(null);
   const { isXl, isLg, isMd, isSm } = useWindowResize();
+  const [inViewRef, inView] = useInView({
+    threshold: 0.7,
+  });
 
   /**
    * Set default slider items count
@@ -424,18 +427,17 @@ const Slider = ({
         <SliderItem
           key={itemUid}
           fullDataLoaded={!!model?.backdrop_path}
-          isAnimating={isAnimating}
           itemPositionIdx={itemPosition ? itemPositionIdx : 0}
           itemPosition={itemPosition}
         >
           <TitleCardContainer
-            key={`title-card-container-${uid}`}
+            // key={`title-card-container-${uid}`}
             ref={(node: HTMLDivElement) => {
               const map = getItemRefsMap();
               node ? map.set(itemUid, node) : map.delete(itemUid);
             }}
             inViewport={inViewport}
-            itemTabbable={itemTabbable}
+            itemTabbable={inView ? itemTabbable : false}
             listContext={listContext}
             model={tcModel}
             myListRowItemsLength={myListRowItemsLength}
@@ -590,11 +592,14 @@ const Slider = ({
   /**
    * Synchronously update slider state when it shifts
    */
-  const onSliderMove = (lowestVisibleIdx: number) => {
-    flushSync(() => {
-      setHasMovedOnce(true);
-      setLowestVisibleItemIndex(lowestVisibleIdx);
-    });
+  const onSliderMove = (
+    lowestVisibleIdx: number,
+    moveDirection: MoveDirectionProps
+  ) => {
+    resetSliderPosition();
+    !hasMovedOnce && setHasMovedOnce(true);
+    flushSync(() => setLowestVisibleItemIndex(lowestVisibleIdx));
+    refocusAfterShift(moveDirection);
   };
 
   /**
@@ -635,7 +640,7 @@ const Slider = ({
         setIsAnimating(false);
         clearIntervals();
         node.focus();
-      }, 200);
+      }, 100);
     }
   };
 
@@ -656,9 +661,7 @@ const Slider = ({
     // When the slider animation ends, reset the slider position and refocus the slider item
     ontransitionend = (e) => {
       if (e.target === slider) {
-        resetSliderPosition();
-        onSliderMove(totalItemsCount); // Uses flushSync
-        refocusAfterShift(moveDirection);
+        onSliderMove(totalItemsCount, moveDirection);
         slider.classList.remove("animating");
       }
     };
@@ -692,7 +695,11 @@ const Slider = ({
 
   return (
     <div className="row-content slider-hover-trigger-layer w-full overflow-x-visible whitespace-nowrap">
-      <div id={`slider-${sliderNum}`} className="slider px-6 sm:px-12">
+      <div
+        ref={inViewRef}
+        id={`slider-${sliderNum}`}
+        className="slider px-6 sm:px-12"
+      >
         {/* Previous button */}
         {hasMovedOnce &&
           !(isPreviewModalOpen() && rowHasExpandedInfoDensity) && (
@@ -700,6 +707,7 @@ const Slider = ({
               enablePeek={enablePeek}
               hasMovedOnce={hasMovedOnce}
               isAnimating={isAnimating}
+              modalOpen={isPreviewModalOpen() && rowHasExpandedInfoDensity}
               moveDirection={sliderActions.MOVE_DIRECTION_PREV}
               onClick={advancePrev}
               onKeyDown={advancePrev}
@@ -727,19 +735,18 @@ const Slider = ({
             </div>
           </EventStopper>
         </MotionDivWrapper>
-
         {/* Next button */}
-        {totalItems > itemsInRow &&
-          !(isPreviewModalOpen() && rowHasExpandedInfoDensity) && (
-            <Controls
-              enablePeek={enablePeek}
-              hasMovedOnce={hasMovedOnce}
-              isAnimating={isAnimating}
-              moveDirection={sliderActions.MOVE_DIRECTION_NEXT}
-              onClick={advanceNext}
-              onKeyDown={advanceNext}
-            />
-          )}
+        {totalItems > itemsInRow && (
+          <Controls
+            enablePeek={enablePeek}
+            hasMovedOnce={hasMovedOnce}
+            isAnimating={isAnimating}
+            modalOpen={isPreviewModalOpen() && rowHasExpandedInfoDensity}
+            moveDirection={sliderActions.MOVE_DIRECTION_NEXT}
+            onClick={advanceNext}
+            onKeyDown={advanceNext}
+          />
+        )}
       </div>
     </div>
   );

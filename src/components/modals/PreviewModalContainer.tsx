@@ -16,7 +16,7 @@ import { IPreviewModal } from "@/store/types";
 import PreviewModal from "./PreviewModal";
 
 type PreviewModalContainerProps = {
-  children: any;
+  children: JSX.Element;
   mutateSliderData?: IPreviewModal["mutateMedia"];
 };
 
@@ -60,19 +60,18 @@ const PreviewModalContainer = forwardRef(
 
     /**
      * Get videoId from open modal state
-     * @returns {Number}
      */
     const getVideoId = useCallback(() => {
       const modal = openPreviewModalState();
-      return (modal && modal.videoId) || undefined;
+      return modal && modal.videoId ? modal.videoId : undefined;
     }, [openPreviewModalState]);
 
     /**
-     *
+     * Determine if the current route is a jbv route
      */
     const isJBVRoute = useCallback(() => {
       const jbv = router.query.jbv;
-      return !!jbv && !Number.isNaN(jbv);
+      return jbv && !Number.isNaN(jbv);
     }, [router.query.jbv]);
 
     /**
@@ -88,7 +87,7 @@ const PreviewModalContainer = forwardRef(
      * Close the preview modal
      */
     const closeModal = useCallback(
-      (videoId: keyof IPreviewModal) => {
+      (videoId: keyof IPreviewModal["videoId"]) => {
         const openModal =
           previewModalStateById === undefined
             ? ({} as IPreviewModal)
@@ -111,7 +110,7 @@ const PreviewModalContainer = forwardRef(
       Object.values(previewModalStateById)
         .filter(({ isOpen }) => isOpen)
         .forEach(({ videoId }) => {
-          closeModal(videoId as keyof IPreviewModal);
+          closeModal(videoId as keyof IPreviewModal["videoId"]);
         });
     }, [previewModalStateById, closeModal]);
 
@@ -128,7 +127,7 @@ const PreviewModalContainer = forwardRef(
           animationContext: modalStateActions.DETAIL_MODAL,
           queryData: {
             uid: router.query.jbv,
-            id: router.query.jbv,
+            id: Number(router.query.jbv),
             mediaType: router.query.type,
           },
           scrollPosition: window.scrollY,
@@ -136,18 +135,18 @@ const PreviewModalContainer = forwardRef(
           titleCardRect: undefined,
           videoPlayback: undefined,
           model: {
-            uid: router.query.jbv as string,
-            id: router.query.jbv as string,
-            mediaType: router.query.type as string,
+            uid: router.query.jbv,
+            id: Number(router.query.jbv),
+            mediaType: router.query.type,
             videoModel: {
               listContext: undefined,
-              id: router.query.jbv as string,
+              id: Number(router.query.jbv),
               identifiers: {
-                uid: router.query.jbv as string,
-                id: router.query.jbv as string,
-                mediaType: router.query.type as string,
+                uid: router.query.jbv,
+                id: Number(router.query.jbv),
+                mediaType: router.query.type,
               },
-              mediaType: router.query.type as string,
+              mediaType: router.query.type,
               rankNum: undefined,
               rect: undefined,
               rowNum: undefined,
@@ -156,16 +155,16 @@ const PreviewModalContainer = forwardRef(
               titleCardRef: undefined,
             },
           },
-          videoId: router.query.jbv as string,
+          videoId: router.query.jbv?.toString(),
           videoModel: {
             listContext: undefined,
-            id: router.query.jbv as string,
+            id: Number(router.query.jbv),
             identifiers: {
-              uid: router.query.jbv as string,
-              id: router.query.jbv as string,
-              mediaType: router.query.type as string,
+              uid: router.query.jbv,
+              id: Number(router.query.jbv),
+              mediaType: router.query.type,
             },
-            mediaType: router.query.type as string,
+            mediaType: router.query.type,
             rankNum: undefined,
             rect: undefined,
             rowNum: undefined,
@@ -174,9 +173,51 @@ const PreviewModalContainer = forwardRef(
             titleCardRef: undefined,
           },
         });
+      } else {
+        isJBVRoute() &&
+        videoId &&
+        previewModalStateById &&
+        isPreviewModalOpen(videoId) &&
+        [modalStateActions.MINI_MODAL].includes(
+          previewModalStateById[videoId]?.modalState
+        )
+          ? previewModalStateById &&
+            (Object.values(previewModalStateById)
+              .filter((modal) => {
+                return (
+                  modal.videoId &&
+                  modal.videoId !== videoId &&
+                  modal.modalState === modalStateActions.DETAIL_MODAL
+                );
+              })
+              .forEach(({ videoId }) => {
+                closeModal(videoId as keyof IPreviewModal["videoId"]);
+              }),
+            usePreviewModalStore.getState().updatePreviewModalState({
+              individualState: {
+                videoId: getVideoId(),
+                modalState: modalStateActions.DETAIL_MODAL,
+              },
+            }))
+          : previewModalStateById &&
+            Object.values(previewModalStateById).some(
+              ({ isOpen, modalState }) => {
+                return isOpen && modalState === modalStateActions.DETAIL_MODAL;
+              }
+            ) &&
+            !isJBVRoute() &&
+            closeAllModals();
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [
+      closeModal,
+      closeAllModals,
+      getVideoId,
+      previewModalStateById,
+      isJBVRoute,
+      isPreviewModalOpen,
+      router.query.jbv,
+      router.query.type,
+    ]);
 
     /**
      * Update preview modal state
@@ -184,7 +225,7 @@ const PreviewModalContainer = forwardRef(
     useLayoutEffect(() => {
       updatePreviewModalState();
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [updatePreviewModalState]);
+    }, []); // updatePreviewModalState
 
     /**
      * Render mini preview modal

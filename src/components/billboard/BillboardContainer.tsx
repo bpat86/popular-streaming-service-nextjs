@@ -3,9 +3,10 @@ import { shallow } from "zustand/shallow";
 
 import Billboard from "@/components/billboard/Billboard";
 import usePreviewModalStore from "@/store/PreviewModalStore";
+import { IModel } from "@/store/types";
 
 type BillboardContainerProps = {
-  model: any;
+  model: IModel;
   shouldFreeze?: boolean;
 };
 
@@ -17,22 +18,25 @@ const BillboardContainer = ({
     (state) => state.previewModalStateById,
     shallow
   );
+
   /**
    * Determine if a preview modal is currently open
    */
   const isPreviewModalOpen = () => {
-    return Object.values(previewModalStateById).some(({ isOpen }) => isOpen);
+    return !!(
+      previewModalStateById &&
+      Object.values(previewModalStateById).some(({ isOpen }) => isOpen)
+    );
   };
 
   return (
     <InView initialInView={true}>
-      {({ ref, inView, entry }) => (
+      {({ ref, inView }) => (
         <Billboard
           ref={ref}
           inView={inView}
-          isIntersecting={entry?.isIntersecting}
           model={model}
-          shouldFreeze={shouldFreeze ?? isPreviewModalOpen()}
+          shouldFreeze={shouldFreeze || isPreviewModalOpen()}
         />
       )}
     </InView>
