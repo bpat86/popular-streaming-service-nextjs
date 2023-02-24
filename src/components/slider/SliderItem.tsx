@@ -31,7 +31,7 @@ const SliderItem = ({
       {fullDataLoaded ? (
         children
       ) : (
-        <div className="boxart-size-16x9 animate-pulse bg-zinc-800" />
+        <div className="boxart-size-16x9 slider-refocus bg-zinc-800" />
       )}
     </MotionDivWrapper>
   );

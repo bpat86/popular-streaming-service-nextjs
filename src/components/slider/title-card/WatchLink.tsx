@@ -1,4 +1,4 @@
-import { KeyboardEvent, MouseEvent, ReactNode, useRef } from "react";
+import { KeyboardEvent, MouseEvent, ReactNode } from "react";
 
 import UnstyledLink from "@/components/ui/links/UnstyledLink";
 
@@ -21,10 +21,8 @@ const TitleCardLink = ({
   watchURL,
   onFocus,
 }: TitleCardLinkProps) => {
-  const watchLinkAnchorRef = useRef<HTMLAnchorElement | null>(null);
   return (
     <UnstyledLink
-      ref={watchLinkAnchorRef}
       className={className}
       tabIndex={itemTabbable ? 0 : -1}
       aria-hidden={itemTabbable ? false : true}

@@ -30,7 +30,6 @@ type TitleCardContainerProps = {
 const TitleCardContainer = forwardRef(
   (
     {
-      inViewport,
       itemTabbable,
       model,
       onFocus,
@@ -137,11 +136,8 @@ const TitleCardContainer = forwardRef(
       e: MouseEvent<HTMLDivElement>,
       titleCardRef: RefObject<HTMLDivElement>
     ) => {
-      const { isHovering, isModalOpen } = scopeRef.current;
-      isHovering ||
-        isModalOpen ||
-        isPreviewModalOpen() ||
-        handleMouseEnter(e, titleCardRef);
+      const { isHovering } = scopeRef.current;
+      isHovering || isPreviewModalOpen() || handleMouseEnter(e, titleCardRef);
     };
 
     /**

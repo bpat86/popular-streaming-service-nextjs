@@ -694,25 +694,23 @@ const Slider = ({
   };
 
   return (
-    <div className="row-content slider-hover-trigger-layer w-full overflow-x-visible whitespace-nowrap">
-      <div
-        ref={inViewRef}
-        id={`slider-${sliderNum}`}
-        className="slider px-6 sm:px-12"
-      >
+    <div
+      ref={inViewRef}
+      className="row-content slider-hover-trigger-layer w-full overflow-x-visible whitespace-nowrap"
+    >
+      <div id={`slider-${sliderNum}`} className="slider px-6 sm:px-12">
         {/* Previous button */}
-        {hasMovedOnce &&
-          !(isPreviewModalOpen() && rowHasExpandedInfoDensity) && (
-            <Controls
-              enablePeek={enablePeek}
-              hasMovedOnce={hasMovedOnce}
-              isAnimating={isAnimating}
-              modalOpen={isPreviewModalOpen() && rowHasExpandedInfoDensity}
-              moveDirection={sliderActions.MOVE_DIRECTION_PREV}
-              onClick={advancePrev}
-              onKeyDown={advancePrev}
-            />
-          )}
+        {hasMovedOnce && (
+          <Controls
+            enablePeek={enablePeek}
+            hasMovedOnce={hasMovedOnce}
+            isAnimating={isAnimating}
+            modalOpen={isPreviewModalOpen() && rowHasExpandedInfoDensity}
+            moveDirection={sliderActions.MOVE_DIRECTION_PREV}
+            onClick={advancePrev}
+            onKeyDown={advancePrev}
+          />
+        )}
         {getTotalPages() > 1 && (
           <PaginationIndicator
             activePage={getPageNumber(lowestVisibleItemIndex)}
