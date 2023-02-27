@@ -528,8 +528,6 @@ input.input-profile:-webkit-autofill::first-line {
 }
 
 .media-control-buttons {
-  width: 2.4vw;
-  height: 2.4vw;
   position: relative;
   z-index: 20;
 }
