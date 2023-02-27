@@ -2,6 +2,7 @@ import "@/styles/globals.css";
 
 import { AppProps } from "next/app";
 import { Fragment } from "react";
+import { SWRConfig } from "swr";
 
 import { Page } from "@/@types/page";
 import { AuthProvider } from "@/context/AuthContext";
@@ -28,7 +29,9 @@ export default function MyApp({ Component, pageProps, router }: Props) {
       {getLayout(
         <CombineContexts contextProviders={contextProviders}>
           <AnimatePresenceWrapper mode="wait">
-            <Component key={router.route} {...pageProps} />
+            <SWRConfig value={{ provider: () => new Map() }}>
+              <Component key={router.route} {...pageProps} />
+            </SWRConfig>
           </AnimatePresenceWrapper>
         </CombineContexts>
       )}

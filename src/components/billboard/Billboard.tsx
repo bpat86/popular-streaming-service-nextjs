@@ -126,7 +126,7 @@ const Billboard = forwardRef<HTMLDivElement, BillboardProps>(
       setTextIsAnimating(true);
     };
 
-    const audioEnabled = () => {
+    const isMuted = () => {
       return muted;
     };
 
@@ -250,7 +250,7 @@ const Billboard = forwardRef<HTMLDivElement, BillboardProps>(
                   />
                   <div
                     className={clsxm(
-                      "absolute -inset-px transition-all duration-300 ease-out",
+                      "absolute -inset-px transition-colors duration-300 ease-out",
                       [inView ? "bg-zinc-900/30" : "bg-zinc-900/70"]
                     )}
                   />
@@ -267,11 +267,19 @@ const Billboard = forwardRef<HTMLDivElement, BillboardProps>(
                     ) &&
                       videoStarted && (
                         <MediaControls
-                          audioEnabled={audioEnabled()}
+                          isMuted={isMuted()}
+                          inView={inView}
                           replayVideo={replayVideo}
                           title={model?.videoModel?.title}
                           toggleAudio={toggleAudio}
-                          videoPlaying={!videoCompleted && videoCanPlayThrough}
+                          videoPlaying={
+                            !shouldFreeze &&
+                            !videoBuffering &&
+                            videoStarted &&
+                            videoCanPlayThrough &&
+                            playing
+                          }
+                          videoError={!videoCanPlayThrough || playerError}
                           videoCompleted={
                             videoCompleted && videoHasPlayedAtLeastOnce
                           }
