@@ -22,8 +22,28 @@ const Sliders = ({ model }: SlidersProps) => {
       );
     // Render the sliders
     return model
-      .filter((slider) => slider.data.length > 0)
+      .filter(
+        (slider) =>
+          slider.name === "My List" ||
+          (slider.name !== "My List" && slider.data.length > 0)
+      )
       .map((slider, idx) => {
+        // If the slider is the My List slider and there are no items, render a message
+        if (slider.name === "My List" && slider.data.length === 0) {
+          return (
+            <div
+              key={`${idx}${slider.name.toLowerCase().split(" ").join("")}_${
+                slider.id
+              }`}
+              className="my-list flex min-h-full items-center justify-center"
+            >
+              <h2 className="text-3xl text-white">
+                You haven't added anything to your list yet.
+              </h2>
+            </div>
+          );
+        }
+        // Render the slider row
         return (
           <Row
             key={`${idx}${slider.name.toLowerCase().split(" ").join("")}_${

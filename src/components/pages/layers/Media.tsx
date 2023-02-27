@@ -152,7 +152,7 @@ const Media = forwardRef(({ pageAPI }: MediaContainerProps, ref) => {
       {media?.data?.billboard?.data?.id ? (
         <Sliders model={media?.data?.sliders} />
       ) : (
-        <div className="grid min-h-screen-1/2 items-center">
+        <div className="mt-[68px] grid min-h-[500px] items-center">
           <Sliders model={media?.data?.sliders} />
         </div>
       )}
