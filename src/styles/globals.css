@@ -1202,23 +1202,6 @@ iframe {
   font-size: 1vw;
 }
 
-.main-view {
-  position: relative;
-  min-height: 1000px;
-  z-index: 0;
-}
-.main-view-content {
-  overflow-x: hidden;
-}
-.main-view-content {
-  width: 100%;
-  z-index: 0;
-  overflow: hidden;
-}
-.main-view-content.is-fullbleed {
-  margin-top: -65px;
-}
-
 .has-open-jaw {
   padding: 0 0 34vw;
 }

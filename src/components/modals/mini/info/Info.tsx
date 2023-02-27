@@ -46,26 +46,29 @@ const Info = forwardRef<HTMLDivElement, InfoProps>(
     ref
   ) => {
     return (
-      <MotionDivWrapper
-        inherit={false}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{
-          opacity: 0,
-          transition: {
-            delay: 0.067,
-            duration: 0.117,
-            ease: "linear",
-          },
-        }}
-        transition={{
-          opacity: { delay: 0.043, duration: 0.117, ease: "linear" },
-        }}
-        className="preview-modal info"
-        onClick={handleMetadataAreaClicked}
-      >
+      <div className="preview-modal info" onClick={handleMetadataAreaClicked}>
         <div className="preview-modal info-container">
-          <div className="mini-modal-container">
+          <MotionDivWrapper
+            inherit={false}
+            initial={{ opacity: 0 }}
+            animate={{
+              opacity: 1,
+              transition: {
+                delay: 0.043,
+                duration: 0.067,
+                ease: "linear",
+              },
+            }}
+            exit={{
+              opacity: 0,
+              transition: {
+                delay: 0.067,
+                duration: 0.117,
+                ease: "linear",
+              },
+            }}
+            className="mini-modal-container"
+          >
             <ButtonControls
               ref={ref}
               handleWatchNow={handleWatchNow}
@@ -79,9 +82,9 @@ const Info = forwardRef<HTMLDivElement, InfoProps>(
               videoModel={videoModel}
             />
             <Genres genres={genres} isLoading={isLoading} />
-          </div>
+          </MotionDivWrapper>
         </div>
-      </MotionDivWrapper>
+      </div>
     );
   }
 );

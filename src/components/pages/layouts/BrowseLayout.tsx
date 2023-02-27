@@ -12,7 +12,6 @@ import { transitions } from "@/components/motion/transitions";
 import BrowseNavigation from "@/components/navigation/BrowseNavigation";
 import PageTransitionsLayout from "@/components/pages/layouts/PageTransitionsLayout";
 import InteractionContext from "@/context/InteractionContext";
-import clsxm from "@/lib/clsxm";
 
 type BrowseLayoutProps = {
   children: ReactNode;
@@ -40,16 +39,8 @@ const BrowseLayout = forwardRef(
         >
           <div ref={layoutWrapperRef} className="bd">
             <BrowseNavigation {...rest} />
-            <div className="main-view">
-              <div className="main-view-content is-fullbleed">
-                <main
-                  className={clsxm("browse relative w-full overflow-hidden", [
-                    title === "My List" && "mt-12",
-                  ])}
-                >
-                  {children}
-                </main>
-              </div>
+            <div className="main-view-content">
+              <main className="browse relative z-0">{children}</main>
             </div>
             <Footer />
           </div>

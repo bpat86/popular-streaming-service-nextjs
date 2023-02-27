@@ -1,4 +1,4 @@
-import { ButtonHTMLAttributes, ReactNode } from "react";
+import { ButtonHTMLAttributes, MouseEvent, ReactNode } from "react";
 
 export interface UnstyledButtonProps
   extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -6,7 +6,7 @@ export interface UnstyledButtonProps
   className?: string;
   type: "button" | "submit" | "reset";
   tabIndex?: number;
-  onClick?: () => void;
+  onClick?: (e: MouseEvent) => void;
 }
 
 const UnstyledButton = ({

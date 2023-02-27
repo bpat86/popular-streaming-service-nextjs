@@ -14,10 +14,10 @@ type IndexProps = {
   initialUser: InitialUserProps;
 };
 
-const BrowseHome = ({ initialUser }: IndexProps) => {
+const BrowseMovies = ({ initialUser }: IndexProps) => {
   const pageProps = {
-    page: "browse",
-    title: "Home",
+    page: "movies",
+    title: "Movies",
   };
   return (
     <BrowsePage
@@ -28,7 +28,7 @@ const BrowseHome = ({ initialUser }: IndexProps) => {
     />
   );
 };
-export default BrowseHome;
+export default BrowseMovies;
 
 export const getServerSideProps = withSessionSsr(async ({ req }) => {
   // Get the user session object from the request

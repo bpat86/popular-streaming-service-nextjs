@@ -102,12 +102,15 @@ export interface IVideoModel {
 
 export interface IModel {
   animationContext?: string | undefined;
+  billboardVideoId?: string | undefined;
   uid?: string | string[] | undefined;
   id?: number;
   isMyListRow?: boolean;
   listContext?: string;
   mediaType?: string | string[] | undefined;
   model?: IMediaItem;
+  mutateData?: (data: any) => Promise<void> | undefined;
+  mutateSliderData?: (data: any) => Promise<void> | undefined;
   rankNum?: number;
   rect?: DOMRect | undefined;
   ref?: MutableRefObject<HTMLDivElement> | undefined;
@@ -138,6 +141,7 @@ export interface IModel {
 export interface IPreviewModal {
   animationContext?: string | undefined;
   billboardVideoMerchId?: string | undefined;
+  billboardVideoId?: string | undefined;
   closeWithoutAnimation?: boolean;
   queryData?: {
     [key: string]: any;
@@ -202,7 +206,6 @@ export interface IInitialState {
 export interface PreviewModalStore extends IInitialState {
   isDetailModal: () => boolean;
   isPreviewModalOpen: () => boolean;
-  previewModalStateByIdValues: () => IPreviewModal[] | undefined | null;
   setPreviewModalOpen: (payload: IPreviewModal) => void;
   setPreviewModalWasOpen: (payload: IInitialState) => void;
   setPreviewModalClose: (payload: IPreviewModal) => void;

@@ -2,6 +2,8 @@ import { KeyboardEvent, MouseEvent, ReactNode } from "react";
 
 import UnstyledLink from "@/components/ui/links/UnstyledLink";
 
+import EventStopper from "../EventStopper";
+
 type TitleCardLinkProps = {
   children: ReactNode;
   className?: string;
@@ -22,16 +24,18 @@ const TitleCardLink = ({
   onFocus,
 }: TitleCardLinkProps) => {
   return (
-    <UnstyledLink
-      className={className}
-      tabIndex={itemTabbable ? 0 : -1}
-      aria-hidden={itemTabbable ? false : true}
-      onClick={onClick}
-      onFocus={onFocus}
-      href={watchURL}
-    >
-      {children}
-    </UnstyledLink>
+    <EventStopper>
+      <UnstyledLink
+        className={className}
+        tabIndex={itemTabbable ? 0 : -1}
+        aria-hidden={itemTabbable ? false : true}
+        onClick={onClick}
+        onFocus={onFocus}
+        href={watchURL}
+      >
+        {children}
+      </UnstyledLink>
+    </EventStopper>
   );
 };
 

@@ -30,7 +30,7 @@ const BillboardContainer = ({
   };
 
   return (
-    <InView initialInView={true}>
+    <InView initialInView={true} threshold={0.4}>
       {({ ref, inView }) => (
         <Billboard
           ref={ref}

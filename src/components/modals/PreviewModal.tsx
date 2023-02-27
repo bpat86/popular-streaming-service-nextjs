@@ -82,7 +82,7 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
     const modalInfoRef = useRef<HTMLDivElement>(null);
     const mediaButtonsRef = useRef<HTMLDivElement>(null);
     const animationFrameId = useRef<number | null>(null);
-    const timerId = useRef<number | null>(null);
+    const timerIdRef = useRef<number | null>(null);
     // const willClose = useRef<boolean>(false);
     const [willClose, setWillClose] = useState<boolean>(false);
     const {
@@ -420,6 +420,7 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
           ...closeMiniModal(),
         },
       };
+
       // console.log("variants", miniModalVariants);
       return titleCardRect
         ? {
@@ -427,16 +428,15 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
             exit: animationStateActions.CLOSE_MINI_MODAL,
             onAnimationStart: () => {
               setIsAnimating(true);
-              // disableTooltips();
+              disableTooltips();
             },
             onAnimationComplete: (
               currentAnimationState: (typeof animationStateActions)[keyof typeof animationStateActions]
             ) => {
               if (
-                currentAnimationState ===
-                  animationStateActions.RESET_MINI_MODAL &&
+                !willClose &&
                 isPresent &&
-                !willClose
+                currentAnimationState === animationStateActions.RESET_MINI_MODAL
               )
                 return (
                   setAnimationState(animationStateActions.OPEN_MINI_MODAL),
@@ -448,7 +448,8 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
               enableTooltips();
             },
             onHoverEnd: () => {
-              modalState &&
+              !willClose &&
+                modalState &&
                 modalState === modalStateActions.MINI_MODAL &&
                 handleCloseModal();
             },
@@ -726,14 +727,12 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
           if (
             currentAnimationState === animationStateActions.MOUNT_DETAIL_MODAL
           )
-            flushSync(() => {
-              return (
-                window.scrollTo(0, 0),
+            return flushSync(() => {
+              window.scrollTo(0, 0),
                 setAnimationState(animationStateActions.OPEN_DETAIL_MODAL),
                 currentAnimationState ===
                   animationStateActions.OPEN_DETAIL_MODAL &&
-                  setResponsiveDetailModalWidth()
-              );
+                  setResponsiveDetailModalWidth();
             });
           setIsDetailAnimating(false);
           enableTooltips();
@@ -802,25 +801,27 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
      */
     const handleCloseModal = useCallback(
       ({ closeAll = false, closeWithoutAnimation = false } = {}) => {
-        flushSync(() => {
-          // Set willClose to true
-          setWillClose(true);
-          // Reset timeout id
-          animationFrameId.current &&
-            cancelAnimationFrame(animationFrameId.current),
-            (animationFrameId.current = 0);
-          // Set preview modal closed
-          usePreviewModalStore.getState().setPreviewModalClose({
-            closeWithoutAnimation,
-            videoId,
-          });
-          // Remove the preview modal's box shadow
-          modalRef.current && (modalRef.current.style.boxShadow = "none");
-          // Reset the document body styles if preview modal is a detail modal
-          closeAll &&
-            modalState === modalStateActions.DETAIL_MODAL &&
-            (document.body.style.overflowY = "");
+        // Set willClose to true
+        flushSync(() => setWillClose(true));
+        // Set preview modal closed
+        usePreviewModalStore.getState().setPreviewModalClose({
+          closeWithoutAnimation,
+          videoId,
         });
+        // Set preview modal was open
+        usePreviewModalStore
+          .getState()
+          .setPreviewModalWasOpen({ wasOpen: true });
+        // Reset timeout id
+        animationFrameId.current &&
+          cancelAnimationFrame(animationFrameId.current),
+          (animationFrameId.current = 0);
+        // Remove the preview modal's box shadow
+        modalRef.current && (modalRef.current.style.boxShadow = "none");
+        // Reset the document body styles if preview modal is a detail modal
+        closeAll &&
+          modalState === modalStateActions.DETAIL_MODAL &&
+          (document.body.style.overflowY = "");
       },
       [modalState, videoId]
     );
@@ -997,7 +998,6 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
       if (modalRef.current && titleCardRect && !willClose) {
         const modalWidth = Math.round(titleCardRect.width * scaleFactor);
         (modalRef.current.style.width = `${modalWidth}px`),
-          disableTooltips(),
           (animationFrameId.current = requestAnimationFrame(() => {
             updateModalRect(),
               (animationFrameId.current = requestAnimationFrame(() => {
@@ -1069,9 +1069,9 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
 
     // Cleanup
     useLayoutEffect(() => {
-      if (!isPresent) {
-        !timerId.current &&
-          (timerId.current = window.setTimeout(() => {
+      if (!isPresent && willClose) {
+        !timerIdRef.current &&
+          (timerIdRef.current = window.setTimeout(() => {
             // Remove preview modal from the react tree
             safeToRemove();
             // Set was open state to false
@@ -1082,8 +1082,8 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
         // Cleanup
         return () => {
           // Cancel pending timeouts
-          timerId.current && clearTimeout(timerId.current),
-            (timerId.current = null);
+          timerIdRef.current && clearTimeout(timerIdRef.current),
+            (timerIdRef.current = null);
           // Cancel pending requests
           cancelRequest();
           // Remove detail modal parent styles
@@ -1097,7 +1097,7 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
       }
 
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isPresent]);
+    }, [isPresent, willClose]);
 
     /**
      * Render the preview modal

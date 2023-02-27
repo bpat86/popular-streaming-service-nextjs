@@ -10,7 +10,6 @@ import {
   useState,
 } from "react";
 import YouTubePlayer from "react-player/youtube";
-import { shallow } from "zustand/shallow";
 
 import Info from "@/components/billboard/Info";
 import InteractionContext from "@/context/InteractionContext";
@@ -33,11 +32,11 @@ const Billboard = forwardRef<HTMLDivElement, BillboardProps>(
     const billboardInViewRef = ref as MutableRefObject<HTMLDivElement>;
     const infoRef = useRef<HTMLDivElement>(null);
     const { enableWatchMode } = useContext(InteractionContext);
-    const wasOpen = usePreviewModalStore((state) => state.wasOpen, shallow);
-    const isDetailModal = usePreviewModalStore(
-      (state) => state.isDetailModal,
-      shallow
-    );
+    // const wasOpen = usePreviewModalStore((state) => state.wasOpen, shallow);
+    // const isDetailModal = usePreviewModalStore(
+    //   (state) => state.isDetailModal,
+    //   shallow
+    // );
 
     const [textIsAnimating, setTextIsAnimating] = useState<boolean>(false);
     // const [audioEnabled, setAudioEnabled] = useState<boolean>(false);
@@ -202,8 +201,8 @@ const Billboard = forwardRef<HTMLDivElement, BillboardProps>(
           <div className="billboard">
             <div
               className={clsxm("billboard-motion dismiss-mask", [
-                !isDetailModal() &&
-                !wasOpen &&
+                !usePreviewModalStore.getState().wasOpen &&
+                !usePreviewModalStore.getState().isDetailModal() &&
                 !videoCompleted &&
                 !videoBuffering &&
                 videoStarted &&
@@ -237,7 +236,6 @@ const Billboard = forwardRef<HTMLDivElement, BillboardProps>(
                   </div>
                 </div>
               )}
-
               <div className="motion-background-component bottom-layer full-screen">
                 <div className="hero-image-wrapper">
                   <Image
@@ -250,7 +248,12 @@ const Billboard = forwardRef<HTMLDivElement, BillboardProps>(
                     sizes="(max-width: 768px) 100vw, 50vw"
                     alt={model?.videoModel?.title || ""}
                   />
-                  <div className="absolute -inset-px bg-zinc-900/40" />
+                  <div
+                    className={clsxm(
+                      "absolute -inset-px transition-all duration-300 ease-out",
+                      [inView ? "bg-zinc-900/30" : "bg-zinc-900/70"]
+                    )}
+                  />
                   <div className="absolute -inset-px bg-gradient-to-b from-transparent via-transparent  to-zinc-900" />
                   <div className="absolute -inset-px hidden bg-gradient-to-l from-transparent via-transparent to-zinc-900 lg:block" />
                   <div className="trailer-vignette vignette-layer" />
@@ -258,18 +261,22 @@ const Billboard = forwardRef<HTMLDivElement, BillboardProps>(
                 </div>
                 <div className="embedded-components button-layer">
                   <AnimatePresenceWrapper>
-                    {!(isDetailModal() && !videoCompleted) && videoStarted && (
-                      <MediaControls
-                        audioEnabled={audioEnabled()}
-                        replayVideo={replayVideo}
-                        title={model?.videoModel?.title}
-                        toggleAudio={toggleAudio}
-                        videoPlaying={!videoCompleted && videoCanPlayThrough}
-                        videoCompleted={
-                          videoCompleted && videoHasPlayedAtLeastOnce
-                        }
-                      />
-                    )}
+                    {!(
+                      usePreviewModalStore.getState().isDetailModal() &&
+                      !videoCompleted
+                    ) &&
+                      videoStarted && (
+                        <MediaControls
+                          audioEnabled={audioEnabled()}
+                          replayVideo={replayVideo}
+                          title={model?.videoModel?.title}
+                          toggleAudio={toggleAudio}
+                          videoPlaying={!videoCompleted && videoCanPlayThrough}
+                          videoCompleted={
+                            videoCompleted && videoHasPlayedAtLeastOnce
+                          }
+                        />
+                      )}
                   </AnimatePresenceWrapper>
                 </div>
               </div>

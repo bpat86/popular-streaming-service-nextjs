@@ -1,5 +1,5 @@
 import { Variants } from "framer-motion";
-import { useContext, useEffect, useState } from "react";
+import { MouseEvent, useContext, useEffect, useState } from "react";
 
 import UnstyledButton from "@/components/ui/buttons/UnstyledButton";
 import ProfileContext from "@/context/ProfileContext";
@@ -72,7 +72,8 @@ const MediaListButton = ({
       setTimeout(() => handleCloseModal(), 100);
   }
 
-  function handleClick() {
+  function handleClick(e: MouseEvent) {
+    e.stopPropagation();
     isSet ? handleRemoveMediaFromList() : handleAddMediaToList();
   }
 

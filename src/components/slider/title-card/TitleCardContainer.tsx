@@ -51,10 +51,97 @@ const TitleCardContainer = forwardRef(
     const hoverTimeoutIdRef = useRef<number | null>(null);
 
     /**
+     * Open the preview modal.
+     */
+    const openPreviewModal = ({
+      titleCardRef,
+      openDetailModal,
+    }: {
+      titleCardRef?: RefObject<HTMLDivElement>;
+      openDetailModal?: boolean;
+    }) => {
+      const { isModalOpen } = scopeRef.current;
+      if (titleCardRef) {
+        // Initialize window resize listener for the title card
+        window.addEventListener("resize", () => {
+          handleWindowResize(titleCardRef.current);
+        });
+        // Close all previously open preview modals
+        if (isPreviewModalOpen()) {
+          const previewModalStateById =
+            usePreviewModalStore.getState().previewModalStateById;
+          return (
+            previewModalStateById &&
+              Object.values(previewModalStateById)
+                .filter(({ isOpen }) => isOpen)
+                .map(({ videoId }) => videoId)
+                .forEach((videoId) => {
+                  usePreviewModalStore.getState().setPreviewModalClose({
+                    closeWithoutAnimation: true,
+                    videoId,
+                  });
+                }),
+            queuePreviewModalOpen(titleCardRef)
+          );
+        }
+      }
+      // Open this titleCard as a preview modal
+      !isModalOpen && (scopeRef.current.isModalOpen = true);
+      usePreviewModalStore.getState().setPreviewModalOpen({
+        sliderRow: rowNum,
+        videoModel: model.videoModel,
+        videoId: model.videoModel.videoId,
+        listContext: model.videoModel.listContext,
+        titleCardId: titleCardRef ? titleCardRef?.current?.id : undefined,
+        // titleCardRef: undefined,
+        titleCardRect: openDetailModal
+          ? undefined
+          : titleCardRef && titleCardRef.current?.getBoundingClientRect(),
+        scrollPosition: window.scrollY,
+        modalState: openDetailModal
+          ? modalStateActions.DETAIL_MODAL
+          : modalStateActions.MINI_MODAL,
+        onPreviewModalClose: () => {
+          !openDetailModal &&
+            window.removeEventListener("resize", () => {
+              handleWindowResize(titleCardRef);
+            });
+        },
+        model,
+        videoPlayback: {
+          start: undefined,
+          length: undefined,
+        },
+        isMyListRow: model.videoModel.isMyListRow,
+        animationContext: undefined, // galleryModal
+      });
+    };
+
+    /**
+     * Queue the preview modal to open.
+     */
+    const queuePreviewModalOpen = (titleCardRef: RefObject<HTMLDivElement>) => {
+      const { isHovering, isModalOpen } = scopeRef.current;
+      if (isHovering && !isModalOpen && !hoverTimeoutIdRef.current) {
+        const delay = usePreviewModalStore.getState().wasOpen ? 200 : 400;
+        hoverTimeoutIdRef.current = window.setTimeout(() => {
+          openPreviewModal({
+            titleCardRef,
+          });
+        }, delay);
+      }
+    };
+
+    /**
      * Determine if a preview modal is currently open
      */
     const isPreviewModalOpen = () => {
-      return usePreviewModalStore.getState().isPreviewModalOpen();
+      const previewModalStateById =
+        usePreviewModalStore.getState().previewModalStateById;
+      return (
+        previewModalStateById &&
+        Object.values(previewModalStateById).some(({ isOpen }) => isOpen)
+      );
     };
 
     /**
@@ -85,7 +172,9 @@ const TitleCardContainer = forwardRef(
     ) => {
       const { isModalOpen } = scopeRef.current;
       const mouseEnter =
-        e.currentTarget && titleCardRef.current?.contains(e.currentTarget);
+        e.currentTarget &&
+        titleCardRef.current &&
+        titleCardRef.current.contains(e.currentTarget);
       // Only visible titles can display a preview modal
       if (!itemTabbable || isModalOpen) return;
       // Process the mouse enter event
@@ -104,40 +193,6 @@ const TitleCardContainer = forwardRef(
         return queuePreviewModalOpen(titleCardRef);
       }
       queuePreviewModalOpen(titleCardRef);
-    };
-
-    /**
-     * Handle when a user hovers out of a titlecard
-     */
-    const handleMouseLeave = (
-      e: MouseEvent<HTMLDivElement> & {
-        relatedTarget: EventTarget &
-          Node & {
-            location: Location;
-          };
-      },
-      titleCardRef: RefObject<HTMLDivElement>
-    ) => {
-      const mouseLeave =
-        !e.relatedTarget ||
-        e.relatedTarget.location ||
-        (titleCardRef.current &&
-          !titleCardRef.current.contains(e.relatedTarget));
-      // Process the mouse leave event
-      if (mouseLeave) {
-        handleLeave();
-      }
-    };
-
-    /**
-     * If a preview modal is open or this titleCard is hovered over
-     */
-    const handleMouseMove = (
-      e: MouseEvent<HTMLDivElement>,
-      titleCardRef: RefObject<HTMLDivElement>
-    ) => {
-      const { isHovering } = scopeRef.current;
-      isHovering || isPreviewModalOpen() || handleMouseEnter(e, titleCardRef);
     };
 
     /**
@@ -161,95 +216,37 @@ const TitleCardContainer = forwardRef(
     };
 
     /**
-     * Queue the preview modal to open.
+     * Handle when a user hovers out of a titlecard
      */
-    const queuePreviewModalOpen = (titleCardRef: RefObject<HTMLDivElement>) => {
-      let delay;
-      const { isHovering, isModalOpen } = scopeRef.current;
-      if (isHovering && !isModalOpen && !hoverTimeoutIdRef.current) {
-        delay = usePreviewModalStore.getState().wasOpen ? 100 : 400;
-        hoverTimeoutIdRef.current = window.setTimeout(() => {
-          openPreviewModal({
-            titleCardRef,
-          });
-        }, delay);
-      }
-    };
-
-    /**
-     * Open the preview modal.
-     */
-    const openPreviewModal = ({
-      openDetailModal,
-      titleCardRef,
-    }: {
-      openDetailModal?: boolean;
-      titleCardRef?: RefObject<HTMLDivElement>;
-    }) => {
-      if (titleCardRef) {
-        // Initialize window resize listener for the title card
-        window.addEventListener("resize", () => {
-          handleWindowResize(titleCardRef.current);
-        });
-        // Close all previously open preview modals
-        if (isPreviewModalOpen()) {
-          const previewModalStateById =
-            usePreviewModalStore.getState().previewModalStateById;
-          return (
-            previewModalStateById &&
-              Object.values(previewModalStateById)
-                .filter(({ isOpen }) => isOpen)
-                .map(({ videoId }) => videoId)
-                .forEach((videoId) => {
-                  usePreviewModalStore.getState().setPreviewModalClose({
-                    closeWithoutAnimation: true,
-                    videoId,
-                  });
-                }),
-            queuePreviewModalOpen(titleCardRef)
-          );
-        }
-      }
-      // Open this titleCard as a preview modal
-      !openDetailModal && (scopeRef.current.isModalOpen = true),
-        usePreviewModalStore.getState().setPreviewModalOpen({
-          sliderRow: rowNum,
-          videoModel: model.videoModel,
-          videoId: model.videoModel.videoId,
-          listContext: model.videoModel.listContext,
-          titleCardId: titleCardRef ? titleCardRef?.current?.id : undefined,
-          titleCardRef: undefined,
-          titleCardRect: openDetailModal
-            ? undefined
-            : titleCardRef?.current?.getBoundingClientRect(),
-          scrollPosition: window.scrollY,
-          modalState: openDetailModal
-            ? modalStateActions.DETAIL_MODAL
-            : modalStateActions.MINI_MODAL,
-          onPreviewModalClose: () => {
-            !openDetailModal &&
-              window.removeEventListener("resize", () => {
-                handleWindowResize(titleCardRef);
-              });
-          },
-          model,
-          videoPlayback: {
-            start: undefined,
-            length: undefined,
-          },
-          isMyListRow: model.videoModel.isMyListRow,
-          animationContext: undefined, // galleryModal
-        });
-    };
-
-    /**
-     * Close the preview modal.
-     */
-    const handleKeyDown = (
-      e: KeyboardEvent<HTMLDivElement>,
+    const handleMouseLeave = (
+      e: MouseEvent<HTMLDivElement> & {
+        relatedTarget: EventTarget &
+          Node & {
+            location: Location;
+          };
+      },
       titleCardRef: RefObject<HTMLDivElement>
     ) => {
-      (e && e.key) === "Enter" && handleClick(e, titleCardRef);
+      const triggerMouseLeave =
+        !e.relatedTarget ||
+        e.relatedTarget.location ||
+        (titleCardRef.current &&
+          !titleCardRef.current.contains(e.relatedTarget));
+      // Process the mouse leave event
+      if (triggerMouseLeave) {
+        handleLeave();
+      }
+    };
+
+    /**
+     * If a preview modal is open or this titleCard is hovered over
+     */
+    const handleMouseMove = (
+      e: MouseEvent<HTMLDivElement>,
+      titleCardRef: RefObject<HTMLDivElement>
+    ) => {
+      const { isHovering } = scopeRef.current;
+      isHovering || isPreviewModalOpen() || handleMouseEnter(e, titleCardRef);
     };
 
     /**
@@ -261,17 +258,25 @@ const TitleCardContainer = forwardRef(
         | KeyboardEvent<HTMLDivElement | HTMLAnchorElement>,
       titleCardRef: RefObject<HTMLDivElement>
     ) => {
-      if ((e.preventDefault(), !itemTabbable)) return;
-      if (
-        (e.preventDefault(),
-        hoverTimeoutIdRef.current && clearTimeout(hoverTimeoutIdRef.current),
-        isPreviewModalOpen())
-      )
-        return;
+      e.preventDefault();
+      e.stopPropagation();
+      clearDelays();
+      if (!itemTabbable) return;
+      if (isPreviewModalOpen()) return;
       openPreviewModal({
         titleCardRef,
         openDetailModal: true,
       });
+    };
+
+    /**
+     * Close the preview modal.
+     */
+    const handleKeyDown = (
+      e: KeyboardEvent<HTMLDivElement>,
+      titleCardRef: RefObject<HTMLDivElement>
+    ) => {
+      (e && e.key) === "Enter" && handleClick(e, titleCardRef);
     };
 
     return (

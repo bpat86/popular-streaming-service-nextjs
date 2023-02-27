@@ -1,24 +1,87 @@
+import axios from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
 
 import { API_URL } from "@/config/index";
-import { getFetch } from "@/lib/getFetch";
 import { withSessionRoute } from "@/middleware/withSession";
 import { parseCookies } from "@/utils/parseCookies";
 
-import { IMediaItemWithUserPreferences, IProfileMediaList } from "./types";
+import { IMediaItemWithUserPreferences } from "./types";
 import {
   handleResults,
+  makeMediaArray,
   makeMediaItemSingleCreditsURL,
   makeMediaItemSingleURL,
   orderByLastAdded,
+  pickRandomIdx,
+  pickRandomInt,
 } from "./utils";
+
+/**
+ * Fetch the media item to be displayed in the billboard component
+ */
+async function getBillboardMedia({
+  srcArray,
+  profileMediaListArray,
+  profileLikedMediaArray,
+  profileDislikedMediaArray,
+}: {
+  srcArray: any[];
+  profileMediaListArray: IMediaItemWithUserPreferences[];
+  profileLikedMediaArray: IMediaItemWithUserPreferences[];
+  profileDislikedMediaArray: IMediaItemWithUserPreferences[];
+}) {
+  if (!srcArray.length) return {};
+  // const idsArray = [656663, 414906, 646380, 696806, 634649, 619979, 615904];
+  const idsArray = srcArray.slice(0, 42);
+  const randomItem = idsArray[pickRandomIdx(idsArray)];
+  const params = {
+    mediaType: randomItem.media_type || srcArray[pickRandomInt(6)].media_type,
+    mediaID: randomItem.id || srcArray[pickRandomInt(6)].id,
+  };
+  const results = await Promise.allSettled([
+    axios.get(makeMediaItemSingleURL(params)),
+    axios.get(makeMediaItemSingleCreditsURL(params)),
+  ]);
+  const [getBillboardMedia, getBillboardMediaCredits] = handleResults(results);
+  const billboardMedia = await getBillboardMedia?.data;
+  const billboardMediaCredits = await getBillboardMediaCredits?.data;
+  // Determine if item appears in the media list
+  const mediaListItem = profileMediaListArray?.find(
+    ({ id }) => id === billboardMedia?.id
+  );
+  // Determine if item appears in the liked media list
+  const likedMediaItem = profileLikedMediaArray?.find(
+    ({ id }) => id === billboardMedia?.id
+  );
+  // Determine if item appears in the disliked media list
+  const dislikedMediaItem = profileDislikedMediaArray?.find(
+    ({ id }) => id === billboardMedia?.id
+  );
+  return {
+    data: {
+      ...billboardMedia,
+      ...billboardMediaCredits,
+      is_billboard: true,
+      media_type: randomItem.media_type,
+      in_media_list: !!mediaListItem?.media_list_id,
+      media_list_id: mediaListItem?.media_list_id || null,
+      is_liked: !!likedMediaItem?.liked_media_id,
+      liked_media_id: likedMediaItem?.liked_media_id || null,
+      is_disliked: !!dislikedMediaItem?.disliked_media_id,
+      disliked_media_id: dislikedMediaItem?.disliked_media_id || null,
+    },
+  };
+}
 
 /**
  * Fetch the active profile's media list items.
  * This function will return an array of objects.
  */
-function getProfileMediaList({ profile }: { profile: any }) {
-  const { mediaList } = profile;
+function getProfileMediaList({
+  profile: { mediaList },
+}: {
+  profile: { mediaList: any };
+}) {
   let profileMediaList = [] as IMediaItemWithUserPreferences[];
   // Add the liked items into a new media array and assign new keys
   mediaList?.map(
@@ -50,8 +113,6 @@ function getProfileMediaList({ profile }: { profile: any }) {
 /**
  * Fetch the active profile's liked media items.
  * This function will return an array of objects.
- * @param {Object} profile
- * @returns
  */
 function getProfileLikedMedia({
   profile: { likedMedia },
@@ -89,8 +150,6 @@ function getProfileLikedMedia({
 /**
  * Fetch the active profile's disliked media items.
  * This function will return an array of objects.
- * @param {Object} profile
- * @returns
  */
 function getProfileDislikedMedia({
   profile: { dislikedMedia },
@@ -130,7 +189,6 @@ export default withSessionRoute(
     // Get the current activeProfile from browser cookies
     const { activeProfile } = parseCookies(req);
     // Get the authenticated user from iron-session middleware
-    const { id, type } = req.query;
     const userSessionObj = req.session.user;
     // Attach the current activeProfile ID to the user data object
     const user = {
@@ -139,92 +197,70 @@ export default withSessionRoute(
     };
 
     if (req.method === "GET") {
+      // `Bearer` token must be included in authorization headers for Strapi requests
+      const config = {
+        headers: { Authorization: `Bearer ${user?.strapiToken}` },
+      };
+      // User URL
+      const userMeURL = `${API_URL}/api/users/me`;
+      // Fetch all data concurrently
       try {
-        // `Bearer` token must be included in authorization headers for Strapi requests
-        const config = {
-          headers: { Authorization: `Bearer ${user?.strapiToken}` },
-        };
-        const params = {
-          mediaType: type as string,
-          mediaID: Number(id) as number,
-        };
-
-        // Get single media item credits URL
-        const userMeURL = `${API_URL}/api/users/me`;
-
-        // Get the title page media
-        const results = await Promise.allSettled([
-          getFetch(userMeURL, config),
-          getFetch(makeMediaItemSingleURL(params)),
-          getFetch(makeMediaItemSingleCreditsURL(params)),
-        ]);
-        const [getUserMe, getTitle, getCredits] = handleResults(results);
-
-        // TMDB response
-        const title = getTitle.data;
-        const credits = getCredits.data;
-
-        // Get user profile preferences
+        const getUserMe = await axios.get(userMeURL, config);
         const profileMediaList = getProfileMediaList({
-          profile: Object.assign(
-            {},
-            getUserMe.status === 200
+          profile: {
+            ...(getUserMe.status === 200
               ? getUserMe.data.profiles?.find(
-                  (profile: IProfileMediaList) =>
-                    profile.id.toString() === activeProfile // Don't forget to convert to string :(
+                  (profile: any) => profile.id == activeProfile
                 )
-              : {}
-          ),
+              : {}),
+          },
         });
         const profileLikedMedia = getProfileLikedMedia({
-          profile: Object.assign(
-            {},
-            getUserMe.status === 200
+          profile: {
+            ...(getUserMe.status === 200
               ? getUserMe.data.profiles?.find(
-                  (profile: any) => profile.id.toString() === activeProfile
+                  (profile: any) => profile.id == activeProfile
                 )
-              : {}
-          ),
+              : {}),
+          },
         });
         const profileDislikedMedia = getProfileDislikedMedia({
-          profile: Object.assign(
-            {},
-            getUserMe.status === 200
+          profile: {
+            ...(getUserMe.status === 200
               ? getUserMe.data.profiles?.find(
-                  (profile: any) => profile.id.toString() === activeProfile
+                  (profile: any) => profile.id == activeProfile
                 )
-              : {}
-          ),
+              : {}),
+          },
+        });
+        // Build sliders
+        const myMediaList = makeMediaArray({
+          srcArray: profileMediaList,
+          mediaType: "",
+          profileMediaListArray: profileMediaList,
+          profileLikedMediaArray: profileLikedMedia,
+          profileDislikedMediaArray: profileDislikedMedia,
         });
 
-        // If successful, send the media to the frontend
-        if (getTitle.status === 200 && getCredits.status === 200) {
-          // Determine if item appears in the media list. Returns a boolean
-          const mediaListItem = profileMediaList?.find(
-            (item) => item?.id === title?.id
-          );
-          // Determine if item appears in the liked media list. Returns a boolean
-          const likedMediaItem = profileLikedMedia?.find(
-            (item) => item?.id === title?.id
-          );
-          // Determine if item appears in the disliked media list. Returns a boolean
-          const dislikedMediaItem = profileDislikedMedia?.find(
-            (item) => item?.id === title?.id
-          );
-          res.status(200).json({
-            data: {
-              ...title,
-              ...credits,
-              media_type: type,
-              in_media_list: !!mediaListItem?.media_list_id,
-              media_list_id: mediaListItem?.media_list_id || null,
-              is_liked: !!likedMediaItem?.liked_media_id,
-              liked_media_id: likedMediaItem?.liked_media_id || null,
-              is_disliked: !!dislikedMediaItem?.disliked_media_id,
-              disliked_media_id: dislikedMediaItem?.disliked_media_id || null,
+        // Send the media data to the frontend
+        res.status(200).json({
+          data: {
+            billboard: {
+              data: {}, // billboardMedia
             },
-          });
-        }
+            profileMediaList: profileMediaList ?? [],
+            profileLikedMedia: profileLikedMedia ?? [],
+            profileDislikedMedia: profileDislikedMedia ?? [],
+            sliders: [
+              {
+                id: 0,
+                type: "mixed",
+                name: "My List",
+                data: myMediaList ?? [],
+              },
+            ],
+          },
+        });
       } catch (error: any) {
         // Send error repsonses to the frontend for user feedback
         res.status(error.response.status).json({

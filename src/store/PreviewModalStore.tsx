@@ -144,11 +144,6 @@ export const usePreviewModalStore = create<PreviewModalStore>((set, get) => ({
     }
     return false;
   },
-  previewModalStateByIdValues: () => {
-    const { previewModalStateById } = get();
-    if (!previewModalStateById) return [];
-    return Object.values(previewModalStateById);
-  },
   setPreviewModalWasOpen: (payload) => {
     set((state) => {
       return immerReducer({
@@ -172,7 +167,6 @@ export const usePreviewModalStore = create<PreviewModalStore>((set, get) => ({
     });
   },
   setPreviewModalClose: (payload) => {
-    get().setPreviewModalWasOpen({ wasOpen: true });
     set((state) => {
       return immerReducer({
         state,

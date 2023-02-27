@@ -6,7 +6,6 @@ import {
   useCallback,
   useLayoutEffect,
 } from "react";
-import { shallow } from "zustand/shallow";
 
 import { modalStateActions } from "@/actions/Actions";
 import { AnimatePresenceWrapper } from "@/lib/AnimatePresenceWrapper";
@@ -23,12 +22,9 @@ type PreviewModalContainerProps = {
 const PreviewModalContainer = forwardRef(
   ({ children, mutateSliderData }: PreviewModalContainerProps, ref) => {
     const layoutWrapperRef = ref as MutableRefObject<HTMLDivElement | null>;
-    const { previewModalStateById } = usePreviewModalStore(
-      (state) => ({
-        previewModalStateById: state.previewModalStateById,
-      }),
-      shallow
-    );
+    const { previewModalStateById } = usePreviewModalStore((state) => ({
+      previewModalStateById: state.previewModalStateById,
+    }));
     const router = useRouter();
 
     /**

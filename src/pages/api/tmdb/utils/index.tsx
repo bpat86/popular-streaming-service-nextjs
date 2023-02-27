@@ -146,8 +146,6 @@ export function makeMediaURL(mediaGenreUrl: string, pageNumber: string) {
 /**
  * Format the URL to fetch a single media item.
  * This export function returns a URL string.
- * @param {Object}
- * @returns
  */
 export function makeMediaItemSingleURL({
   mediaType,
@@ -166,8 +164,6 @@ export function makeMediaItemSingleURL({
 /**
  * Format the URL to fetch the media items credits.
  * This export function returns a URL string.
- * @param {Object}
- * @returns
  */
 export function makeMediaItemSingleCreditsURL({
   mediaType,
@@ -181,4 +177,19 @@ export function makeMediaItemSingleCreditsURL({
   mediaURL.searchParams.set("api_key", apiKey);
   mediaURL.searchParams.set("append_to_response", "videos,images");
   return mediaURL.href;
+}
+
+/**
+ * Handle the results of a Promise.allSettled() call
+ */
+export function handleResults(results: any[]) {
+  if (!results.length) return [];
+  const errors = results
+    .filter((result) => result.status === "rejected")
+    .map((result) => result.reason);
+  if (errors.length) {
+    // Aggregate all errors into one
+    throw new AggregateError(errors);
+  }
+  return results.map((result) => result.value);
 }

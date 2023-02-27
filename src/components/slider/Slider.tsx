@@ -222,6 +222,7 @@ const Slider = ({
    * Render the slider items
    */
   const renderSliderItems = () => {
+    if (!model || !model.length) return;
     const totalItemsCount = getTotalItemsCount();
     // Create a pre-filled array of default slider item elements
     const sliderItemChildren: ReactElement[] = Array.from(
@@ -237,7 +238,7 @@ const Slider = ({
       visibleItems: ReactElement[] = [],
       itemsRange = 0;
     /**
-     * Append empty loading items to the end of the slider if the slider is not full.
+     * If slider items exist, compute the visible items and the offscreen items.
      */
     if (sliderItemChildren && sliderItemChildren.length) {
       itemsRange = getHighestIndex() - getLowestIndex();
@@ -245,6 +246,10 @@ const Slider = ({
         getLowestIndex(),
         getHighestIndex()
       );
+      /**
+       * Since the initial number of items is artificially decreased to itemsInRow + 2,
+       * fill the remaining items with loading items.
+       */
       for (
         let idx = 0;
         visibleItems.length < itemsRange &&

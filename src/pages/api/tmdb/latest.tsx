@@ -1,14 +1,14 @@
+import axios from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
 
 import { API_URL } from "@/config/index";
-import { getFetch } from "@/lib/getFetch";
-import { getFetchConcurrently } from "@/lib/getFetchConcurrently";
 import { withSessionRoute } from "@/middleware/withSession";
 import { parseCookies } from "@/utils/parseCookies";
 import { requests } from "@/utils/requests";
 
-import { IMediaItemWithUserPreferences, IProfileMediaList } from "./types";
+import { IMediaItemWithUserPreferences } from "./types";
 import {
+  handleResults,
   makeMediaArray,
   makeMediaItemSingleCreditsURL,
   makeMediaItemSingleURL,
@@ -41,11 +41,11 @@ async function getBillboardMedia({
     mediaType: randomItem.media_type || srcArray[pickRandomInt(6)].media_type,
     mediaID: randomItem.id || srcArray[pickRandomInt(6)].id,
   };
-  const [getBillboardMedia, getBillboardMediaCredits] =
-    await getFetchConcurrently([
-      getFetch(makeMediaItemSingleURL(params)),
-      getFetch(makeMediaItemSingleCreditsURL(params)),
-    ]);
+  const results = await Promise.allSettled([
+    axios.get(makeMediaItemSingleURL(params)),
+    axios.get(makeMediaItemSingleCreditsURL(params)),
+  ]);
+  const [getBillboardMedia, getBillboardMediaCredits] = handleResults(results);
   const billboardMedia = await getBillboardMedia?.data;
   const billboardMediaCredits = await getBillboardMediaCredits?.data;
   // Determine if item appears in the media list
@@ -200,113 +200,83 @@ export default withSessionRoute(
     };
 
     if (req.method === "GET") {
+      // `Bearer` token must be included in authorization headers for Strapi requests
+      const config = {
+        headers: { Authorization: `Bearer ${user?.strapiToken}` },
+      };
+      // User URL
+      const userMeURL = `${API_URL}/api/users/me`;
+      // Genres URLs
+      const popularMoviesUrl = requests.fetchPopularMovies.url;
+      const nowPlayingMoviesUrl = requests.fetchNowPlayingMovies.url;
+      const trendingMoviesUrl = requests.fetchTrendingMovies.url;
+      const popularTVUrl = requests.fetchPopularTV.url;
+      const airingTodayTVUrl = requests.fetchAiringTodayTV.url;
+      // Fetch all data concurrently
       try {
-        // `Bearer` token must be included in authorization headers for Strapi requests
-        const config = {
-          headers: { Authorization: `Bearer ${user?.strapiToken}` },
-        };
-        // User URL
-        const userMeURL = `${API_URL}/api/users/me`;
-        // Genres URLs
-        const upcomingMoviesUrl = requests.fetchUpcomingMovies.url;
-        const popularMoviesUrl = requests.fetchPopularMovies.url;
-        const trendingMoviesUrl = requests.fetchTrendingMovies.url;
-        const comedyMoviesUrl = requests.fetchComedyMovies.url;
-        const actionMoviesUrl = requests.fetchActionMovies.url;
-        const romanceMoviesUrl = requests.fetchRomanceMovies.url;
-        const popularTVUrl = requests.fetchPopularTV.url;
-        const animatedMoviesUrl = requests.fetchAnimatedMovies.url;
-        const horrorMoviesUrl = requests.fetchHorrorMovies.url;
-        // Fetch all data concurrently
+        const results = await Promise.allSettled([
+          axios.get(userMeURL, config),
+          axios.get(makeMediaURL(popularMoviesUrl, "1")),
+          axios.get(makeMediaURL(popularMoviesUrl, "2")),
+          axios.get(makeMediaURL(popularMoviesUrl, "3")),
+          axios.get(makeMediaURL(nowPlayingMoviesUrl, "1")),
+          axios.get(makeMediaURL(nowPlayingMoviesUrl, "2")),
+          axios.get(makeMediaURL(nowPlayingMoviesUrl, "3")),
+          axios.get(makeMediaURL(trendingMoviesUrl, "1")),
+          axios.get(makeMediaURL(trendingMoviesUrl, "2")),
+          axios.get(makeMediaURL(trendingMoviesUrl, "3")),
+          axios.get(makeMediaURL(popularTVUrl, "1")),
+          axios.get(makeMediaURL(popularTVUrl, "2")),
+          axios.get(makeMediaURL(popularTVUrl, "3")),
+          axios.get(makeMediaURL(airingTodayTVUrl, "1")),
+          axios.get(makeMediaURL(airingTodayTVUrl, "2")),
+          axios.get(makeMediaURL(airingTodayTVUrl, "3")),
+        ]);
+        // Deconstruct the results
         const [
           getUserMe,
-          getUpcomingMoviesOne,
-          getUpcomingMoviesTwo,
-          getUpcomingMoviesThree,
           getPopularMoviesOne,
           getPopularMoviesTwo,
           getPopularMoviesThree,
-          getPopularTVOne,
-          getPopularTVTwo,
-          getPopularTVThree,
+          getNowPlayingMoviesOne,
+          getNowPlayingMoviesTwo,
+          getNowPlayingMoviesThree,
           getTrendingMoviesOne,
           getTrendingMoviesTwo,
           getTrendingMoviesThree,
-          getComedyMoviesOne,
-          getComedyMoviesTwo,
-          getComedyMoviesThree,
-          getActionMoviesOne,
-          getActionMoviesTwo,
-          getActionMoviesThree,
-          getRomanceMoviesOne,
-          getRomanceMoviesTwo,
-          getRomanceMoviesThree,
-          getHorrorMoviesOne,
-          getHorrorMoviesTwo,
-          getHorrorMoviesThree,
-          getAnimatedMoviesOne,
-          getAnimatedMoviesTwo,
-          getAnimatedMoviesThree,
-        ] = await getFetchConcurrently([
-          getFetch(userMeURL, config),
-          getFetch(makeMediaURL(upcomingMoviesUrl, "1")),
-          getFetch(makeMediaURL(upcomingMoviesUrl, "2")),
-          getFetch(makeMediaURL(upcomingMoviesUrl, "3")),
-          getFetch(makeMediaURL(popularMoviesUrl, "1")),
-          getFetch(makeMediaURL(popularMoviesUrl, "2")),
-          getFetch(makeMediaURL(popularMoviesUrl, "3")),
-          getFetch(makeMediaURL(popularTVUrl, "1")),
-          getFetch(makeMediaURL(popularTVUrl, "2")),
-          getFetch(makeMediaURL(popularTVUrl, "3")),
-          getFetch(makeMediaURL(trendingMoviesUrl, "1")),
-          getFetch(makeMediaURL(trendingMoviesUrl, "2")),
-          getFetch(makeMediaURL(trendingMoviesUrl, "3")),
-          getFetch(makeMediaURL(comedyMoviesUrl, "1")),
-          getFetch(makeMediaURL(comedyMoviesUrl, "2")),
-          getFetch(makeMediaURL(comedyMoviesUrl, "3")),
-          getFetch(makeMediaURL(actionMoviesUrl, "1")),
-          getFetch(makeMediaURL(actionMoviesUrl, "2")),
-          getFetch(makeMediaURL(actionMoviesUrl, "3")),
-          getFetch(makeMediaURL(romanceMoviesUrl, "1")),
-          getFetch(makeMediaURL(romanceMoviesUrl, "2")),
-          getFetch(makeMediaURL(romanceMoviesUrl, "3")),
-          getFetch(makeMediaURL(horrorMoviesUrl, "1")),
-          getFetch(makeMediaURL(horrorMoviesUrl, "2")),
-          getFetch(makeMediaURL(horrorMoviesUrl, "3")),
-          getFetch(makeMediaURL(animatedMoviesUrl, "1")),
-          getFetch(makeMediaURL(animatedMoviesUrl, "2")),
-          getFetch(makeMediaURL(animatedMoviesUrl, "3")),
-        ]);
+          getPopularTVOne,
+          getPopularTVTwo,
+          getPopularTVThree,
+          getAiringTodayTVOne,
+          getAiringTodayTVTwo,
+          getAiringTodayTVThree,
+        ] = handleResults(results);
         const profileMediaList = getProfileMediaList({
-          profile: Object.assign(
-            {},
-            getUserMe.status === 200
+          profile: {
+            ...(getUserMe.status === 200
               ? getUserMe.data.profiles?.find(
-                  (profile: IProfileMediaList) =>
-                    profile.id.toString() === activeProfile // Don't forget to convert to string :(
+                  (profile: any) => profile.id == activeProfile
                 )
-              : {}
-          ),
+              : {}),
+          },
         });
         const profileLikedMedia = getProfileLikedMedia({
-          profile: Object.assign(
-            {},
-            getUserMe.status === 200
+          profile: {
+            ...(getUserMe.status === 200
               ? getUserMe.data.profiles?.find(
-                  (profile: any) => profile.id.toString() === activeProfile
+                  (profile: any) => profile.id == activeProfile
                 )
-              : {}
-          ),
+              : {}),
+          },
         });
         const profileDislikedMedia = getProfileDislikedMedia({
-          profile: Object.assign(
-            {},
-            getUserMe.status === 200
+          profile: {
+            ...(getUserMe.status === 200
               ? getUserMe.data.profiles?.find(
-                  (profile: any) => profile.id.toString() === activeProfile
+                  (profile: any) => profile.id == activeProfile
                 )
-              : {}
-          ),
+              : {}),
+          },
         });
         // Build sliders
         const myMediaList = makeMediaArray({
@@ -316,82 +286,67 @@ export default withSessionRoute(
           profileLikedMediaArray: profileLikedMedia,
           profileDislikedMediaArray: profileDislikedMedia,
         });
-        const upcomingMovies = makeMediaArray({
-          srcArray: [].concat(
-            getUpcomingMoviesOne.data.results,
-            getUpcomingMoviesTwo.data.results,
-            getUpcomingMoviesThree.data.results
-          ),
-          mediaType: "movie",
-          profileMediaListArray: profileMediaList,
-          profileLikedMediaArray: profileLikedMedia,
-          profileDislikedMediaArray: profileDislikedMedia,
-        });
         const popularMovies = makeMediaArray({
-          srcArray: [].concat(
-            getPopularMoviesOne.data.results,
-            getPopularMoviesTwo.data.results,
-            getPopularMoviesThree.data.results
-          ),
+          srcArray: [
+            ...(getPopularMoviesOne.status === 200
+              ? getPopularMoviesOne.data.results
+              : []),
+            ...(getPopularMoviesTwo.status === 200
+              ? getPopularMoviesTwo.data.results
+              : []),
+            ...(getPopularMoviesThree.status === 200
+              ? getPopularMoviesThree.data.results
+              : []),
+          ],
           mediaType: "movie",
           profileMediaListArray: profileMediaList,
           profileLikedMediaArray: profileLikedMedia,
           profileDislikedMediaArray: profileDislikedMedia,
         });
         const popularTV = makeMediaArray({
-          srcArray: [].concat(
-            getPopularTVOne.data.results,
-            getPopularTVTwo.data.results,
-            getPopularTVThree.data.results
-          ),
+          srcArray: [
+            ...(getPopularTVOne.status === 200
+              ? getPopularTVOne.data.results
+              : []),
+            ...(getPopularTVTwo.status === 200
+              ? getPopularTVTwo.data.results
+              : []),
+            ...(getPopularTVThree.status === 200
+              ? getPopularTVThree.data.results
+              : []),
+          ],
           mediaType: "tv",
           profileMediaListArray: profileMediaList,
           profileLikedMediaArray: profileLikedMedia,
           profileDislikedMediaArray: profileDislikedMedia,
         });
+        const nowPlayingMovies = makeMediaArray({
+          srcArray: [
+            ...(getNowPlayingMoviesOne.status === 200
+              ? getNowPlayingMoviesOne.data.results
+              : []),
+            ...(getNowPlayingMoviesTwo.status === 200
+              ? getNowPlayingMoviesTwo.data.results
+              : []),
+            ...(getNowPlayingMoviesThree.status === 200
+              ? getNowPlayingMoviesThree.data.results
+              : []),
+          ],
+          mediaType: "movie",
+          profileMediaListArray: profileMediaList,
+          profileLikedMediaArray: profileLikedMedia,
+          profileDislikedMediaArray: profileDislikedMedia,
+        });
         const trendingMovies = makeMediaArray({
-          srcArray: [].concat(
-            getTrendingMoviesOne.data.results,
-            getTrendingMoviesTwo.data.results,
-            getTrendingMoviesThree.data.results
-          ),
-          mediaType: "movie",
-          profileMediaListArray: profileMediaList,
-          profileLikedMediaArray: profileLikedMedia,
-          profileDislikedMediaArray: profileDislikedMedia,
-        });
-        const comedyMovies = makeMediaArray({
-          srcArray: [].concat(
-            getComedyMoviesOne.data.results,
-            getComedyMoviesTwo.data.results,
-            getComedyMoviesThree.data.results
-          ),
-          mediaType: "movie",
-          profileMediaListArray: profileMediaList,
-          profileLikedMediaArray: profileLikedMedia,
-          profileDislikedMediaArray: profileDislikedMedia,
-        });
-        const actionMovies = makeMediaArray({
-          srcArray: [].concat(
-            getActionMoviesOne.data.results,
-            getActionMoviesTwo.data.results,
-            getActionMoviesThree.data.results
-          ),
-          mediaType: "movie",
-          profileMediaListArray: profileMediaList,
-          profileLikedMediaArray: profileLikedMedia,
-          profileDislikedMediaArray: profileDislikedMedia,
-        });
-        const romanceMovies = makeMediaArray({
           srcArray: [
-            ...(getRomanceMoviesOne.status === 200
-              ? getRomanceMoviesOne.data.results
+            ...(getTrendingMoviesOne.status === 200
+              ? getTrendingMoviesOne.data.results
               : []),
-            ...(getRomanceMoviesTwo.status === 200
-              ? getRomanceMoviesTwo.data.results
+            ...(getTrendingMoviesTwo.status === 200
+              ? getTrendingMoviesTwo.data.results
               : []),
-            ...(getRomanceMoviesThree.status === 200
-              ? getRomanceMoviesThree.data.results
+            ...(getTrendingMoviesThree.status === 200
+              ? getTrendingMoviesThree.data.results
               : []),
           ],
           mediaType: "movie",
@@ -399,55 +354,31 @@ export default withSessionRoute(
           profileLikedMediaArray: profileLikedMedia,
           profileDislikedMediaArray: profileDislikedMedia,
         });
-        const horrorMovies = makeMediaArray({
+        const airingTodayTV = makeMediaArray({
           srcArray: [
-            ...(getHorrorMoviesOne.status === 200
-              ? getHorrorMoviesOne.data.results
+            ...(getAiringTodayTVOne.status === 200
+              ? getAiringTodayTVOne.data.results
               : []),
-            ...(getHorrorMoviesTwo.status === 200
-              ? getHorrorMoviesTwo.data.results
+            ...(getAiringTodayTVTwo.status === 200
+              ? getAiringTodayTVTwo.data.results
               : []),
-            ...(getHorrorMoviesThree.status === 200
-              ? getHorrorMoviesThree.data.results
+            ...(getAiringTodayTVThree.status === 200
+              ? getAiringTodayTVThree.data.results
               : []),
           ],
-          mediaType: "movie",
-          profileMediaListArray: profileMediaList,
-          profileLikedMediaArray: profileLikedMedia,
-          profileDislikedMediaArray: profileDislikedMedia,
-        });
-        const animatedMovies = makeMediaArray({
-          srcArray: [
-            ...(getAnimatedMoviesOne.status === 200
-              ? getAnimatedMoviesOne.data.results
-              : []),
-            ...(getAnimatedMoviesTwo.status === 200
-              ? getAnimatedMoviesTwo.data.results
-              : []),
-            ...(getAnimatedMoviesThree.status === 200
-              ? getAnimatedMoviesThree.data.results
-              : []),
-          ],
-          mediaType: "movie",
+          mediaType: "tv",
           profileMediaListArray: profileMediaList,
           profileLikedMediaArray: profileLikedMedia,
           profileDislikedMediaArray: profileDislikedMedia,
         });
         // Merge tv and movies to create a mixed content array
-        const popularTVAndMovies = mergeSortedArrays([
+        const tvAndMoviesArray = mergeSortedArrays([
           popularMovies.slice(0, 30 || Math.floor(popularMovies.length / 2)),
           popularTV.slice(0, 30 || Math.floor(popularTV.length / 2)),
         ]);
         // Get the Billboard component movie media
         const { data: billboardMedia } = await getBillboardMedia({
-          srcArray: profileMediaList.length
-            ? [
-                ...profileMediaList,
-                ...profileLikedMedia,
-                ...popularTVAndMovies,
-                ...upcomingMovies,
-              ]
-            : popularTVAndMovies,
+          srcArray: popularMovies,
           profileMediaListArray: profileMediaList,
           profileLikedMediaArray: profileLikedMedia,
           profileDislikedMediaArray: profileDislikedMedia,
@@ -458,100 +389,52 @@ export default withSessionRoute(
           data: {
             billboard: {
               data: billboardMedia,
-              listContext: "billboard",
             },
             profileMediaList,
             profileLikedMedia,
             profileDislikedMedia,
-            upcomingMovies,
             popularMovies,
+            nowPlayingMovies,
             trendingMovies,
-            comedyMovies,
-            actionMovies,
-            romanceMovies,
-            horrorMovies,
-            animatedMovies,
+            airingTodayTV,
             sliders: [
               {
                 id: 0,
                 type: "mixed",
                 name: "My List",
-                listContext: "queue",
                 data: myMediaList,
-                isMyListRow: true,
               },
               {
                 id: 1,
-                type: "mixed",
-                name: requests.fetchPopularMovies.title,
-                listContext: requests.fetchPopularMovies.listContext,
-                data: popularTVAndMovies,
-                isMyListRow: false,
+                type: "tv",
+                name: requests.fetchAiringTodayTV.title,
+                data: airingTodayTV,
               },
               {
                 id: 2,
                 type: "movie",
-                name: requests.fetchUpcomingMovies.title,
-                listContext: requests.fetchUpcomingMovies.listContext,
-                data: upcomingMovies,
-                isMyListRow: false,
+                name: requests.fetchNowPlayingMovies.title,
+                data: nowPlayingMovies,
               },
               {
                 id: 3,
-                type: "movie",
-                name: requests.fetchTrendingMovies.title,
-                listContext: requests.fetchTrendingMovies.listContext,
-                data: trendingMovies,
-                isMyListRow: false,
+                type: "mixed",
+                name: requests.fetchPopularMovies.title,
+                data: tvAndMoviesArray,
               },
               {
                 id: 4,
                 type: "movie",
-                name: requests.fetchComedyMovies.title,
-                listContext: requests.fetchComedyMovies.listContext,
-                data: comedyMovies,
-                isMyListRow: false,
-              },
-              {
-                id: 5,
-                type: "movie",
-                name: requests.fetchActionMovies.title,
-                listContext: requests.fetchActionMovies.listContext,
-                data: actionMovies,
-                isMyListRow: false,
-              },
-              {
-                id: 6,
-                type: "movie",
-                name: requests.fetchRomanceMovies.title,
-                listContext: requests.fetchRomanceMovies.listContext,
-                data: romanceMovies,
-                isMyListRow: false,
-              },
-              {
-                id: 7,
-                type: "movie",
-                name: requests.fetchHorrorMovies.title,
-                listContext: requests.fetchHorrorMovies.listContext,
-                data: horrorMovies,
-                isMyListRow: false,
-              },
-              {
-                id: 8,
-                type: "movie",
-                name: requests.fetchAnimatedMovies.title,
-                listContext: requests.fetchAnimatedMovies.listContext,
-                data: animatedMovies,
-                isMyListRow: false,
+                name: requests.fetchTrendingMovies.title,
+                data: trendingMovies,
               },
             ],
           },
         });
       } catch (error: any) {
         // Send error repsonses to the frontend for user feedback
-        res.status(500).send(`Internal Server Error: ${error} .`);
         res.status(error.response.status).json({
-          message: `Internal Server Error: ${error} .`,
+          message: error,
         });
       }
     } else {
