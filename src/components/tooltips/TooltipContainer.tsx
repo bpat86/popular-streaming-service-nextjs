@@ -132,7 +132,7 @@ const TooltipContainer = forwardRef(
         style={{ ...portalStyle() }}
       >
         {/* Tooltip */}
-        <div className="whitespace-nowrap rounded bg-zinc-100 py-2 px-4 text-[0.65rem] font-semibold text-zinc-900 sm:text-[1.1rem] xl:text-xl">
+        <div className="tooltip whitespace-nowrap rounded bg-zinc-100 py-2 px-4 text-[0.65rem] font-semibold text-zinc-900 sm:text-[1.1rem] xl:text-xl">
           {children}
         </div>
         {/* Caret */}

@@ -26,7 +26,10 @@ const Tooltip = ({
 
   // Render the tooltip
   return (
-    <div ref={wrapperRef} className={clsxm("relative", className)}>
+    <div
+      ref={wrapperRef}
+      className={clsxm("tooltip-wrapper relative", className)}
+    >
       <AnimatePresenceWrapper>
         {isHovering && tooltipsAreEnabled() && (
           <TooltipContainer key={text} ref={wrapperRef} showCaret={showCaret}>

@@ -1,3 +1,5 @@
+import { MouseEvent } from "react";
+
 import Tooltip from "@/components/tooltips/Tooltip";
 import clsxm from "@/lib/clsxm";
 import { MotionPathWrapper } from "@/lib/MotionPathWrapper";
@@ -160,7 +162,8 @@ const MediaControls = ({
   /**
    * Handle the click event for the media controls
    */
-  function handleClick() {
+  function handleClick(e: MouseEvent<Element>) {
+    e.stopPropagation();
     return videoPlaying
       ? inView
         ? toggleAudio()

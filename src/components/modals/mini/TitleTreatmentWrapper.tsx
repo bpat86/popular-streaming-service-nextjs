@@ -1,95 +1,84 @@
 import { ReactNode, useEffect, useRef, useState } from "react";
 
+import clsxm from "@/lib/clsxm";
 import { PreviewModalStore } from "@/store/types";
 
 type TitleTreatmentWrapperProps = {
-  animationTiming?: number;
   children: ReactNode;
-  delayTiming?: number;
   isDefaultModal?: boolean;
   isDetailModal?: PreviewModalStore["isDetailModal"];
-  transitionTiming?: number;
-  videoCompleted?: boolean;
-  videoCanPlayThrough?: boolean;
-  videoId?: string;
+  shouldAnimate?: boolean;
 };
 
 const TitleTreatmentWrapper = ({
-  animationTiming = 3000,
   children,
-  delayTiming = 6000,
-  isDefaultModal = false,
   isDetailModal,
-  transitionTiming = 500,
-  videoCompleted,
-  videoCanPlayThrough,
-  videoId,
+  shouldAnimate,
 }: TitleTreatmentWrapperProps) => {
-  const [isHovered, setIsHovered] = useState<boolean>(false);
   const [isDelayed, setIsDelayed] = useState<boolean>(true);
-  const [mounted, setMounted] = useState<boolean>(false);
+  const [isHovering, setIsHovering] = useState<boolean>(false);
+  const delayTimerIdRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hoverTimerIdRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const mountedRef = useRef<boolean>(false);
 
-  const delayedTimeoutId = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const timeoutId = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const style =
-    !videoId ||
-    isDelayed ||
-    isDetailModal ||
-    (videoCompleted && !videoCanPlayThrough)
-      ? {
-          opacity: mounted ? 1 : 0,
-          transition: `opacity ${transitionTiming}ms ease-out`,
-          transitionDelay: `${transitionTiming}ms`,
-        }
-      : {
-          opacity: isHovered ? 1 : 0,
-          transition: `opacity ${transitionTiming}ms ease-out`,
-          transitionDelay: `${transitionTiming}ms`,
-        };
-
+  /**
+   * Set isHovering state on hover
+   */
   useEffect(() => {
-    setMounted(true);
-    if (!isHovered) return;
-    delayedTimeoutId.current = setTimeout(() => {
-      setIsDelayed(false);
-    }, delayTiming);
-
-    timeoutId.current = setTimeout(() => {
-      !isDelayed && setIsHovered(false);
-    }, animationTiming);
-
-    return () => {
-      setMounted(false);
-      setIsHovered(false);
-      clearDelays();
-    };
-  }, [isHovered, isDelayed, delayTiming, animationTiming]);
-
-  /**
-   * Handle logo animation visibility
-   */
-  const triggerAnimation = () => {
-    !isHovered && setIsHovered(true);
-  };
+    mountedRef.current = true;
+    if (isHovering) {
+      // Set timeout to reset isDelayed state after delayTiming
+      delayTimerIdRef.current = setTimeout(() => {
+        isDelayed && setIsDelayed(false);
+      }, 6000);
+      // Set timeout to reset isHovering state after animationTiming
+      hoverTimerIdRef.current = setTimeout(() => {
+        !isDelayed && setIsHovering(false);
+      }, 3000);
+      // Clear timeouts and reset state on unmount
+      return () => {
+        mountedRef.current = false;
+        setIsHovering(false);
+        clearDelays();
+      };
+    }
+  }, [isHovering, isDelayed]);
 
   /**
-   * Clear timeoutId refs
+   * Clear hoverTimerIdRef refs
    */
-  const clearDelays = () => {
-    delayedTimeoutId.current && clearTimeout(delayedTimeoutId.current),
-      (delayedTimeoutId.current = null);
-    timeoutId.current && clearTimeout(timeoutId.current),
-      (timeoutId.current = null);
-  };
+  function clearDelays() {
+    delayTimerIdRef.current && clearTimeout(delayTimerIdRef.current),
+      (delayTimerIdRef.current = null);
+    hoverTimerIdRef.current && clearTimeout(hoverTimerIdRef.current),
+      (hoverTimerIdRef.current = null);
+  }
 
-  return isDefaultModal || isDetailModal ? (
+  /**
+   * Trigger visibility animation on hover or move
+   */
+  function visibilityAnimation() {
+    !isHovering && setIsHovering(true);
+  }
+
+  return isDetailModal ? (
     <div className="title-treatment-wrapper">{children}</div>
   ) : (
     <div
-      className="title-treatment-wrapper"
-      onMouseEnter={triggerAnimation}
-      onMouseMove={triggerAnimation}
-      style={style}
+      className={clsxm(
+        "title-treatment-wrapper transition-opacity duration-500 ease-out",
+        [
+          !shouldAnimate || isDelayed
+            ? mountedRef.current
+              ? "opacity-100"
+              : "opacity-0"
+            : isHovering
+            ? "opacity-100"
+            : "opacity-0",
+        ]
+      )}
+      onMouseEnter={visibilityAnimation}
+      onMouseMove={visibilityAnimation}
     >
       {children}
     </div>

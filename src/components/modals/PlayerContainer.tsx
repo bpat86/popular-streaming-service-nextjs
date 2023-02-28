@@ -85,6 +85,7 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
     const buttonsRef = ref as MutableRefObject<HTMLDivElement>;
     // Player state
     const playerRef = useRef<YouTubePlayer>(null);
+    const [playerError, setPlayerError] = useState<boolean>(false);
     const [playing, setPlaying] = useState<boolean>(true);
     const [played, setPlayed] = useState<number>(0);
     const [videoCompleted, setVideoCompleted] = useState<boolean>(false);
@@ -124,6 +125,7 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
 
     const handleOnReady = () => {
       handleSeek();
+      setPlayerError(false);
       setVideoCanPlayThrough(true);
     };
 
@@ -164,7 +166,7 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
       setVideoCompleted(false);
     };
 
-    const audioEnabled = () => {
+    const isMuted = () => {
       return muted;
     };
 
@@ -321,9 +323,12 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
           {!isDefaultModal && !showBoxArtOnClose && (
             <TitleTreatmentWrapper
               isDetailModal={isDetailModal}
-              videoId={videoId}
-              videoCompleted={videoCompleted}
-              videoCanPlayThrough={videoCanPlayThrough}
+              shouldAnimate={
+                !videoCompleted &&
+                videoStarted &&
+                videoCanPlayThrough &&
+                playing
+              }
             >
               <div className="title-treatment">
                 {!isLoading && <Logo logos={logos} title={title} />}
@@ -345,11 +350,18 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
               <AnimatePresenceWrapper>
                 {videoStarted && showVideo && (
                   <MediaControls
-                    audioEnabled={audioEnabled()}
                     isDetailModal={isDetailModal}
+                    isMuted={isMuted()}
                     toggleAudio={toggleAudio}
                     replayVideo={replayVideo}
-                    videoCompleted={videoCompleted}
+                    videoError={!videoCanPlayThrough || playerError}
+                    videoPlaying={
+                      !videoBuffering &&
+                      videoStarted &&
+                      videoCanPlayThrough &&
+                      playing
+                    }
+                    videoCompleted={videoCompleted && videoHasPlayedAtLeastOnce}
                     videoCanPlayThrough={videoCanPlayThrough}
                     videoHasPlayedAtLeastOnce={videoHasPlayedAtLeastOnce}
                   />
@@ -360,11 +372,8 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
           {/* Default modal media info */}
           {isDefaultModal && showTitleGradient && (
             <TitleTreatmentWrapper
-              isDefaultModal={isDefaultModal}
               isDetailModal={isDetailModal}
-              videoId={videoId}
-              videoCompleted={videoCompleted}
-              videoCanPlayThrough={videoCanPlayThrough}
+              shouldAnimate={false}
             >
               <MotionDivWrapper
                 inherit={false}
@@ -393,11 +402,18 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
               <AnimatePresenceWrapper>
                 {videoStarted && showVideo && (
                   <MediaControls
-                    audioEnabled={audioEnabled()}
                     isDetailModal={isDetailModal}
+                    isMuted={isMuted()}
                     toggleAudio={toggleAudio}
                     replayVideo={replayVideo}
-                    videoCompleted={videoCompleted}
+                    videoError={!videoCanPlayThrough || playerError}
+                    videoPlaying={
+                      !videoBuffering &&
+                      videoStarted &&
+                      videoCanPlayThrough &&
+                      playing
+                    }
+                    videoCompleted={videoCompleted && videoHasPlayedAtLeastOnce}
                     videoCanPlayThrough={videoCanPlayThrough}
                     videoHasPlayedAtLeastOnce={videoHasPlayedAtLeastOnce}
                   />
