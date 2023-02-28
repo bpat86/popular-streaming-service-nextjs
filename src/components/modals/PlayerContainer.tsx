@@ -198,8 +198,8 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
             <Image
               priority={true}
               className={clsxm(
-                "boxart-image transition delay-100 duration-200 ease-out",
-                [isDisliked && "grayscale"]
+                "boxart-image transition-opacity delay-700 duration-500 ease-out",
+                [isDisliked && "grayscale", willClose && "transition-none"]
               )}
               src={`https://image.tmdb.org/t/p/${
                 "w780" ?? "original"
@@ -243,8 +243,8 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
                 <Image
                   priority={true}
                   className={clsxm(
-                    "boxart-image transition delay-100 duration-200 ease-out",
-                    [isDisliked && "grayscale"]
+                    "boxart-image transition-opacity delay-700 duration-500 ease-out",
+                    [isDisliked && "grayscale", willClose && "transition-none"]
                   )}
                   src={`https://image.tmdb.org/t/p/${
                     "w1280" ?? "original"
@@ -279,8 +279,8 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
                 <Image
                   priority={true}
                   className={clsxm(
-                    "boxart-image transition delay-100 duration-200 ease-out",
-                    [isDisliked && "grayscale"]
+                    "boxart-image transition-opacity delay-700 duration-500 ease-out",
+                    [isDisliked && "grayscale", willClose && "transition-none"]
                   )}
                   src={`https://image.tmdb.org/t/p/${
                     "w1280" ?? "original"

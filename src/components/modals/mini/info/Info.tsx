@@ -46,7 +46,26 @@ const Info = forwardRef<HTMLDivElement, InfoProps>(
     ref
   ) => {
     return (
-      <div className="preview-modal info" onClick={handleMetadataAreaClicked}>
+      <MotionDivWrapper
+        inherit={false}
+        initial={{ opacity: 0 }}
+        animate={{
+          opacity: 1,
+          transition: {
+            duration: 0.067,
+            ease: "linear",
+          },
+        }}
+        exit={{
+          opacity: 0,
+          transition: {
+            duration: 0.117,
+            ease: "linear",
+          },
+        }}
+        className="preview-modal info"
+        onClick={handleMetadataAreaClicked}
+      >
         <div className="preview-modal info-container">
           <MotionDivWrapper
             inherit={false}
@@ -84,7 +103,7 @@ const Info = forwardRef<HTMLDivElement, InfoProps>(
             <Genres genres={genres} isLoading={isLoading} />
           </MotionDivWrapper>
         </div>
-      </div>
+      </MotionDivWrapper>
     );
   }
 );

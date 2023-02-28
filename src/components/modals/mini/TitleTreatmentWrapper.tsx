@@ -26,7 +26,7 @@ const TitleTreatmentWrapper = ({
    */
   useEffect(() => {
     mountedRef.current = true;
-    if (isHovering) {
+    if (mountedRef.current || isHovering) {
       // Set timeout to reset isDelayed state after delayTiming
       delayTimerIdRef.current = setTimeout(() => {
         isDelayed && setIsDelayed(false);
@@ -35,14 +35,13 @@ const TitleTreatmentWrapper = ({
       hoverTimerIdRef.current = setTimeout(() => {
         !isDelayed && setIsHovering(false);
       }, 3000);
-      // Clear timeouts and reset state on unmount
       return () => {
-        mountedRef.current = false;
-        setIsHovering(false);
         clearDelays();
+        delayTimerIdRef.current = null;
+        hoverTimerIdRef.current = null;
       };
     }
-  }, [isHovering, isDelayed]);
+  }, [isHovering, isDelayed, mountedRef]);
 
   /**
    * Clear hoverTimerIdRef refs
@@ -66,7 +65,7 @@ const TitleTreatmentWrapper = ({
   ) : (
     <div
       className={clsxm(
-        "title-treatment-wrapper transition-opacity duration-500 ease-out",
+        "title-treatment-wrapper transition-opacity delay-300 duration-300 ease-out",
         [
           !shouldAnimate || isDelayed
             ? mountedRef.current
