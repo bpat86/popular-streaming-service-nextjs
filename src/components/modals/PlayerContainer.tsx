@@ -354,6 +354,7 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
                     isMuted={isMuted()}
                     toggleAudio={toggleAudio}
                     replayVideo={replayVideo}
+                    title={title}
                     videoError={!videoCanPlayThrough || playerError}
                     videoPlaying={
                       !videoBuffering &&
@@ -404,8 +405,9 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
                   <MediaControls
                     isDetailModal={isDetailModal}
                     isMuted={isMuted()}
-                    toggleAudio={toggleAudio}
                     replayVideo={replayVideo}
+                    toggleAudio={toggleAudio}
+                    title={title}
                     videoError={!videoCanPlayThrough || playerError}
                     videoPlaying={
                       !videoBuffering &&
