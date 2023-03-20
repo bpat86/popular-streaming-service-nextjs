@@ -3,21 +3,47 @@ import Link from "next/link";
 import { Fragment, useContext } from "react";
 
 import AuthContext from "@/context/AuthContext";
-import ProfileContext from "@/context/ProfileContext";
+import clsxm from "@/lib/clsxm";
+import useProfiles from "@/middleware/useProfiles";
+import useProfileStore from "@/store/ProfileStore";
+import { IProfile } from "@/store/types";
 
-const classNames = (...classes) => {
-  return classes.filter(Boolean).join(" ");
+type UserDropdownProps = {
+  isActive: boolean;
 };
 
-const UserDropdown = (props) => {
-  const { isActive, profiles } = props;
+export default function UserDropdown({ isActive }: UserDropdownProps) {
   const { logout } = useContext(AuthContext);
-  const { manageProfilesHandler, makeProfileActive, activeProfile } =
-    useContext(ProfileContext);
+  const { profiles } = useProfiles();
+  const {
+    activeProfile,
+    setActiveProfile,
+    manageProfilesModeEnabled,
+    toggleManageProfilesMode,
+  } = useProfileStore();
 
-  const getTotalProfiles = () => {
-    return profiles && profiles.map((profile) => profile).length;
-  };
+  /**
+   * Count the number of profiles.
+   */
+  function getProfilesCount() {
+    return (
+      (profiles && profiles.map((profile: IProfile) => profile).length) || 0
+    );
+  }
+
+  /**
+   * Handle the click event for the "Manage Profiles" button.
+   */
+  function handleManageProfiles() {
+    !manageProfilesModeEnabled && toggleManageProfilesMode();
+  }
+
+  /**
+   * Activate a profile.
+   */
+  function handleSetActiveProfile(profile: IProfile) {
+    setActiveProfile(profile);
+  }
 
   return isActive ? (
     <Menu as="div" className="relative inline-block bg-transparent text-left">
@@ -41,31 +67,36 @@ const UserDropdown = (props) => {
           {({ open }) => (
             <>
               <span className="sr-only">Open profile menu</span>
-              <span className="mr-2 text-sm font-semibold">
-                {activeProfile?.attributes.name}
-              </span>
-              <div
-                className="profile-avatar mx-auto flex h-8 w-8 flex-col rounded-md bg-cover"
-                style={{
-                  backgroundImage: `url("/images/profiles/avatars/${activeProfile?.attributes.avatar}.png")`,
-                }}
-              ></div>
+              {activeProfile && (
+                <>
+                  <span className="mr-2 text-sm font-semibold">
+                    {activeProfile.attributes.name}
+                  </span>
+                  <div
+                    className="profile-avatar mx-auto flex h-8 w-8 flex-col rounded-md bg-cover"
+                    style={{
+                      backgroundImage: `url("/images/profiles/avatars/${activeProfile.attributes.avatar}.png")`,
+                    }}
+                  />
+                </>
+              )}
               <svg
                 aria-hidden="true"
                 width="8"
                 height="6"
                 fill="none"
-                className={`ml-1.5 transform text-zinc-300 transition duration-300 ease-out ${
-                  open ? "rotate-0" : "-rotate-180"
-                }`}
+                className={clsxm(
+                  "ml-1.5 transform text-zinc-300 transition duration-300 ease-out",
+                  [open ? "rotate-0" : "-rotate-180"]
+                )}
               >
                 <path
                   d="M7 1.5l-3 3-3-3"
                   stroke="currentColor"
-                  strokeWidth="2"
+                  strokeWidth={2}
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                ></path>
+                />
               </svg>
             </>
           )}
@@ -87,53 +118,58 @@ const UserDropdown = (props) => {
         >
           <div className="relative py-4">
             <div className="cursor-pointer space-y-3 px-3">
-              {profiles?.map((profile) => {
-                if (
-                  profile.attributes.name !== activeProfile?.attributes.name
-                ) {
+              {profiles
+                ?.filter((profile: IProfile, idx: number) => {
+                  if (!profile || !activeProfile) return <Fragment key={idx} />;
                   return (
-                    <Menu.Item as="div" key={profile.id}>
+                    profile.attributes.name !== activeProfile.attributes.name
+                  );
+                })
+                ?.map((profile: IProfile, idx: number) => {
+                  if (!profile) return <Fragment key={idx} />;
+                  return (
+                    <Menu.Item as="div" key={`${idx}_${profile.id}`}>
                       {() => (
-                        <>
+                        <div
+                          className="group flex items-center justify-start"
+                          onClick={() => handleSetActiveProfile(profile)}
+                        >
                           <div
-                            className="group flex items-center justify-start"
-                            onClick={() => makeProfileActive(profile)}
-                          >
-                            <div
-                              className="profile-avatar mr-2 flex h-8 w-8 flex-col rounded-md bg-cover"
-                              style={{
-                                backgroundImage: `url("/images/profiles/avatars/${profile.attributes.avatar}.png")`,
-                              }}
-                            ></div>
-                            <span className="mr-4 text-sm font-semibold group-hover:underline">
-                              {profile.attributes.name}
-                            </span>
-                          </div>
-                        </>
+                            className="profile-avatar mr-2 flex h-8 w-8 flex-col rounded-md bg-cover"
+                            style={{
+                              backgroundImage: `url("/images/profiles/avatars/${profile.attributes.avatar}.png")`,
+                            }}
+                          ></div>
+                          <span className="mr-4 text-sm font-semibold group-hover:underline">
+                            {profile.attributes.name}
+                          </span>
+                        </div>
                       )}
                     </Menu.Item>
                   );
-                }
-              })}
+                })}
             </div>
             <div
-              className={`px-3 ${
-                profiles && profiles.map((profile) => profile).length < 2
+              className={clsxm("px-3", [
+                profiles &&
+                profiles?.map((profile: IProfile) => profile).length < 2
                   ? "pt-0"
-                  : "pt-5"
-              }`}
+                  : "pt-5",
+              ])}
             >
               <Menu.Item>
                 {({ active }) => (
                   <button
                     type="submit"
-                    className={classNames(
-                      active
-                        ? "text-sm font-semibold hover:underline"
-                        : "text-zinc-100",
-                      "flex w-full items-center text-left text-sm font-semibold focus:outline-none"
+                    className={clsxm(
+                      "flex w-full items-center text-left text-sm font-semibold focus:outline-none",
+                      [
+                        active
+                          ? "text-sm font-semibold hover:underline"
+                          : "text-zinc-100",
+                      ]
                     )}
-                    onClick={() => manageProfilesHandler()}
+                    onClick={handleManageProfiles}
                   >
                     <svg
                       aria-hidden="true"
@@ -150,8 +186,8 @@ const UserDropdown = (props) => {
                         height="4.5"
                         rx="2.25"
                         stroke="#D4D4D4"
-                        strokeWidth="1.5"
-                      ></rect>
+                        strokeWidth={1.5}
+                      />
                       <rect
                         x="10.75"
                         y="2.75"
@@ -159,16 +195,16 @@ const UserDropdown = (props) => {
                         height="4.5"
                         rx="2.25"
                         stroke="#D4D4D4"
-                        strokeWidth="1.5"
-                      ></rect>
+                        strokeWidth={1.5}
+                      />
                       <path
                         d="M11.179 16.52c-.854-1.416-2.035-2.77-4.171-2.77s-3.318 1.353-4.171 2.77a.484.484 0 00.425.73h7.492c.379 0 .62-.406.425-.73zM12.75 9.75c2.14 0 3.51 1.358 4.418 2.776.204.32-.035.724-.414.724H12.75"
                         stroke="#D4D4D4"
-                        strokeWidth="1.5"
+                        strokeWidth={1.5}
                         strokeLinecap="round"
-                      ></path>
+                      />
                     </svg>
-                    {getTotalProfiles() < 2
+                    {getProfilesCount() < 2
                       ? "Manage Profile"
                       : "Manage Profiles"}
                   </button>
@@ -180,9 +216,9 @@ const UserDropdown = (props) => {
                 {({ active }) => (
                   <Link
                     href="/my-account"
-                    className={classNames(
-                      active ? "text-sm hover:underline" : "text-zinc-100",
-                      "flex w-full items-center text-left text-sm font-bold focus:outline-none"
+                    className={clsxm(
+                      "flex w-full items-center text-left text-sm font-bold focus:outline-none",
+                      [active ? "text-sm hover:underline" : "text-zinc-100"]
                     )}
                     legacyBehavior={false}
                   >
@@ -193,7 +229,7 @@ const UserDropdown = (props) => {
                         height="20"
                         fill="none"
                         stroke="currentColor"
-                        strokeWidth="1.5"
+                        strokeWidth={1.5}
                         className="mr-3 flex-none text-zinc-300"
                       >
                         <rect
@@ -202,15 +238,15 @@ const UserDropdown = (props) => {
                           width="4.5"
                           height="4.5"
                           rx="2.25"
-                        ></rect>
+                        />
                         <rect
                           x="2.75"
                           y="2.75"
                           width="14.5"
                           height="14.5"
                           rx="7.25"
-                        ></rect>
-                        <path d="M14.618 15.5A5.249 5.249 0 0010 12.75a5.249 5.249 0 00-4.618 2.75"></path>
+                        />
+                        <path d="M14.618 15.5A5.249 5.249 0 0010 12.75a5.249 5.249 0 00-4.618 2.75" />
                       </svg>
                       Account
                     </>
@@ -221,11 +257,11 @@ const UserDropdown = (props) => {
                 {({ active }) => (
                   <button
                     type="submit"
-                    className={classNames(
-                      active ? "text-sm hover:underline" : "text-zinc-100",
-                      "flex w-full items-center text-left text-sm font-bold focus:outline-none"
+                    className={clsxm(
+                      "flex w-full items-center text-left text-sm font-bold focus:outline-none",
+                      [active ? "text-sm hover:underline" : "text-zinc-100"]
                     )}
-                    onClick={() => logout()}
+                    onClick={logout}
                   >
                     <svg
                       aria-hidden="true"
@@ -237,10 +273,10 @@ const UserDropdown = (props) => {
                       <path
                         d="M10.25 3.75H9A6.25 6.25 0 002.75 10v0A6.25 6.25 0 009 16.25h1.25M10.75 10h6.5M14.75 12.25l2.5-2.25-2.5-2.25"
                         stroke="currentColor"
-                        strokeWidth="1.5"
+                        strokeWidth={1.5}
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                      ></path>
+                      />
                     </svg>
                     Sign out of Netflix
                   </button>
@@ -256,7 +292,7 @@ const UserDropdown = (props) => {
       <button
         type="submit"
         className="flex w-full items-center text-left text-sm font-bold text-zinc-100 focus:outline-none"
-        onClick={() => logout()}
+        onClick={logout}
       >
         <svg
           aria-hidden="true"
@@ -268,15 +304,13 @@ const UserDropdown = (props) => {
           <path
             d="M10.25 3.75H9A6.25 6.25 0 002.75 10v0A6.25 6.25 0 009 16.25h1.25M10.75 10h6.5M14.75 12.25l2.5-2.25-2.5-2.25"
             stroke="currentColor"
-            strokeWidth="1.5"
+            strokeWidth={1.5}
             strokeLinecap="round"
             strokeLinejoin="round"
-          ></path>
+          />
         </svg>
         Sign out of Netflix
       </button>
     </>
   );
-};
-
-export default UserDropdown;
+}

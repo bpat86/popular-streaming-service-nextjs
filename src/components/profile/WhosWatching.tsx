@@ -2,6 +2,8 @@ import { useContext, useEffect } from "react";
 
 import Profile from "@/components/pages/layouts/ProfileGateLayout";
 import ProfileContext from "@/context/ProfileContext";
+import useProfileStore from "@/store/ProfileStore";
+import { IProfile } from "@/store/types";
 
 const WhosWatching = ({
   profiles,
@@ -10,7 +12,7 @@ const WhosWatching = ({
   mutateProfiles,
   user,
   isLoggedIn,
-}) => {
+}: any) => {
   const {
     loading,
     error,
@@ -59,7 +61,7 @@ const WhosWatching = ({
     resetFormState,
     makeProfileActive,
     activeProfile,
-  } = useContext(ProfileContext);
+  }: any = useContext(ProfileContext);
 
   const profileContextProps = {
     loading,
@@ -119,29 +121,27 @@ const WhosWatching = ({
   /**
    * Open the Add New Profile prompt
    */
-  const addNewProfileHandler = () => {
+  function handleCreateProfile() {
     resetFormState();
     setAddNewProfile(true);
-  };
+  }
 
   /**
    * Get the updated profile data and open the Edit Profile prompt
-   * @param {Object} profile
    */
-  const editProfileHandler = (profile) => {
+  function handleEditProfile(profile: IProfile) {
     getUpdatedProfile(profile);
     setProfileID(profile.id);
     setEditProfile(true);
-  };
+  }
 
   /**
    * Set profile as active when clicked
-   * @param {Object} profile
    */
-  const setActiveProfile = (profile) => {
-    const { id } = profile;
+  function handleSetActiveProfile(profile: IProfile) {
+    const { id, attributes } = profile;
     const { name, kid, autoPlayNextEpisode, autoPlayPreviews, avatar } =
-      profile.attributes;
+      attributes;
     const activeProfile = {
       id,
       attributes: {
@@ -154,7 +154,9 @@ const WhosWatching = ({
       },
     };
     makeProfileActive(activeProfile);
-  };
+    // useProfileStore.persist.clearStorage();
+    useProfileStore.getState().setActiveProfile(activeProfile);
+  }
 
   useEffect(() => {
     mutateProfiles();
@@ -167,11 +169,11 @@ const WhosWatching = ({
         <div className="fixed inset-0">
           <div className="fade-in fixed inset-0 flex flex-col items-center justify-center">
             <h1 className="block text-4xl font-medium tracking-wide text-white sm:text-6xl">
-              {manageProfiles ? <>Manage Profiles:</> : <>Who's watching?</>}
+              {manageProfiles ? "Manage Profiles:" : "Who's watching?"}
             </h1>
             <ul className="my-8 mb-20 flex w-full flex-row flex-wrap justify-center space-x-8">
               {!loadingProfiles && profiles ? (
-                profiles.map((profile) => (
+                profiles.map((profile: IProfile) => (
                   <li
                     key={profile.id}
                     className="group my-3 flex cursor-pointer flex-col items-center justify-center text-center"
@@ -182,12 +184,12 @@ const WhosWatching = ({
                         style={{
                           backgroundImage: `url("/images/profiles/avatars/${profile.attributes.avatar}.png")`,
                         }}
-                        onClick={() => setActiveProfile(profile)}
+                        onClick={() => handleSetActiveProfile(profile)}
                       ></div>
                       {manageProfiles && (
                         <div
                           className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50"
-                          onClick={() => editProfileHandler(profile)}
+                          onClick={() => handleEditProfile(profile)}
                         >
                           <div className="rounded-full border-2 border-white p-1">
                             <svg
@@ -236,20 +238,18 @@ const WhosWatching = ({
                   type="button"
                   className="group my-3 flex cursor-pointer flex-col items-center justify-center text-center focus:outline-none"
                   aria-label="Add a profile"
-                  onClick={() => addNewProfileHandler()}
+                  onClick={() => handleCreateProfile()}
                 >
                   <div className="profile-avatar mx-auto flex h-32 w-32 flex-col items-center justify-center rounded-md	transition duration-200 ease-out group-hover:bg-white md:h-44 md:w-44">
                     <svg
+                      stroke="currentColor"
+                      fill="currentColor"
+                      strokeWidth={0}
+                      viewBox="0 0 16 16"
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-32 w-32 text-zinc-400"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
                     >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
-                        clipRule="evenodd"
-                      />
+                      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"></path>
                     </svg>
                   </div>
                   <dl className="mt-4 flex flex-grow flex-col justify-between">

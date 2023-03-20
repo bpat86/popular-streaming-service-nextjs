@@ -10,7 +10,7 @@ import {
 import { modalStateActions } from "@/actions/Actions";
 import { AnimatePresenceWrapper } from "@/lib/AnimatePresenceWrapper";
 import usePreviewModalStore from "@/store/PreviewModalStore";
-import { IPreviewModal } from "@/store/types";
+import { IPreviewModal, PreviewModalStore } from "@/store/types";
 
 import PreviewModal from "./PreviewModal";
 
@@ -19,12 +19,15 @@ type PreviewModalContainerProps = {
   mutateSliderData?: IPreviewModal["mutateMedia"];
 };
 
+const previewModalStateByIdSelector = (state: PreviewModalStore) =>
+  state.previewModalStateById;
+
 const PreviewModalContainer = forwardRef(
   ({ children, mutateSliderData }: PreviewModalContainerProps, ref) => {
     const layoutWrapperRef = ref as MutableRefObject<HTMLDivElement | null>;
-    const { previewModalStateById } = usePreviewModalStore((state) => ({
-      previewModalStateById: state.previewModalStateById,
-    }));
+    const previewModalStateById = usePreviewModalStore(
+      previewModalStateByIdSelector
+    );
     const router = useRouter();
 
     /**
@@ -32,14 +35,14 @@ const PreviewModalContainer = forwardRef(
      */
     const isPreviewModalOpen = useCallback(
       (videoId: IPreviewModal["videoId"]) => {
-        if (!previewModalStateById) return false;
+        if (previewModalStateById === undefined) return false;
         let modal;
         return videoId
           ? null === (modal = previewModalStateById[videoId]) ||
             undefined === modal
             ? undefined
             : modal.isOpen
-          : Object.values(previewModalStateById).some(({ isOpen }) => isOpen);
+          : usePreviewModalStore.getState().isPreviewModalOpen();
       },
       [previewModalStateById]
     );
@@ -48,7 +51,7 @@ const PreviewModalContainer = forwardRef(
      * Returns the state of the currently open preview modal
      */
     const openPreviewModalState = useCallback(() => {
-      if (!previewModalStateById) return;
+      if (previewModalStateById === undefined) return;
       return Object.values(previewModalStateById).find(
         ({ isOpen }) => isOpen
       ) as IPreviewModal;
@@ -102,7 +105,7 @@ const PreviewModalContainer = forwardRef(
      * Close all preview modals
      */
     const closeAllModals = useCallback(() => {
-      if (!previewModalStateById) return;
+      if (previewModalStateById === undefined) return;
       Object.values(previewModalStateById)
         .filter(({ isOpen }) => isOpen)
         .forEach(({ videoId }) => {
@@ -227,7 +230,7 @@ const PreviewModalContainer = forwardRef(
      * Render mini preview modal
      */
     const renderMiniModal = () => {
-      if (!previewModalStateById) return;
+      if (previewModalStateById === undefined) return;
       return Object.values(previewModalStateById)
         .filter(({ closeWithoutAnimation, isOpen, modalState }) => {
           return (
@@ -243,7 +246,7 @@ const PreviewModalContainer = forwardRef(
      * Render detail preview modal
      */
     const renderDetailModal = () => {
-      if (!previewModalStateById) return;
+      if (previewModalStateById === undefined) return;
       const modal = Object.values(previewModalStateById).find(
         ({ closeWithoutAnimation, isOpen, modalState }) => {
           return (

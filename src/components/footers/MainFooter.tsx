@@ -205,7 +205,7 @@ const Footer = () => {
         </div>
         <div className="mt-8 md:flex md:items-center md:justify-between">
           <p className="mt-8 text-sm text-zinc-500 md:order-1 md:mt-0">
-            &copy; 1997-2022 Netflix, Inc.
+            &copy; {`1997-${new Date().getFullYear()} Netflix, Inc.`}
           </p>
         </div>
       </div>

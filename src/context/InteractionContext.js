@@ -5,29 +5,6 @@ const InteractionContext = createContext();
 export const InteractionProvider = ({ children }) => {
   const [watchModeEnabled, setWatchModeEnabled] = useState(false);
   const [tooltipsEnabled, setTooltipsEnabled] = useState(false);
-  const [audioEnabled, setAudioEnabled] = useState(false);
-
-  /**
-   * Enable audio globally
-   */
-  const enableAudio = () => {
-    setAudioEnabled(true);
-  };
-
-  /**
-   * Disable audio globally
-   */
-  const disableAudio = () => {
-    setAudioEnabled(false);
-  };
-
-  /**
-   * Return if audio is enabled globally
-   * @returns {Boolean}
-   */
-  const audioIsEnabled = () => {
-    return audioEnabled;
-  };
 
   /**
    * Enable watch mode globally
@@ -75,9 +52,6 @@ export const InteractionProvider = ({ children }) => {
   return (
     <InteractionContext.Provider
       value={{
-        enableAudio,
-        disableAudio,
-        audioIsEnabled,
         isWatchModeEnabled,
         enableWatchMode,
         disableWatchMode,

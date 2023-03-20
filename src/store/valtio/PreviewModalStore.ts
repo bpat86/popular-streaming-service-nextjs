@@ -1,6 +1,5 @@
 import { produce } from "immer";
-import { mountStoreDevtool } from "simple-zustand-devtools";
-import { create } from "zustand";
+import { proxy } from "valtio";
 
 import { modalStateActions, previewModalActions } from "@/actions/Actions";
 
@@ -124,74 +123,58 @@ const immerReducer = ({ state, action }: ImmerReducerProps) => {
   });
 };
 
-export const usePreviewModalStore = create<PreviewModalStore>((set, get) => ({
+const usePreviewModalStore = proxy<PreviewModalStore>({
   ...initialState,
   isDetailModal: () => {
-    const { previewModalStateById } = get();
-    if (previewModalStateById) {
-      return Object.values(previewModalStateById).some(
-        ({ isOpen, modalState }) => {
-          return isOpen && modalState === modalStateActions.DETAIL_MODAL;
-        }
-      );
+    const state = usePreviewModalStore.previewModalStateById;
+    if (state) {
+      return Object.values(state).some(({ isOpen, modalState }) => {
+        return isOpen && modalState === modalStateActions.DETAIL_MODAL;
+      });
     }
     return false;
   },
   isPreviewModalOpen: () => {
-    const { previewModalStateById } = get();
-    if (previewModalStateById) {
-      return Object.values(previewModalStateById).some(({ isOpen }) => isOpen);
-    }
-    return false;
+    const state = usePreviewModalStore.previewModalStateById;
+    return !!(state && Object.values(state).some(({ isOpen }) => isOpen));
   },
-  setPreviewModalWasOpen: (payload) => {
-    set((state) => {
-      return immerReducer({
-        state,
-        action: {
-          type: previewModalActions.SET_PREVIEW_MODAL_WAS_OPEN,
-          payload,
-        },
-      });
+  setPreviewModalWasOpen: async (payload) => {
+    return immerReducer({
+      state: usePreviewModalStore,
+      action: {
+        type: previewModalActions.SET_PREVIEW_MODAL_WAS_OPEN,
+        payload,
+      },
     });
   },
   setPreviewModalOpen: (payload) => {
-    set((state) => {
-      return immerReducer({
-        state,
-        action: {
-          type: previewModalActions.SET_PREVIEW_MODAL_OPEN,
-          payload,
-        },
-      });
+    console.log("payload", payload);
+    return immerReducer({
+      state: usePreviewModalStore,
+      action: {
+        type: previewModalActions.SET_PREVIEW_MODAL_OPEN,
+        payload,
+      },
     });
   },
   setPreviewModalClose: (payload) => {
-    set((state) => {
-      return immerReducer({
-        state,
-        action: {
-          type: previewModalActions.SET_PREVIEW_MODAL_CLOSE,
-          payload,
-        },
-      });
+    return immerReducer({
+      state: usePreviewModalStore,
+      action: {
+        type: previewModalActions.SET_PREVIEW_MODAL_CLOSE,
+        payload,
+      },
     });
   },
   updatePreviewModalState: (payload) => {
-    set((state) => {
-      return immerReducer({
-        state,
-        action: {
-          type: previewModalActions.UPDATE_PREVIEW_MODAL_STATE,
-          payload,
-        },
-      });
+    return immerReducer({
+      state: usePreviewModalStore,
+      action: {
+        type: previewModalActions.UPDATE_PREVIEW_MODAL_STATE,
+        payload,
+      },
     });
   },
-}));
+});
 
 export default usePreviewModalStore;
-
-if (process.env.NODE_ENV === "development") {
-  mountStoreDevtool("Store", usePreviewModalStore);
-}

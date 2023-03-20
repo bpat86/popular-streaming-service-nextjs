@@ -31,7 +31,10 @@
     "src/pages/_app.tsx",
     "src/middleware/withSession.ts",
     "src/components/navigation/HomeNavigation.js",
-    "src/middleware/useTitle.js"
+    "src/middleware/useTitle.js",
+    "src/pages/api/strapi/profiles/getProfiles.ts",
+    "src/pages/api/strapi/profiles/myProfile.js",
+    "src/pages/api/strapi/profiles/addMediaToList.js"
   ],
   "exclude": ["node_modules"],
   "moduleResolution": ["node_modules", ".next", "node"]

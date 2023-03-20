@@ -1,9 +1,8 @@
-import { ReactNode, useContext, useRef } from "react";
+import { ReactNode, useRef } from "react";
 
-import InteractionContext from "@/context/InteractionContext";
 import { useHover } from "@/hooks/useHover";
-import { AnimatePresenceWrapper } from "@/lib/AnimatePresenceWrapper";
 import clsxm from "@/lib/clsxm";
+import useInteractionStore from "@/store/InteractionStore";
 
 import TooltipContainer from "./TooltipContainer";
 
@@ -20,7 +19,6 @@ const Tooltip = ({
   showCaret = true,
   text,
 }: TooltipProps) => {
-  const { tooltipsAreEnabled } = useContext(InteractionContext);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const isHovering = useHover(wrapperRef);
 
@@ -30,13 +28,11 @@ const Tooltip = ({
       ref={wrapperRef}
       className={clsxm("tooltip-wrapper relative", className)}
     >
-      <AnimatePresenceWrapper>
-        {isHovering && tooltipsAreEnabled() && (
-          <TooltipContainer key={text} ref={wrapperRef} showCaret={showCaret}>
-            {text}
-          </TooltipContainer>
-        )}
-      </AnimatePresenceWrapper>
+      {isHovering && useInteractionStore.getState().tooltipsEnabled && (
+        <TooltipContainer key={text} ref={wrapperRef} showCaret={showCaret}>
+          {text}
+        </TooltipContainer>
+      )}
       {children}
     </div>
   );

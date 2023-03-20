@@ -4,51 +4,49 @@ import { API_URL } from "@/config/index";
 import { withSessionRoute } from "@/middleware/withSession";
 
 export default withSessionRoute(async (req, res) => {
-  if (req.method === "POST") {
+  if (req.method === "GET") {
     try {
       // Get the authenticated user's token from the session
-      const user = req.session.user;
-
+      const { user } = req.session;
       // `Bearer` token must be included in authorization headers for Strapi requests
       const config = {
         headers: { Authorization: `Bearer ${user?.strapiToken}` },
       };
-
       // Destructure the body params from `request.body`
-      const { profileID, mediaID, mediaType, mediaItem } = req.body;
-      const timestamp = Math.floor(new Date().getTime() / 1000).toString();
-
+      const { id, name, autoPlayNextEpisode, autoPlayPreviews } = req.body;
       // Body parameters to be sent to the backend
       const params = {
         data: {
-          profile: profileID,
+          publishedAt: new Date(),
           user: user.id,
-          profileID: profileID.toString(),
-          mediaID: mediaID.toString(),
-          mediaType,
-          mediaItem,
-          timestamp,
+          id,
+          name,
+          // user,
+          // avatar,
+          autoPlayNextEpisode,
+          autoPlayPreviews,
+          // kid,
         },
       };
-      // Make the request to Strapi
-      const url = `${API_URL}/api/media-lists`;
-      const response = await axios.post(url, params, config);
-      // Destructure the data from the response
-      const { data } = await response.data;
-      // Send to the frontend
+      // Define Strapi backend API url
+      const url = `${API_URL}/api/profiles/${id}`;
+      // Make our "GET" request
+      const response = await axios.get(url, params, config);
+      // Strapi JSON response
+      const { data } = response.data;
+      // If successful, send the created profile to the frontend
       if (response.status === 200) {
-        res.status(200).json(data);
+        res.status(200).json({ profile: data });
       }
-      res.status(400).json({ message: "Something went wrong" });
     } catch (error: any) {
       // Send error repsonses to the frontend for user feedback
-      res.status(error.response.data.error.status).json({
-        message: error.response.data.error.message,
+      res.status(error.response.status).json({
+        message: error.response.data.message[0].messages[0].message,
       });
     }
   } else {
     // Reject all other request types
-    res.setHeader("Allow", ["POST"]);
+    res.setHeader("Allow", ["GET"]);
 
     // If rejected, send JSON error response back to the frontend
     res.status(405).json({ message: `Method ${req.method} is not allowed` });

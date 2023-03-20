@@ -78,8 +78,8 @@ export interface IVideoModel {
   title?: string;
   titleCardId?: string;
   titleCardRef?: MutableRefObject<HTMLDivElement> | undefined;
-  videoId?: string | undefined;
-  videoKey?: string | undefined;
+  videoId?: string;
+  videoKey?: string;
   videos?: {
     results: Array<{
       id?: string;
@@ -102,7 +102,7 @@ export interface IVideoModel {
 
 export interface IModel {
   animationContext?: string | undefined;
-  billboardVideoId?: string | undefined;
+  billboardVideoId?: string;
   uid?: string | string[] | undefined;
   id?: number;
   isMyListRow?: boolean;
@@ -119,8 +119,8 @@ export interface IModel {
   sliderName?: string;
   titleCardRef?: MutableRefObject<HTMLDivElement> | undefined;
   imageKey?: string;
-  videoId?: string | undefined;
-  videoKey?: string | undefined;
+  videoId?: string;
+  videoKey?: string;
   videoModel?: IVideoModel;
   videos?: {
     results: Array<{
@@ -141,7 +141,7 @@ export interface IModel {
 export interface IPreviewModal {
   animationContext?: string | undefined;
   billboardVideoMerchId?: string | undefined;
-  billboardVideoId?: string | undefined;
+  billboardVideoId?: string;
   closeWithoutAnimation?: boolean;
   queryData?: {
     [key: string]: any;
@@ -161,8 +161,8 @@ export interface IPreviewModal {
     titleCardId?: string | undefined;
     titleCardRect?: DOMRect | undefined;
     titleCardRef?: MutableRefObject<HTMLDivElement> | undefined;
-    videoId?: string | undefined;
-    videoKey?: string | undefined;
+    videoId?: string;
+    videoKey?: string;
     videoModel?: IVideoModel | undefined;
     videoPlayback?: {
       start: number | undefined;
@@ -182,8 +182,8 @@ export interface IPreviewModal {
   titleCardId?: string | undefined;
   titleCardRef?: MutableRefObject<HTMLDivElement> | undefined;
   titleCardRect?: DOMRect | undefined;
-  videoId?: string | undefined;
-  videoKey?: string | undefined;
+  videoId?: string;
+  videoKey?: string;
   videoModel?: IVideoModel | undefined;
   videoPlayback?: {
     start: number | undefined;
@@ -192,14 +192,14 @@ export interface IPreviewModal {
 }
 
 export interface IInitialState {
-  galleryModalOpen?: boolean;
-  previewModalStateById?:
+  galleryModalOpen: boolean;
+  previewModalStateById:
     | {
         [key: string]: IPreviewModal;
       }
     | undefined;
-  scrollPosition?: number | undefined;
-  wasOpen?: boolean;
+  scrollPosition: number | undefined;
+  wasOpen: boolean;
 }
 
 // Create the store.
@@ -209,6 +209,7 @@ export interface PreviewModalStore extends IInitialState {
   setPreviewModalOpen: (payload: IPreviewModal) => void;
   setPreviewModalWasOpen: (payload: IInitialState) => void;
   setPreviewModalClose: (payload: IPreviewModal) => void;
+  getPreviewModalState: () => void;
   updatePreviewModalState: (payload: IPreviewModal) => void;
 }
 
@@ -226,4 +227,54 @@ export interface Actions {
 export interface ImmerReducerProps {
   state: PreviewModalStore;
   action: Actions;
+}
+
+// Media store
+export interface MediaStore {
+  media: {
+    [key: string]: IMediaItem;
+  };
+}
+
+export interface IProfileAttributes {
+  name: string | null;
+  avatar: string;
+  kid: boolean;
+  autoPlayNextEpisode: boolean;
+  autoPlayPreviews: boolean;
+}
+
+export interface IProfile {
+  id: string;
+  attributes: IProfileAttributes;
+}
+
+export interface IProfileStore {
+  addProfileModeEnabled: boolean;
+  editModeEnabled: boolean;
+  manageProfilesModeEnabled: boolean;
+  promptSelectAvatar: boolean;
+  promptConfirmAvatar: boolean;
+  promptConfirmDeleteProfile: boolean;
+  profileAttributes: IProfileAttributes;
+  profiles: IProfile[];
+  activeProfile: IProfile | null;
+  editableProfile: IProfile | null;
+  toggleAddProfileMode: () => void;
+  toggleEditMode: () => void;
+  toggleManageProfilesMode: () => void;
+  togglePromptSelectAvatar: () => void;
+  togglePromptConfirmAvatar: () => void;
+  togglePromptConfirmDeleteProfile: () => void;
+  toggleAll: () => void;
+  resetProfile: () => void;
+  setProfileAttributes: (profileAttributes: IProfileAttributes) => void;
+  setProfiles: (profiles: IProfile[]) => void;
+  setProfileAvatar: (avatar: IProfileAttributes["avatar"]) => void;
+  getSessionStorage: () => void;
+  setActiveProfile: (profile: IProfile) => void;
+  setEditableProfile: (profile: IProfile) => void;
+  createProfile: (profile: IProfileAttributes) => void;
+  updateProfile: (profile: IProfile) => void;
+  deleteProfile: (id: IProfile["id"]) => void;
 }

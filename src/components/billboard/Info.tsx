@@ -6,17 +6,12 @@ import { IModel, IVideoModel } from "@/store/types";
 
 import CTAButtons from "./buttons/CTAButtons";
 
-type WatchNowProps = {
-  id: number;
-  mediaType: string;
-};
-
 type InfoProps = {
   videoPlayback: IVideoModel["videoPlayback"];
   model: IModel;
   canAnimate: boolean;
   logos?: IVideoModel["logos"];
-  handleWatchNow: (identifiers: WatchNowProps) => void;
+  handleWatchNow: (identifiers: IVideoModel["identifiers"]) => void;
   handleClick?: () => void;
   synopsis: IVideoModel["synopsis"];
   title: IVideoModel["title"];
@@ -40,7 +35,7 @@ const Info = forwardRef(
     /**
      * Billboard logo animation
      */
-    const billboardTitleStyles = () => {
+    function billboardTitleStyles() {
       const infoHeight = ref.current?.offsetHeight * 1.6 + "px";
       const duration = 1;
       const delay = 2.6;
@@ -61,12 +56,12 @@ const Info = forwardRef(
       };
 
       return canAnimate ? transitionStyles : defaultStyles;
-    };
+    }
 
     /**
      * Info wrapper animation
      */
-    const infoWrapperStyles = () => {
+    function infoWrapperStyles() {
       const infoHeight = ref.current?.offsetHeight + "px";
       const duration = 1;
       const delay = 2.6;
@@ -87,12 +82,12 @@ const Info = forwardRef(
       };
 
       return canAnimate ? transitionStyles : defaultStyles;
-    };
+    }
 
     /**
      * Info synopsis animation
      */
-    const infoWrapperFadeStyles = () => {
+    function infoWrapperFadeStyles() {
       const duration = 1;
       const delay = 2.6;
       // Default
@@ -109,7 +104,7 @@ const Info = forwardRef(
       };
 
       return canAnimate ? transitionStyles : defaultStyles;
-    };
+    }
 
     return (
       <div className="info meta-layer">

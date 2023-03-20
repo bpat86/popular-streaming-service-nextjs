@@ -47,7 +47,7 @@ type PlayerContainerProps = {
   showTitleGradient?: boolean;
   showVideo?: boolean;
   requestAndRevalidate?: any;
-  videoPlayback?: any;
+  videoPlayback?: IVideoModel["videoPlayback"];
   videoModel?: any;
   willClose?: boolean;
 };
@@ -71,6 +71,7 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
       isDetailModal,
       isDefaultModal,
       handleWatchNow,
+      handleUnplayableMedia,
       showBoxArtOnMount,
       showBoxArtOnClose,
       showTitleGradient,
@@ -176,7 +177,7 @@ const PlayerContainer = forwardRef<HTMLDivElement, PlayerContainerProps>(
     const handleWatchNowClick = (e: MouseEvent<Element>) => {
       e.preventDefault();
       if (mediaType && id) {
-        handleWatchNow({
+        return handleWatchNow({
           id: Number(id),
           mediaType: mediaType.toString(),
         });

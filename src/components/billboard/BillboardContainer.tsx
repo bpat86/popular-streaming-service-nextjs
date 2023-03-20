@@ -1,33 +1,34 @@
 import { InView } from "react-intersection-observer";
-import { shallow } from "zustand/shallow";
 
 import Billboard from "@/components/billboard/Billboard";
 import usePreviewModalStore from "@/store/PreviewModalStore";
-import { IModel } from "@/store/types";
+import { IModel, PreviewModalStore } from "@/store/types";
 
 type BillboardContainerProps = {
   model: IModel;
   shouldFreeze?: boolean;
 };
 
-const BillboardContainer = ({
+const previewModalStateByIdSelector = (state: PreviewModalStore) =>
+  state.previewModalStateById;
+
+export default function BillboardContainer({
   model,
   shouldFreeze,
-}: BillboardContainerProps) => {
+}: BillboardContainerProps) {
   const previewModalStateById = usePreviewModalStore(
-    (state) => state.previewModalStateById,
-    shallow
+    previewModalStateByIdSelector
   );
 
   /**
    * Determine if a preview modal is currently open
    */
-  const isPreviewModalOpen = () => {
-    return !!(
-      previewModalStateById &&
+  function isPreviewModalOpen() {
+    return previewModalStateById !== undefined &&
       Object.values(previewModalStateById).some(({ isOpen }) => isOpen)
-    );
-  };
+      ? true
+      : false;
+  }
 
   return (
     <InView initialInView={true} threshold={0.4}>
@@ -41,6 +42,4 @@ const BillboardContainer = ({
       )}
     </InView>
   );
-};
-
-export default BillboardContainer;
+}

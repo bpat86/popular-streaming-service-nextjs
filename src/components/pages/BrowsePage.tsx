@@ -1,12 +1,13 @@
-import { useContext, useRef } from "react";
+import { useContext, useEffect, useRef } from "react";
 
 import { AuthContextType } from "@/@types/auth";
 import BrowseLayout from "@/components/pages/layouts/BrowseLayout";
-import UserProfiles from "@/components/profile/UserProfiles";
+// import ProfileGate from "@/components/profile/UserProfiles";
+import ProfileGate from "@/components/profile-gate/ProfileGate";
 import AuthContext from "@/context/AuthContext";
-import ProfileContext from "@/context/ProfileContext";
 import useProfiles from "@/middleware/useProfiles";
 import useUser from "@/middleware/useUser";
+import useProfileStore from "@/store/ProfileStore";
 
 import Media from "./layers/Media";
 
@@ -27,29 +28,19 @@ const BrowseContainer = ({
   pageAPI,
   pageTitle,
 }: BrowseContainerProps) => {
-  const { logout } = useContext(AuthContext) as AuthContextType;
-  const { activeProfile } = useContext(ProfileContext);
   const { user } = useUser({ redirectTo: "/" });
-  const { profiles, profileNames, loadingProfiles, mutateProfiles } =
-    useProfiles({ user });
+  const { profiles, error, mutate, isLoading, isValidating } = useProfiles();
+  const { logout } = useContext(AuthContext) as AuthContextType;
+  const activeProfileID =
+    useProfileStore((state) => state.activeProfile?.id) || null;
   const layoutWrapperRef = useRef<HTMLDivElement | null>(null);
-
-  const activeProfileId = activeProfile?.id ?? null; // initialUser?.activeProfile?.id
   const isLoggedIn = user?.isLoggedIn || initialUser?.isLoggedIn || false;
-  const userData = {
-    user,
-    logout,
-    isLoggedIn,
-    isActive: user?.isActive,
-    activeProfile: user?.activeProfile,
-  };
-  const profilesData = {
-    profiles,
-    profileNames,
-    mutateProfiles,
-    loadingProfiles,
-  };
-  const pageProps = { ...userData, ...profilesData, profile: activeProfileId };
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      useProfileStore.getState().getSessionStorage();
+    }
+  }, []);
 
   /**
    * Show nothing if a user is not yet logged in
@@ -59,14 +50,18 @@ const BrowseContainer = ({
   }
 
   const isShowingProfilesGate = () => {
-    return user?.isActive && isLoggedIn && !activeProfileId;
+    return user && user.isActive === true && isLoggedIn && !activeProfileID;
   };
 
   /**
    * Load the media content once a profile is created or selected
    */
   if (isShowingProfilesGate()) {
-    return <UserProfiles user={user} />;
+    return (
+      <ProfileGate
+        {...{ user, profiles, error, mutate, isLoading, isValidating }}
+      />
+    );
   }
 
   /**
@@ -74,10 +69,17 @@ const BrowseContainer = ({
    */
   return (
     <BrowseLayout
-      key={activeProfileId}
+      key={activeProfileID}
       ref={layoutWrapperRef}
-      title={pageTitle}
-      {...pageProps}
+      {...{
+        user,
+        logout,
+        isLoggedIn,
+        isActive: user?.isActive,
+        activeProfile: user?.activeProfile,
+        profile: activeProfileID,
+        title: pageTitle,
+      }}
     >
       <Media ref={layoutWrapperRef} pageAPI={pageAPI} />
     </BrowseLayout>

@@ -4,7 +4,7 @@ type SynopsisProps = {
   synopsis: IVideoModel["synopsis"];
 };
 
-const Synopsis = ({ synopsis }: SynopsisProps) => {
+export default function Synopsis({ synopsis }: SynopsisProps) {
   function extractFirstSentence(str: SynopsisProps["synopsis"]) {
     if (!str) return "";
     return str.substring(0, str.indexOf("."));
@@ -18,6 +18,4 @@ const Synopsis = ({ synopsis }: SynopsisProps) => {
         : "No synopsis available."}
     </div>
   );
-};
-
-export default Synopsis;
+}

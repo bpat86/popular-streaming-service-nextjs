@@ -1,12 +1,19 @@
 import debounce from "lodash/debounce";
 import { useRouter } from "next/router";
-import { forwardRef, MutableRefObject, useLayoutEffect, useRef } from "react";
+import {
+  forwardRef,
+  MutableRefObject,
+  useCallback,
+  useLayoutEffect,
+  useRef,
+} from "react";
 
 import BillboardContainer from "@/components/billboard/BillboardContainer";
 import LoadingSpinner from "@/components/loading/LoadingSpinner";
 import PreviewModalContainer from "@/components/modals/PreviewModalContainer";
 import Sliders from "@/components/slider/Sliders";
 import useMedia from "@/middleware/useMedia";
+import useMediaStore from "@/store/MediaStore";
 import usePreviewModalStore from "@/store/PreviewModalStore";
 import { getVideoKey } from "@/utils/getVideoKey";
 
@@ -16,9 +23,16 @@ type MediaContainerProps = {
 
 const Media = forwardRef(({ pageAPI }: MediaContainerProps, ref) => {
   const layoutWrapperRef = ref as MutableRefObject<HTMLDivElement | null>;
-  const { fetchingMedia, media, mutateMedia, mediaError } = useMedia({
+  const {
+    fetchingMedia,
+    media: data,
+    mutateMedia,
+    mediaError,
+  } = useMedia({
     pageAPI,
   });
+  useMediaStore.getState().setMediaData(data);
+  const media = useMediaStore.getState().mediaData;
 
   // console.log("media: ", media);
 
@@ -27,46 +41,36 @@ const Media = forwardRef(({ pageAPI }: MediaContainerProps, ref) => {
   const router = useRouter();
 
   /**
-   * Determine if a preview modal is currently open
-   */
-  const isPreviewModalOpen = () => {
-    const previewModalStateById =
-      usePreviewModalStore.getState().previewModalStateById;
-    return (
-      previewModalStateById &&
-      Object.values(previewModalStateById).some(({ isOpen }) => isOpen)
-    );
-  };
-
-  /**
    * Turn pointer events off while scrolling
    */
-  const onScroll = debounce(
-    () => {
-      const style = document.body.style;
-      timerIdRef.current && clearTimeout(timerIdRef.current),
-        (timerIdRef.current = 0);
-      isPreviewModalOpen() ||
-        (style.pointerEvents !== "none" && (style.pointerEvents = "none")),
-        (timerIdRef.current = window.setTimeout(() => {
-          style.pointerEvents = "";
-        }, 100));
-    },
-    100,
-    { maxWait: 100, leading: true, trailing: true }
-  );
+  const onScroll = useCallback(() => {
+    const style = document.body.style;
+    timerIdRef.current && clearTimeout(timerIdRef.current),
+      (timerIdRef.current = 0);
+    usePreviewModalStore.getState().isPreviewModalOpen() ||
+      (style.pointerEvents !== "none" && (style.pointerEvents = "none")),
+      (timerIdRef.current = window.setTimeout(() => {
+        style.pointerEvents = "";
+      }, 200));
+  }, []);
+
+  const debouncedOnScroll = debounce(onScroll, 200, {
+    maxWait: 200,
+    leading: true,
+    trailing: true,
+  });
 
   /**
    * Disable hover while scrolling
    */
   useLayoutEffect(() => {
     if (typeof window !== "undefined") {
-      window.addEventListener("scroll", onScroll);
+      window.addEventListener("scroll", debouncedOnScroll);
       return () => {
-        window.removeEventListener("scroll", onScroll);
+        window.removeEventListener("scroll", debouncedOnScroll);
       };
     }
-  }, [onScroll]);
+  }, [debouncedOnScroll]);
 
   /**
    * Render error message
@@ -82,7 +86,7 @@ const Media = forwardRef(({ pageAPI }: MediaContainerProps, ref) => {
   /**
    * Render loading spinner
    */
-  if (!media || fetchingMedia) {
+  if (!media && fetchingMedia) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <LoadingSpinner />
@@ -144,7 +148,10 @@ const Media = forwardRef(({ pageAPI }: MediaContainerProps, ref) => {
             },
           }}
           shouldFreeze={
-            router.query.jbv ?? isPreviewModalOpen() ? true : undefined
+            router.query.jbv ||
+            usePreviewModalStore.getState().isPreviewModalOpen()
+              ? true
+              : undefined
           }
         />
       )}
@@ -165,5 +172,4 @@ const Media = forwardRef(({ pageAPI }: MediaContainerProps, ref) => {
   );
 });
 
-Media.displayName = "Media";
 export default Media;

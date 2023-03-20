@@ -24,15 +24,8 @@ const MediaListButton = ({
   videoModel,
 }: MediaListButtonProps) => {
   const { addMediaToList, removeMediaFromList } = useContext(ProfileContext);
-  const [isSet, setIsSet] = useState<boolean>(inMediaList || false);
+  const [isSet, setIsSet] = useState<boolean>(inMediaList ?? false);
   const [clicked, setClicked] = useState<boolean>(false);
-
-  /**
-   * Optimistically show the updated button state in the ui
-   */
-  useEffect(() => {
-    setIsSet(inMediaList || false);
-  }, [inMediaList]);
 
   /**
    * Allow 200 ms for the animation to complete

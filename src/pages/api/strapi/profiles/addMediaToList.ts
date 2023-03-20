@@ -1,8 +1,7 @@
 import axios from "axios";
 
-import { withSessionRoute } from "@/middleware/withSession";
-
 import { API_URL } from "@/config/index";
+import { withSessionRoute } from "@/middleware/withSession";
 
 export default withSessionRoute(async (req, res) => {
   if (req.method === "PUT") {

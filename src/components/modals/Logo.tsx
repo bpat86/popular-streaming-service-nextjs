@@ -11,7 +11,7 @@ const Logo = ({ logos, title }: LogoProps) => {
   /**
    * Show the best fitted logo
    */
-  const getLogoPath = (logos: IVideoModel["logos"]) => {
+  const getLogoPath = () => {
     if (!logos) return;
     const logo =
       logos.filter(({ iso_639_1 }) => iso_639_1 === "en")[0] || logos[0];
@@ -21,7 +21,7 @@ const Logo = ({ logos, title }: LogoProps) => {
   /**
    * Format the logo CSS style
    */
-  const getLogoAspectRatio = (logos: IVideoModel["logos"]) => {
+  const getLogoAspectRatio = () => {
     if (!logos) return;
     const logo =
       logos.filter(({ iso_639_1 }) => iso_639_1 === "en")[0] || logos[0];
@@ -62,9 +62,9 @@ const Logo = ({ logos, title }: LogoProps) => {
       <picture>
         <img
           className={clsxm("title-treatment-logo", [
-            getLogoAspectRatio(logos) === "wide" ? "wide" : "tall",
+            getLogoAspectRatio() === "wide" ? "wide" : "tall",
           ])}
-          src={`https://image.tmdb.org/t/p/w500${getLogoPath(logos)}`}
+          src={`https://image.tmdb.org/t/p/w500${getLogoPath()}`}
           alt={title || ""}
         />
       </picture>

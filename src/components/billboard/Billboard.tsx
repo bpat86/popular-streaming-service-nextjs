@@ -4,7 +4,6 @@ import {
   forwardRef,
   MutableRefObject,
   useCallback,
-  useContext,
   useLayoutEffect,
   useRef,
   useState,
@@ -12,11 +11,11 @@ import {
 import YouTubePlayer from "react-player/youtube";
 
 import Info from "@/components/billboard/Info";
-import InteractionContext from "@/context/InteractionContext";
 import { AnimatePresenceWrapper } from "@/lib/AnimatePresenceWrapper";
 import clsxm from "@/lib/clsxm";
+import useInteractionStore from "@/store/InteractionStore";
 import usePreviewModalStore from "@/store/PreviewModalStore";
-import { IModel } from "@/store/types";
+import { IModel, IVideoModel } from "@/store/types";
 
 import MediaControls from "./buttons/MediaControls";
 import VideoPlayer from "./player/VideoPlayer";
@@ -31,12 +30,7 @@ const Billboard = forwardRef<HTMLDivElement, BillboardProps>(
   ({ model, inView, shouldFreeze }, ref) => {
     const billboardInViewRef = ref as MutableRefObject<HTMLDivElement>;
     const infoRef = useRef<HTMLDivElement>(null);
-    const { enableWatchMode } = useContext(InteractionContext);
-    // const wasOpen = usePreviewModalStore((state) => state.wasOpen, shallow);
-    // const isDetailModal = usePreviewModalStore(
-    //   (state) => state.isDetailModal,
-    //   shallow
-    // );
+    const wasOpen = usePreviewModalStore((state) => state.wasOpen);
 
     const [textIsAnimating, setTextIsAnimating] = useState<boolean>(false);
     // const [audioEnabled, setAudioEnabled] = useState<boolean>(false);
@@ -61,40 +55,40 @@ const Billboard = forwardRef<HTMLDivElement, BillboardProps>(
     const [volume, setVolume] = useState<number>(0.1);
     const [duration, setDuration] = useState<number>(0);
 
-    const handleToggleLight = () => {
+    function handleToggleLight() {
       setLight(!light);
-    };
+    }
 
-    const handleToggleLoop = () => {
+    function handleToggleLoop() {
       setLoop(!loop);
-    };
+    }
 
-    const handleTogglePlaying = () => {
+    function handleTogglePlaying() {
       setPlaying(!playing);
-    };
+    }
 
-    const handleOnStop = () => {
+    function handleOnStop() {
       setPlaying(false);
-    };
+    }
 
-    const toggleAudio = () => {
+    function toggleAudio() {
       setMuted(!muted);
-    };
+    }
 
-    const handleOnReady = () => {
+    function handleOnReady() {
       setPlayerError(false);
       setTextIsAnimating(true);
       setVideoCanPlayThrough(true);
-    };
+    }
 
-    const handleOnStart = () => {
+    function handleOnStart() {
       setVideoBuffering(false);
       setVideoStarted(true);
-    };
+    }
 
-    const handleOnBuffer = () => {
+    function handleOnBuffer() {
       setVideoBuffering(true);
-    };
+    }
 
     const handleOnError = useCallback(() => {
       setPlayerError(true);
@@ -108,71 +102,65 @@ const Billboard = forwardRef<HTMLDivElement, BillboardProps>(
       setPlaying(false);
     }, []);
 
-    const handleOnEnded = () => {
+    function handleOnEnded() {
       setPlaying(false);
       setVideoCompleted(true);
       setVideoHasPlayedAtLeastOnce(true);
       setTextIsAnimating(false);
-    };
+    }
 
-    const handleOnDuration = (duration: number) => {
+    function handleOnDuration(duration: number) {
       setDuration(duration);
-    };
+    }
 
-    const replayVideo = () => {
+    function replayVideo() {
       setPlayed(0);
       setPlaying(true);
       setVideoCompleted(false);
       setTextIsAnimating(true);
-    };
+    }
 
-    const isMuted = () => {
+    function isMuted() {
       return muted;
-    };
+    }
 
     /**
      * Redirect to watch mode screen
      */
-    const handleWatchNow = ({
-      id,
-      mediaType,
-    }: {
-      id: number;
-      mediaType: string;
-    }) => {
-      if (id) {
-        const as = `/watch/${mediaType}-${id}`;
-        const options = {
-          shallow: true,
-          scroll: false,
-        };
-        router.push(
-          {
-            pathname: "/watch/[mediaId]",
-            query: {
-              ...router.query,
-              id,
-              mediaId: `${mediaType}-${id}`,
-              type: mediaType,
-            },
+    function handleWatchNow(identifiers: IVideoModel["identifiers"]) {
+      if (!identifiers?.id || !identifiers?.mediaType) return;
+      const { mediaType, id } = identifiers;
+      const as = `/watch/${mediaType}-${id}`;
+      const options = {
+        shallow: true,
+        scroll: false,
+      };
+      router.push(
+        {
+          pathname: "/watch/[mediaId]",
+          query: {
+            ...router.query,
+            id: id,
+            mediaId: `${mediaType}-${id}`,
+            type: mediaType,
           },
-          as,
-          options
-        );
-        enableWatchMode();
-      }
-    };
+        },
+        as,
+        options
+      );
+      useInteractionStore.getState().setWatchModeEnabled(true);
+    }
 
     /**
      * Get video playback information
      */
-    const getVideoPlayback = () => {
+    function getVideoPlayback() {
       if (!playerRef.current || videoCompleted) return undefined;
       return {
         start: playerRef.current.getCurrentTime(),
         length: playerRef.current.getDuration(),
       };
-    };
+    }
 
     /**
      * Autoplay billbaord video on mount and play/pause when in and out of view
@@ -201,14 +189,13 @@ const Billboard = forwardRef<HTMLDivElement, BillboardProps>(
           <div className="billboard">
             <div
               className={clsxm("billboard-motion dismiss-mask", [
-                !usePreviewModalStore.getState().wasOpen &&
                 !usePreviewModalStore.getState().isDetailModal() &&
-                !videoCompleted &&
-                !videoBuffering &&
-                videoStarted &&
-                videoCanPlayThrough
-                  ? "dismiss-static"
-                  : "",
+                  !wasOpen &&
+                  !videoCompleted &&
+                  !videoBuffering &&
+                  videoStarted &&
+                  videoCanPlayThrough &&
+                  "dismiss-static",
               ])}
             >
               {!videoCompleted && model?.videoModel?.videoKey && (
@@ -313,5 +300,4 @@ const Billboard = forwardRef<HTMLDivElement, BillboardProps>(
   }
 );
 
-Billboard.displayName = "Billboard";
 export default Billboard;

@@ -6,27 +6,22 @@ import { modalStateActions } from "@/actions/Actions";
 import usePreviewModalStore from "@/store/PreviewModalStore";
 import { IModel, IVideoModel } from "@/store/types";
 
-type WatchNowProps = {
-  id: number;
-  mediaType: string;
-};
-
 type CTAButtonsProps = {
   videoPlayback: IVideoModel["videoPlayback"];
   handleClick?: () => void;
-  handleWatchNow: (identifiers: WatchNowProps) => void;
+  handleWatchNow: (identifiers: IVideoModel["identifiers"]) => void;
   model: IModel;
 };
 
-const CTAButtons = ({
+export default function CTAButtons({
   videoPlayback,
   handleWatchNow,
   model,
-}: CTAButtonsProps) => {
+}: CTAButtonsProps) {
   /**
    * Open default preview modal.
    */
-  const handleClick = () => {
+  function handleClick() {
     usePreviewModalStore.getState().setPreviewModalOpen({
       model: model,
       videoId: model.videoModel?.videoId,
@@ -39,20 +34,23 @@ const CTAButtons = ({
       titleCardRect: undefined,
       videoPlayback,
     });
-  };
+  }
 
-  const handleWatchNowClick = (e: MouseEvent<Element>) => {
+  /**
+   * Handle watch now click.
+   */
+  function handleWatchNowClick(e: MouseEvent<Element>) {
     e.preventDefault();
     if (model?.videoModel?.identifiers) {
       handleWatchNow(model?.videoModel?.identifiers);
     }
-  };
+  }
 
   return (
     <div className="billboard-links button-layer">
       <Link
         href={{
-          pathname: model?.videoModel?.identifiers
+          pathname: model?.videoModel?.identifiers?.id
             ? `/watch/${encodeURIComponent(model?.videoModel?.identifiers?.id)}`
             : "/",
           query: {
@@ -97,6 +95,4 @@ const CTAButtons = ({
       </button>
     </div>
   );
-};
-
-export default CTAButtons;
+}

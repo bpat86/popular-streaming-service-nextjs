@@ -1,9 +1,8 @@
 import axios from "axios";
 
+import { API_URL } from "@/config/index";
 import { withSessionRoute } from "@/middleware/withSession";
 import { parseCookies } from "@/utils/parseCookies";
-
-import { API_URL } from "@/config/index";
 
 export default withSessionRoute(async (req, res) => {
   if (req.method === "GET") {
@@ -23,14 +22,16 @@ export default withSessionRoute(async (req, res) => {
       const config = {
         headers: { Authorization: `Bearer ${user?.strapiToken}` },
       };
-      const getMediaListURL = `${API_URL}/api/media-lists`;
-      const getMediaListResponse = await axios.get(getMediaListURL, config);
-      const mediaListResponse = await getMediaListResponse.data.data;
-      let mediaListArray = [];
-      // Only take the items that belond to the active profile
-      mediaListResponse.map(({ id, attributes }) => {
+      // Make the request to Strapi
+      const url = `${API_URL}/api/media-lists`;
+      const response = await axios.get(url, config);
+      // Destructure the data from the response
+      const { data } = await response.data;
+      const mediaList: any[] = [];
+      // Loop through the media list items and find the ones that match the active profile
+      data.map(({ id, attributes }: { id: number; attributes: any }) => {
         if (attributes.profileID === activeProfileID) {
-          mediaListArray.push({
+          mediaList.push({
             ...attributes.mediaItem,
             media_type: attributes.mediaItem.media_type,
             in_media_list: true,
@@ -39,15 +40,16 @@ export default withSessionRoute(async (req, res) => {
         }
         return;
       });
-      // Using Set(), an instance of unique values will be created removing any duplicates
-      mediaListArray = new Set(mediaListArray);
-      // Convert the instance into a new array
-      mediaListArray = [...mediaListArray];
-      // console.log("mediaListResponse.status: ", mediaListResponse);
-      res.status(200).json({
-        data: mediaListArray.length ? mediaListArray : null,
-      });
-    } catch (error) {
+      // If media list items are found, return them
+      if (response.status === 200) {
+        if (mediaList && mediaList.length > 0) {
+          res.status(200).json({ data: mediaList });
+        }
+        // If no media list items are found, return an empty array
+        res.status(200).json({ data: [] });
+      }
+      res.status(400).json({ message: "Something went wrong" });
+    } catch (error: any) {
       // Send error repsonses to the frontend for user feedback
       res.status(error.response.data.error.status).json({
         message: error.response.data.error.message,

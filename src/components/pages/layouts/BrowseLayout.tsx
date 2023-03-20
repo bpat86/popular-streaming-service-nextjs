@@ -1,17 +1,11 @@
 import Head from "next/head";
-import {
-  forwardRef,
-  MutableRefObject,
-  ReactNode,
-  useContext,
-  useEffect,
-} from "react";
+import { forwardRef, MutableRefObject, ReactNode, useEffect } from "react";
 
 import Footer from "@/components/footers/MainFooter";
 import { transitions } from "@/components/motion/transitions";
 import BrowseNavigation from "@/components/navigation/BrowseNavigation";
 import PageTransitionsLayout from "@/components/pages/layouts/PageTransitionsLayout";
-import InteractionContext from "@/context/InteractionContext";
+import useInteractionStore from "@/store/InteractionStore";
 
 type BrowseLayoutProps = {
   children: ReactNode;
@@ -21,7 +15,6 @@ type BrowseLayoutProps = {
 const BrowseLayout = forwardRef(
   ({ children, title, ...rest }: BrowseLayoutProps, ref) => {
     const layoutWrapperRef = ref as MutableRefObject<HTMLDivElement | null>;
-    const { isWatchModeEnabled } = useContext(InteractionContext);
 
     // Scroll to top on page change
     useEffect(() => {
@@ -35,7 +28,10 @@ const BrowseLayout = forwardRef(
           <link rel="shortcut icon" href="/netflix.ico" />
         </Head>
         <PageTransitionsLayout
-          variants={isWatchModeEnabled() && transitions.fadeOutZoomIn}
+          variants={
+            useInteractionStore.getState().watchModeEnabled &&
+            transitions.fadeOutZoomIn
+          }
         >
           <div ref={layoutWrapperRef} className="bd">
             <BrowseNavigation {...rest} />

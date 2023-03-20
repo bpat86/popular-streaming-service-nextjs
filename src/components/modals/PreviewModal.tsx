@@ -7,7 +7,6 @@ import {
   MouseEvent,
   MutableRefObject,
   useCallback,
-  useContext,
   useLayoutEffect,
   useRef,
   useState,
@@ -15,11 +14,11 @@ import {
 import { flushSync } from "react-dom";
 
 import { animationStateActions, modalStateActions } from "@/actions/Actions";
-import InteractionContext from "@/context/InteractionContext";
 import clsxm from "@/lib/clsxm";
 import { MotionDivWrapper } from "@/lib/MotionDivWrapper";
 import { IMedia } from "@/middleware/types";
 import usePreviewModal from "@/middleware/usePreviewModal";
+import useInteractionStore from "@/store/InteractionStore";
 import usePreviewModalStore from "@/store/PreviewModalStore";
 import { IPreviewModal, PreviewModalStore } from "@/store/types";
 
@@ -60,13 +59,6 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
     ref
   ) => {
     const layoutWrapperRef = ref as MutableRefObject<HTMLDivElement | null>;
-    const {
-      isWatchModeEnabled,
-      enableWatchMode,
-      disableWatchMode,
-      enableTooltips,
-      disableTooltips,
-    } = useContext(InteractionContext);
 
     const [isPresent, safeToRemove] = usePresence();
 
@@ -83,7 +75,6 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
     const mediaButtonsRef = useRef<HTMLDivElement>(null);
     const animationFrameId = useRef<number | null>(null);
     const timerIdRef = useRef<number | null>(null);
-    // const willClose = useRef<boolean>(false);
     const [willClose, setWillClose] = useState<boolean>(false);
     const {
       modalData,
@@ -99,13 +90,6 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
 
     const scaleFactor = 1.5;
     const baseWidth = 850;
-
-    /**
-     * Set willClose to true when the modal is closed
-     */
-    // const setWillClose = (value: boolean) => {
-    //   willClose = value;
-    // };
 
     /**
      * Redirect to watch mode screen
@@ -137,7 +121,8 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
         as,
         options
       );
-      enableWatchMode();
+      // enableWatchMode();
+      useInteractionStore.getState().setWatchModeEnabled(true);
     };
 
     /**
@@ -166,7 +151,7 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
      * Remove the route query string and set the query state to null
      */
     const resetRoute = useCallback(() => {
-      if (isWatchModeEnabled()) return;
+      if (useInteractionStore.getState().watchModeEnabled) return;
       router.push(
         {
           pathname: null,
@@ -175,14 +160,17 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
         undefined,
         { scroll: false }
       );
-    }, [isWatchModeEnabled, router]);
+    }, [router]);
 
     /**
      * Set Detail Modal Parent styles
      */
     const setDetailModalParentStyles = () => {
       const layoutRef = layoutWrapperRef.current;
-      const mainViewContent = document.querySelector(
+      const navigation = document.querySelector(
+        ".navigation-inner"
+      ) as HTMLDivElement;
+      const mainView = document.querySelector(
         ".main-view-content"
       ) as HTMLDivElement;
       if (layoutRef) {
@@ -194,7 +182,9 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
           usePreviewModalStore.getState().updatePreviewModalState({
             scrollPosition: scrollPos,
           }),
-          mainViewContent?.classList.add("has-open-jaw"),
+          mainView?.classList.add("has-open-jaw"),
+          window.scrollY > 0 &&
+            (navigation.style.backgroundColor = "rgb(24, 24, 27)"),
           (layoutRef.style.top = `-${scrollPos}px`),
           (layoutRef.style.position = "fixed"),
           layoutRef.setAttribute("isDetailModalRootStyleSet", "true");
@@ -221,12 +211,16 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
      */
     const resetDetailModalParentStyles = () => {
       const layoutRef = layoutWrapperRef.current;
-      const mainViewContent = document.querySelector(
+      const navigation = document.querySelector(
+        ".navigation-inner"
+      ) as HTMLDivElement;
+      const mainView = document.querySelector(
         ".main-view-content"
       ) as HTMLDivElement;
       if (layoutRef && layoutRef.hasAttribute("isDetailModalRootStyleSet")) {
-        mainViewContent.classList.remove("has-open-jaw"),
-          ((layoutRef.style.top = ""),
+        mainView.classList.remove("has-open-jaw"),
+          ((navigation.style.backgroundColor = ""),
+          (layoutRef.style.top = ""),
           (layoutRef.style.position = "static"),
           restoreScrollPositionOnUnmount(),
           layoutRef.removeAttribute("isDetailModalRootStyleSet"));
@@ -428,7 +422,8 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
             exit: animationStateActions.CLOSE_MINI_MODAL,
             onAnimationStart: () => {
               setIsAnimating(true);
-              disableTooltips();
+              useInteractionStore.getState().setModalIsAnimating(true);
+              useInteractionStore.getState().setTooltipsEnabled(false);
             },
             onAnimationComplete: (
               currentAnimationState: (typeof animationStateActions)[keyof typeof animationStateActions]
@@ -445,7 +440,8 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
                       "0 3px 10px rgba(0, 0, 0, 0.75)")
                 );
               setIsAnimating(false);
-              enableTooltips();
+              useInteractionStore.getState().setModalIsAnimating(false);
+              useInteractionStore.getState().setTooltipsEnabled(true);
             },
             onHoverEnd: () => {
               !willClose &&
@@ -653,7 +649,7 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
         // If no modal props exist or if watch mode is enabled
         if (
           !(modalRect && modalRef.current && titleCardRect) ||
-          isWatchModeEnabled()
+          useInteractionStore.getState().watchModeEnabled
         ) {
           return {
             scaleX: 0.8,
@@ -719,7 +715,8 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
         exit: animationStateActions.CLOSE_DETAIL_MODAL,
         onAnimationStart: () => {
           setIsDetailAnimating(true);
-          disableTooltips();
+          useInteractionStore.getState().setModalIsAnimating(true);
+          useInteractionStore.getState().setTooltipsEnabled(false);
         },
         onAnimationComplete: (
           currentAnimationState: (typeof animationStateActions)[keyof typeof animationStateActions]
@@ -735,7 +732,8 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
                   setResponsiveDetailModalWidth();
             });
           setIsDetailAnimating(false);
-          enableTooltips();
+          useInteractionStore.getState().setModalIsAnimating(false);
+          useInteractionStore.getState().setTooltipsEnabled(true);
         },
         variants: detailModalVariants,
       };
@@ -1069,15 +1067,15 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
 
     // Cleanup
     useLayoutEffect(() => {
-      if (!isPresent && willClose) {
+      if (!isPresent) {
         !timerIdRef.current &&
           (timerIdRef.current = window.setTimeout(() => {
-            // Remove preview modal from the react tree
-            safeToRemove();
             // Set was open state to false
             usePreviewModalStore
               .getState()
               .setPreviewModalWasOpen({ wasOpen: false });
+            // Remove preview modal from the react tree
+            safeToRemove();
           }, 0));
         // Cleanup
         return () => {
@@ -1092,7 +1090,8 @@ const PreviewModal = forwardRef<HTMLDivElement, PreviewModalProps>(
           // Reset the router path to the default path
           modalState === modalStateActions.DETAIL_MODAL && resetRoute();
           // Disable watch mode
-          isWatchModeEnabled() && disableWatchMode();
+          useInteractionStore.getState().watchModeEnabled &&
+            useInteractionStore.getState().setWatchModeEnabled(false);
         };
       }
 

@@ -17,7 +17,7 @@ type MediaControlsProps = {
   videoCompleted: boolean;
 };
 
-const AudioIcons = ({ isMuted }: { isMuted: boolean }) => {
+function AudioIcons({ isMuted }: { isMuted: boolean }) {
   // Show the muted icon if the video is muted
   if (isMuted) {
     return (
@@ -65,9 +65,9 @@ const AudioIcons = ({ isMuted }: { isMuted: boolean }) => {
       </svg>
     </>
   );
-};
+}
 
-const PausedIcon = () => {
+function PausedIcon() {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -84,9 +84,28 @@ const PausedIcon = () => {
       />
     </svg>
   );
-};
+}
 
-const ReplayIcon = () => {
+function UpIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={2}
+      stroke="currentColor"
+      className="h-6 w-6"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M8.25 6.75L12 3m0 0l3.75 3.75M12 3v18"
+      />
+    </svg>
+  );
+}
+
+function ReplayIcon() {
   return (
     <>
       <svg
@@ -111,9 +130,9 @@ const ReplayIcon = () => {
       </svg>
     </>
   );
-};
+}
 
-const MediaControls = ({
+export default function MediaControls({
   isMuted,
   inView,
   replayVideo,
@@ -122,7 +141,7 @@ const MediaControls = ({
   videoError,
   videoPlaying,
   videoCompleted,
-}: MediaControlsProps) => {
+}: MediaControlsProps) {
   /**
    * Handle the icons that are displayed in the media controls
    */
@@ -136,12 +155,23 @@ const MediaControls = ({
             <PausedIcon />
           )
         ) : videoCompleted ? (
-          <ReplayIcon />
+          inView ? (
+            <ReplayIcon />
+          ) : (
+            <UpIcon />
+          )
         ) : (
           <PausedIcon />
         )}
       </div>
     );
+  }
+
+  function scrollUp() {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   }
 
   /**
@@ -153,10 +183,12 @@ const MediaControls = ({
         ? isMuted
           ? "Unmute"
           : "Mute"
-        : `${title} preview is paused`
+        : `${title} is paused`
       : videoCompleted
-      ? `Replay ${title}`
-      : `${title} preview is paused`;
+      ? inView
+        ? `Replay ${title}`
+        : "Scroll back up to replay"
+      : `${title} is paused`;
   }
 
   /**
@@ -169,7 +201,9 @@ const MediaControls = ({
         ? toggleAudio()
         : null
       : videoCompleted
-      ? replayVideo()
+      ? inView
+        ? replayVideo()
+        : scrollUp()
       : null;
   }
 
@@ -207,6 +241,4 @@ const MediaControls = ({
       </div>
     </MotionSpanWrapper>
   );
-};
-
-export default MediaControls;
+}

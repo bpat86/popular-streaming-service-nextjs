@@ -1,39 +1,30 @@
 import axios from "axios";
 
-import { withSessionRoute } from "@/middleware/withSession";
-
 import { API_URL } from "@/config/index";
+import { withSessionRoute } from "@/middleware/withSession";
 
 export default withSessionRoute(async (req, res) => {
   if (req.method === "DELETE") {
     try {
       // Get the authenticated user's token from the session
-      const user = req.session.user;
-
+      const { user } = req.session;
       // `Bearer` token must be included in authorization headers for Strapi requests
       const config = {
         headers: { Authorization: `Bearer ${user?.strapiToken}` },
       };
-
-      // Destructure the body params from `request.body`
-      const { strapiID } = req.body;
-
+      // Destructure the profile ID from `request.body`
+      const { id } = req.body;
       // Define Strapi backend API url
-      const removeMediaItemURL = `${API_URL}/api/media-lists/${strapiID}`;
-
+      const url = `${API_URL}/api/profiles/${id}`;
       // Make our "DELETE" request
-      const removeMediaItemResponse = await axios.delete(
-        removeMediaItemURL,
-        config
-      );
-
+      const response = await axios.delete(url, config);
       // Strapi JSON response
-      const { data } = await removeMediaItemResponse.data;
-      // Send to the frontend
-      if (removeMediaItemResponse.status === 200) {
-        res.status(200).json(data);
+      const { data } = response.data;
+      // If successful, send the deleted profile to the frontend
+      if (response.status === 200) {
+        res.status(200).json({ profile: data });
       }
-    } catch (error) {
+    } catch (error: any) {
       // Send error repsonses to the frontend for user feedback
       res.status(error.response.data.error.status).json({
         message: error.response.data.error.message,
@@ -42,7 +33,6 @@ export default withSessionRoute(async (req, res) => {
   } else {
     // Reject all other request types
     res.setHeader("Allow", ["DELETE"]);
-
     // If rejected, send JSON error response back to the frontend
     res.status(405).json({ message: `Method ${req.method} is not allowed` });
   }

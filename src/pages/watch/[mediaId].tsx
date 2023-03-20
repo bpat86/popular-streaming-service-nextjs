@@ -1,17 +1,15 @@
 import { useRouter } from "next/router";
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { default as YouTubePlayer } from "react-player/youtube";
 
 import VideoPlayer from "@/components/watch/VideoPlayer";
-import InteractionContext from "@/context/InteractionContext";
 import { MotionDivWrapper } from "@/lib/MotionDivWrapper";
 import useTitle from "@/middleware/useTitle";
+import useInteractionStore from "@/store/InteractionStore";
 import usePreviewModalStore from "@/store/PreviewModalStore";
 import { getVideoKey } from "@/utils/getVideoKey";
 
 const WatchMediaPage = () => {
-  const { disableWatchMode } = useContext(InteractionContext);
-
   const router = useRouter();
   const { query } = router;
   const { id, mediaId, mediaType } = query; // mediaId: 'movie-648579'
@@ -139,10 +137,10 @@ const WatchMediaPage = () => {
       if (key === "Escape") {
         router.back();
         closeAllModals();
-        disableWatchMode();
+        useInteractionStore.getState().setWatchModeEnabled(false);
       }
     },
-    [router, closeAllModals, disableWatchMode]
+    [router, closeAllModals]
   );
 
   /**
@@ -166,14 +164,14 @@ const WatchMediaPage = () => {
         // Will run when leaving the current page; on back/forward actions
         // Add your logic here, like toggling the modal state
         closeAllModals();
-        disableWatchMode();
+        useInteractionStore.getState().setWatchModeEnabled(false);
         return true;
       }
     });
     return () => {
       router.beforePopState(() => true);
     };
-  }, [router, closeAllModals, disableWatchMode]); // Add any state variables to dependencies array if needed.
+  }, [router, closeAllModals]);
 
   /**
    * YouTube Player Component

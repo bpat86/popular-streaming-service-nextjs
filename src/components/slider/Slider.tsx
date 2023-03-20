@@ -10,7 +10,6 @@ import {
   useState,
 } from "react";
 import { flushSync } from "react-dom";
-import { useInView } from "react-intersection-observer";
 
 import { sliderActions } from "@/actions/Actions";
 import Controls from "@/components/slider/controls/Controls";
@@ -53,9 +52,6 @@ const Slider = ({
   const wrappedSliderItemsRef = useRef<Map<string, {}> | null>(null);
   const sliderIntervalIdRef = useRef<number | null>(null);
   const { isXl, isLg, isMd, isSm } = useWindowResize();
-  const [inViewRef, inView] = useInView({
-    threshold: 0.7,
-  });
 
   /**
    * Set default slider items count
@@ -99,18 +95,6 @@ const Slider = ({
       wrappedSliderItemsRef.current = new Map();
     }
     return wrappedSliderItemsRef.current;
-  };
-
-  /**
-   * Determine if a preview modal is currently open
-   */
-  const isPreviewModalOpen = () => {
-    const previewModalStateById =
-      usePreviewModalStore.getState().previewModalStateById;
-    return !!(
-      previewModalStateById &&
-      Object.values(previewModalStateById).some(({ isOpen }) => isOpen)
-    );
   };
 
   /**
@@ -442,7 +426,7 @@ const Slider = ({
               node ? map.set(itemUid, node) : map.delete(itemUid);
             }}
             inViewport={inViewport}
-            itemTabbable={inView ? itemTabbable : false}
+            itemTabbable={itemTabbable}
             listContext={listContext}
             model={tcModel}
             myListRowItemsLength={myListRowItemsLength}
@@ -690,7 +674,7 @@ const Slider = ({
       return Math.abs(offset) * velocity;
     };
     const swipe = swipePower(offset.x, velocity.x);
-    if (isPreviewModalOpen()) return;
+    if (usePreviewModalStore.getState().isPreviewModalOpen()) return;
     if (swipe < -swipeConfidenceThreshold) {
       advanceNext(e);
     } else if (swipe > swipeConfidenceThreshold) {
@@ -699,10 +683,7 @@ const Slider = ({
   };
 
   return (
-    <div
-      ref={inViewRef}
-      className="row-content slider-hover-trigger-layer w-full overflow-x-visible whitespace-nowrap"
-    >
+    <div className="row-content slider-hover-trigger-layer w-full overflow-x-visible whitespace-nowrap">
       <div id={`slider-${sliderNum}`} className="slider px-6 sm:px-12">
         {/* Previous button */}
         {hasMovedOnce && (
@@ -710,7 +691,10 @@ const Slider = ({
             enablePeek={enablePeek}
             hasMovedOnce={hasMovedOnce}
             isAnimating={isAnimating}
-            modalOpen={isPreviewModalOpen() && rowHasExpandedInfoDensity}
+            modalOpen={
+              usePreviewModalStore.getState().isPreviewModalOpen() &&
+              rowHasExpandedInfoDensity
+            }
             moveDirection={sliderActions.MOVE_DIRECTION_PREV}
             onClick={advancePrev}
             onKeyDown={advancePrev}
@@ -744,7 +728,10 @@ const Slider = ({
             enablePeek={enablePeek}
             hasMovedOnce={hasMovedOnce}
             isAnimating={isAnimating}
-            modalOpen={isPreviewModalOpen() && rowHasExpandedInfoDensity}
+            modalOpen={
+              usePreviewModalStore.getState().isPreviewModalOpen() &&
+              rowHasExpandedInfoDensity
+            }
             moveDirection={sliderActions.MOVE_DIRECTION_NEXT}
             onClick={advanceNext}
             onKeyDown={advanceNext}

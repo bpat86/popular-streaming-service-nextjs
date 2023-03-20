@@ -7,7 +7,7 @@ import SelectAvatar from "@/components/profile/actions/SelectAvatar";
 import Name from "@/components/profile/fields/Name";
 import ProfileContext from "@/context/ProfileContext";
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 const validationSchema = yup.object({
   name: yup
@@ -153,9 +153,8 @@ const AddNewProfile = ({
 
   /**
    * Create a new user profile
-   * @param {Object} values
    */
-  const submitProfile = async (values) => {
+  const handleSubmit = async (values) => {
     const profileData = {
       user: user.id,
       name: values.name,
@@ -170,7 +169,6 @@ const AddNewProfile = ({
 
   /**
    * Set form data state as the user types
-   * @returns
    */
   const HandleInputOnChange = () => {
     // Get form input values from Formik's context
@@ -207,17 +205,14 @@ const AddNewProfile = ({
                 validationSchema={validationSchema}
                 onSubmit={async (values) => {
                   await sleep(250);
-                  if (!profileNames.includes(values.name)) {
-                    submitProfile(values);
-                    setError(null);
-                  } else {
+                  if (profileNames.includes(values.name)) {
                     setExistingName(values.name);
                     setError("Profile name already exists");
                   }
+                  handleSubmit(values);
+                  setError(null);
                 }}
-                onReset={() => {
-                  cancelProfile();
-                }}
+                onReset={() => cancelProfile()}
               >
                 {({
                   values,
@@ -310,7 +305,6 @@ const AddNewProfile = ({
                         </div>
                       </div>
                     </div>
-
                     <div className="flex w-full flex-col border-b border-zinc-700 sm:pb-4">
                       <h2 className="mb-1 text-2xl text-zinc-400">
                         Autoplay controls
@@ -356,7 +350,6 @@ const AddNewProfile = ({
                         </div>
                       </div>
                     </div>
-
                     <div className="my-4 mt-8 flex sm:mt-12">
                       <button
                         disabled={isSubmitting}

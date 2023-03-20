@@ -1,3 +1,4 @@
+import clsxm from "@/lib/clsxm";
 import { IVideoModel } from "@/store/types";
 
 type LogoProps = {
@@ -5,26 +6,26 @@ type LogoProps = {
   title: IVideoModel["title"];
 };
 
-const Logo = ({ logos, title }: LogoProps) => {
+export default function Logo({ logos, title }: LogoProps) {
   /**
    * Show the best fitted logo
    */
-  const getLogoPath = (logos: LogoProps["logos"]) => {
+  function getLogoPath() {
     if (!logos) return;
     const logo =
       logos.filter(({ iso_639_1 }) => iso_639_1 === "en")[0] || logos[0];
     return logo.file_path;
-  };
+  }
 
   /**
    * Format the logo CSS style
    */
-  const getLogoAspectRatio = (logos: LogoProps["logos"]) => {
+  function getLogoAspectRatio() {
     if (!logos) return;
     const logo =
       logos.filter(({ iso_639_1 }) => iso_639_1 === "en")[0] || logos[0];
     return logo.aspect_ratio > 2 ? "wide" : "tall";
-  };
+  }
 
   if (!logos || logos.length === 0) {
     return (
@@ -35,19 +36,16 @@ const Logo = ({ logos, title }: LogoProps) => {
   }
 
   return (
-    <>
+    <picture className="grid">
       <span className="sr-only">{title} logo</span>
-      <picture className="flex">
-        <img
-          className={`title-logo ${
-            getLogoAspectRatio(logos) === "wide" ? "wide" : "tall"
-          }`}
-          src={`https://image.tmdb.org/t/p/w500${getLogoPath(logos)}`}
-          alt={title}
-        />
-      </picture>
-    </>
+      <img
+        className={clsxm(
+          "title-logo",
+          getLogoAspectRatio() === "wide" ? "wide" : "tall"
+        )}
+        src={`https://image.tmdb.org/t/p/w500${getLogoPath()}`}
+        alt={title || ""}
+      />
+    </picture>
   );
-};
-
-export default Logo;
+}

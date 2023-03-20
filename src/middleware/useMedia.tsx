@@ -1,6 +1,7 @@
 import axios from "axios";
 import useSWR from "swr";
 
+import useMediaStore from "@/store/MediaStore";
 export type FetcherProps = [string, object];
 export type UseMediaProps = {
   pageAPI: string;
@@ -10,7 +11,7 @@ export type UseMediaProps = {
  * Fetcher function
  * https://swr.vercel.app/docs/data-fetching#fetcher-function
  */
-const fetchWithProps = async (...args: FetcherProps) => {
+const fetchWithProps = async ([...args]: FetcherProps) => {
   const res = await axios.get(...args);
   /**
    * If the status code is not 200, we
@@ -21,7 +22,6 @@ const fetchWithProps = async (...args: FetcherProps) => {
     // Attach extra info to the error object.
     throw { ...error, info: await res.data, status: res.status };
   }
-
   return res.data;
 };
 
@@ -37,6 +37,7 @@ export default function useMedia({ pageAPI }: UseMediaProps) {
     shouldRetryOnError: false,
     revalidateOnReconnect: false,
     refreshWhenOffline: false,
+    keepPreviousData: true,
   };
 
   // Abort fetch if the user navigates away
@@ -54,12 +55,12 @@ export default function useMedia({ pageAPI }: UseMediaProps) {
     isValidating,
   } = useSWR(
     apiURL,
-    (url: string) => (pageAPI ? fetchWithProps(url, { signal }) : null),
+    (url: string) => (pageAPI ? fetchWithProps([url, { signal }]) : null),
     options
   );
 
   // Request data is still being fetched
-  const fetchingMediaData = !media && !mediaError && isValidating;
+  const fetchingMediaData = (!media && !mediaError) || isValidating;
 
   // If the request is still validating or is aborted, return undefined
   if (fetchingMediaData || signal.aborted) {
@@ -73,6 +74,7 @@ export default function useMedia({ pageAPI }: UseMediaProps) {
   }
 
   // Return the request data
+  useMediaStore.getState().setMediaData(media);
   return {
     fetchingMedia: isValidating,
     media,
