@@ -50,7 +50,10 @@ const BrowseContainer = ({
   }
 
   const isShowingProfilesGate = () => {
-    return user && user.isActive === true && isLoggedIn && !activeProfileID;
+    return (
+      pageAPI === "manage-profiles" ||
+      (user && user.isActive === true && isLoggedIn && !activeProfileID)
+    );
   };
 
   /**
@@ -59,7 +62,15 @@ const BrowseContainer = ({
   if (isShowingProfilesGate()) {
     return (
       <ProfileGate
-        {...{ user, profiles, error, mutate, isLoading, isValidating }}
+        {...{
+          user,
+          profiles,
+          error,
+          mutate,
+          isLoading,
+          isValidating,
+          manageProfilesModeEnabled: pageAPI === "manage-profiles",
+        }}
       />
     );
   }

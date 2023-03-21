@@ -1,6 +1,9 @@
+import { FaPlusCircle } from "react-icons/fa";
+import { MdOutlineEdit } from "react-icons/md";
 import { shallow } from "zustand/shallow";
 
 import ProfileGateLayout from "@/components/pages/layouts/ProfileGateLayout";
+import UnstyledLink from "@/components/ui/links/UnstyledLink";
 import clsxm from "@/lib/clsxm";
 import { IUser } from "@/pages/api/strapi/users/types";
 import useProfileStore from "@/store/ProfileStore";
@@ -13,6 +16,7 @@ type WhosWatchingProps = {
   error?: any;
   isLoading?: boolean;
   isValidating?: boolean;
+  manageProfilesModeEnabled?: boolean;
 };
 
 export default function WhosWatching({
@@ -20,12 +24,11 @@ export default function WhosWatching({
   profiles,
   isLoading,
   isValidating,
+  manageProfilesModeEnabled,
 }: WhosWatchingProps) {
   const {
     addProfileModeEnabled,
     toggleAddProfileMode,
-    manageProfilesModeEnabled,
-    toggleManageProfilesMode,
     setProfileAttributes,
     setActiveProfile,
     resetProfile,
@@ -37,7 +40,6 @@ export default function WhosWatching({
       addProfileModeEnabled: state.addProfileModeEnabled,
       toggleAddProfileMode: state.toggleAddProfileMode,
       manageProfilesModeEnabled: state.manageProfilesModeEnabled,
-      toggleManageProfilesMode: state.toggleManageProfilesMode,
       setProfileAttributes: state.setProfileAttributes,
       setActiveProfile: state.setActiveProfile,
       resetProfile: state.resetProfile,
@@ -60,8 +62,6 @@ export default function WhosWatching({
    * Get the updated profile data and open the Edit Profile prompt
    */
   function handleEditProfile(profile: IProfile) {
-    // getUpdatedProfile(profile);
-    // setProfileID(profile.id);
     setProfileAttributes(profile.attributes);
     setEditableProfile(profile);
     !editModeEnabled && toggleEditMode();
@@ -128,7 +128,7 @@ export default function WhosWatching({
             <button
               type="button"
               aria-label="Manage Profiles"
-              className="mt-2 animate-pulse border border-zinc-400 px-8 py-3 text-xl font-medium tracking-widest text-zinc-400 focus:outline-none"
+              className="mt-2 animate-pulse border border-zinc-400 px-8 py-3 text-xl font-medium tracking-wider text-zinc-400 focus:outline-none"
             >
               Loading Profiles...
             </button>
@@ -152,47 +152,40 @@ export default function WhosWatching({
             {manageProfilesModeEnabled ? "Manage Profiles:" : "Who's watching?"}
           </h1>
           <ul className="my-8 mb-20 flex w-full flex-row flex-wrap justify-center space-x-8">
-            {profiles?.map((profile: IProfile) => (
-              <li
-                key={profile.id}
-                id={profile.id}
-                tabIndex={0}
-                className="group my-3 flex cursor-pointer flex-col items-center justify-center text-center"
-              >
-                <div className="relative">
-                  <div
-                    className="profile-avatar mx-auto flex h-32 w-32 flex-col rounded-md bg-cover ring-inset group-hover:ring-4 group-hover:ring-white group-focus:ring-4 group-focus:ring-white md:h-44 md:w-44"
-                    style={{
-                      backgroundImage: `url("/images/profiles/avatars/${profile.attributes.avatar}.png")`,
-                    }}
-                    onClick={() => handleSetActiveProfile(profile)}
-                  ></div>
-                  {manageProfilesModeEnabled && (
+            {profiles?.map((profile: IProfile) => {
+              return (
+                <li
+                  key={profile.id}
+                  id={profile.id}
+                  tabIndex={0}
+                  className="group my-3 flex cursor-pointer flex-col items-center justify-center text-center"
+                >
+                  <div className="relative">
                     <div
-                      className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50"
-                      onClick={() => handleEditProfile(profile)}
-                    >
-                      <div className="rounded-full border-2 border-white p-1">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-6 w-6"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                        </svg>
+                      className="profile-avatar mx-auto flex h-32 w-32 flex-col rounded-md bg-cover ring-inset group-hover:ring-4 group-hover:ring-white group-focus:ring-4 group-focus:ring-white md:h-44 md:w-44"
+                      style={{
+                        backgroundImage: `url("/images/profiles/avatars/${profile.attributes.avatar}.png")`,
+                      }}
+                      onClick={() => handleSetActiveProfile(profile)}
+                    />
+                    {manageProfilesModeEnabled && (
+                      <div
+                        className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-70"
+                        onClick={() => handleEditProfile(profile)}
+                      >
+                        <MdOutlineEdit className="h-12 w-12 text-2xl text-white" />
                       </div>
-                    </div>
-                  )}
-                </div>
-                <dl className="mt-4 flex flex-grow flex-col justify-between">
-                  <dt className="sr-only">{`Profile name: ${profile.attributes.name}`}</dt>
-                  <dd className="text-2xl text-zinc-400 group-hover:text-white">
-                    {profile.attributes.name}
-                  </dd>
-                </dl>
-              </li>
-            ))}
+                    )}
+                  </div>
+                  <dl className="mt-4 flex flex-grow flex-col justify-between">
+                    <dt className="sr-only">{`Profile name: ${profile.attributes.name}`}</dt>
+                    <dd className="text-2xl text-zinc-400 group-hover:text-white">
+                      {profile.attributes.name}
+                    </dd>
+                  </dl>
+                </li>
+              );
+            })}
             <button
               tabIndex={0}
               type="button"
@@ -201,16 +194,7 @@ export default function WhosWatching({
               onClick={handleCreateProfile}
             >
               <div className="profile-avatar mx-auto flex h-32 w-32 flex-col items-center justify-center rounded-md	transition duration-200 ease-out group-hover:bg-white group-focus:bg-white md:h-44 md:w-44">
-                <svg
-                  stroke="currentColor"
-                  fill="currentColor"
-                  strokeWidth={0}
-                  viewBox="0 0 16 16"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-32 w-32 text-zinc-400"
-                >
-                  <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"></path>
-                </svg>
+                <FaPlusCircle className="h-28 w-28 text-zinc-400" />
               </div>
               <dl className="mt-4 flex flex-grow flex-col justify-between">
                 <dt className="sr-only">Add Profile</dt>
@@ -221,19 +205,18 @@ export default function WhosWatching({
             </button>
           </ul>
           {profiles?.length > 0 && (
-            <button
+            <UnstyledLink
               tabIndex={0}
-              type="button"
               aria-label="Manage Profiles"
+              href={manageProfilesModeEnabled ? "/browse" : "/manage-profiles"}
               className={clsxm([
                 manageProfilesModeEnabled
-                  ? "border border-transparent bg-white px-8 py-3 text-xl font-medium  tracking-widest text-zinc-900 hover:bg-netflix-red hover:text-white focus:bg-netflix-red focus:text-white focus:outline-none"
-                  : "border border-zinc-400 px-8 py-3 text-xl font-medium tracking-widest text-zinc-400 hover:border-white hover:text-white focus:border-white focus:text-white focus:outline-none",
+                  ? "border border-transparent bg-white px-8 py-3 text-xl font-medium tracking-wider text-zinc-900 hover:bg-netflix-red hover:text-white focus:bg-netflix-red focus:text-white focus:outline-none"
+                  : "border border-zinc-400 px-8 py-3 text-xl font-medium tracking-wider text-zinc-400 hover:border-white hover:text-white focus:border-white focus:text-white focus:outline-none",
               ])}
-              onClick={toggleManageProfilesMode}
             >
               {manageProfilesModeEnabled ? "Done" : "Manage Profiles"}
-            </button>
+            </UnstyledLink>
           )}
         </div>
       </div>

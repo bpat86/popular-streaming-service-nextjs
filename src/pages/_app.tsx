@@ -2,10 +2,10 @@ import "@/styles/globals.css";
 
 import { AppProps } from "next/app";
 import { Fragment } from "react";
-// import { Toaster } from "react-hot-toast";
 import { SWRConfig } from "swr";
 
 import { Page } from "@/@types/page";
+import Toast from "@/components/toasts/Toast";
 import { AuthProvider } from "@/context/AuthContext";
 // import CombineContexts from "@/context/CombineContexts";
 // import { ProfileProvider } from "@/context/ProfileContext";
@@ -36,11 +36,7 @@ export default function MyApp({ Component, pageProps, router }: Props) {
           <SWRConfig value={{ provider: () => new Map() }}>
             <AnimatePresenceWrapper mode="wait">
               <Component key={activeProfile || router.route} {...pageProps} />
-              {/* <Toaster
-                toastOptions={{
-                  duration: 3000,
-                }}
-              /> */}
+              <Toast />
             </AnimatePresenceWrapper>
           </SWRConfig>
         </AuthProvider>

@@ -1,11 +1,14 @@
 import axios from "axios";
 import produce from "immer";
 import Cookies from "js-cookie";
+import { toast } from "react-hot-toast";
 import { mutate } from "swr";
 import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
+import { createJSONStorage, persist, PersistOptions } from "zustand/middleware";
 
 import { NEXT_URL } from "@/config";
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 interface IProfileAttributes {
   name: string | null;
@@ -175,40 +178,58 @@ const useProfileStore = create(
       },
       createProfile: async (profile: IProfileAttributes) => {
         const url = `${NEXT_URL}/api/strapi/profiles/createProfile`;
-        const response = await axios.post(url, profile);
-        set({
-          profileAttributes: await response.data.profile.attributes,
-          editableProfile: await response.data.profile,
-          profiles: [...get().profiles, response.data.profile],
-        });
-        get().toggleAll();
-        if (response.status === 200) {
-          return response.data.profile;
+        try {
+          const response = await axios.post(url, profile);
+          set({
+            profileAttributes: await response.data.profile.attributes,
+            editableProfile: await response.data.profile,
+            profiles: [...get().profiles, response.data.profile],
+          });
+          if (response.status === 200) {
+            await sleep(1000);
+            toast.success("Profile created successfully.");
+            return response.data.profile;
+          }
+        } catch (e: any) {
+          await sleep(1000);
+          toast.error("Something with wrong.");
         }
       },
       updateProfile: async (profile: IProfile) => {
         const url = `${NEXT_URL}/api/strapi/profiles/editProfile`;
-        const response = await axios.put(url, profile);
-        set({
-          profileAttributes: await response.data.profile.attributes,
-          editableProfile: await response.data.profile,
-          profiles: [...get().profiles, response.data.profile],
-        });
-        get().toggleAll();
-        if (response.status === 200) {
-          return response.data.profile;
+        try {
+          const response = await axios.put(url, profile);
+          set({
+            profileAttributes: await response.data.profile.attributes,
+            editableProfile: await response.data.profile,
+            profiles: [...get().profiles, response.data.profile],
+          });
+          if (response.status === 200) {
+            await sleep(1000);
+            toast.success("Profile updated successfully.");
+            return response.data.profile;
+          }
+        } catch (e: any) {
+          await sleep(1000);
+          toast.error("Something with wrong.");
         }
       },
       deleteProfile: async (id: IProfile["id"]) => {
         const url = `${NEXT_URL}/api/strapi/profiles/deleteProfile`;
-        const response = await axios.delete(url, { data: { id } });
-        set({
-          profileAttributes,
-          profiles: get().profiles.filter((profile) => profile.id !== id),
-        });
-        get().toggleAll();
-        if (response.status === 200) {
-          return response.data.profile;
+        try {
+          const response = await axios.delete(url, { data: { id } });
+          set({
+            profileAttributes,
+            profiles: get().profiles.filter((profile) => profile.id !== id),
+          });
+          if (response.status === 200) {
+            await sleep(1000);
+            toast.success("Profile deleted successfully.");
+            return response.data.profile;
+          }
+        } catch (e: any) {
+          await sleep(1000);
+          toast.error("Something with wrong.");
         }
       },
     }),
@@ -216,7 +237,7 @@ const useProfileStore = create(
       name: "active-profile", // name of the item in the storage (must be unique)
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ ...state.editableProfile }),
-    }
+    } as PersistOptions<IProfileStore>
   )
 );
 

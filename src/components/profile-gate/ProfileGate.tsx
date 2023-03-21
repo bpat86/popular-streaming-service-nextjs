@@ -15,6 +15,7 @@ type ProfileGateProps = {
   error: any;
   isLoading: boolean;
   isValidating: boolean;
+  manageProfilesModeEnabled: boolean;
 };
 
 export default function ProfileGate({
@@ -24,6 +25,7 @@ export default function ProfileGate({
   mutate,
   isLoading,
   isValidating,
+  manageProfilesModeEnabled,
 }: ProfileGateProps) {
   const { addProfileModeEnabled, editModeEnabled } = useProfileStore(
     (state) => ({
@@ -54,7 +56,15 @@ export default function ProfileGate({
   // Default view (list of profiles)
   return (
     <WhosWatching
-      {...{ user, profiles, error, mutate, isLoading, isValidating }}
+      {...{
+        user,
+        profiles,
+        error,
+        mutate,
+        isLoading,
+        isValidating,
+        manageProfilesModeEnabled,
+      }}
     />
   );
 }

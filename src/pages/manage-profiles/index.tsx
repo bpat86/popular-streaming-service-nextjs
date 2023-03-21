@@ -10,20 +10,20 @@ type InitialUserProps = {
   isRegistered: boolean;
 };
 
-type IndexProps = {
+type ManageProfilesProps = {
   initialUser: InitialUserProps;
 };
 
-export default function BrowseHome({ initialUser }: IndexProps) {
-  const pageProps = {
-    page: "browse",
-    title: "Home",
+export default function ManageProfiles({ initialUser }: ManageProfilesProps) {
+  const info = {
+    api: "manage-profiles",
+    title: "Manage Profiles",
   };
   return (
     <BrowsePage
-      key={pageProps.page}
-      pageAPI={pageProps.page}
-      pageTitle={pageProps.title}
+      key={info.api}
+      pageAPI={info.api}
+      pageTitle={info.title}
       initialUser={initialUser}
     />
   );

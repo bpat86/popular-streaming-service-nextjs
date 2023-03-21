@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { MdOutlineEdit } from "react-icons/md";
 import { z } from "zod";
 import { shallow } from "zustand/shallow";
 
@@ -70,7 +71,7 @@ export default function AddProfile({
     resolver: zodResolver(schema),
     mode: "onBlur", // "onChange"
   });
-  const [nameError, setNameError] = useState(false);
+  const [nameError, setNameError] = useState<boolean>(false);
 
   /**
    * Open the avatar selection screen prompt
@@ -139,6 +140,8 @@ export default function AddProfile({
       },
       revalidate: false,
     });
+    // Return to the who's watching screen
+    toggleAll();
   }
 
   // Select avatar screen
@@ -177,11 +180,8 @@ export default function AddProfile({
               Add a profile for another person watching Netflix.
             </h2>
             <div className="flex w-full space-y-6 border-t border-b border-zinc-700">
-              <div className="my-6 flex w-full cursor-pointer items-center text-center">
-                <div
-                  className="group relative"
-                  onClick={handlePromptSelectAvatar}
-                >
+              <div className="my-6 flex w-full items-center text-center">
+                <div className="group relative">
                   <div
                     className="profile-avatar xs:w-20 xs:h-20 mx-auto flex h-16 w-16 flex-col rounded-md bg-cover text-white md:h-36 md:w-36"
                     style={{
@@ -189,17 +189,11 @@ export default function AddProfile({
                     }}
                   />
                   {/* Hovered state */}
-                  <div className="pointer-events-none absolute inset-0 -z-1 flex items-center justify-center bg-black bg-opacity-60 opacity-0 transition duration-150 ease-out group-hover:pointer-events-auto group-hover:z-auto group-hover:opacity-100">
-                    <div className="rounded-full border-2 border-white p-1">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-6 w-6"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                      </svg>
-                    </div>
+                  <div
+                    onClick={handlePromptSelectAvatar}
+                    className="absolute bottom-0 left-0 -z-1 m-3 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-black bg-opacity-70 opacity-0 transition duration-150 ease-out group-hover:pointer-events-auto group-hover:z-auto group-hover:opacity-100"
+                  >
+                    <MdOutlineEdit className="h-8 w-8 text-2xl text-white" />
                   </div>
                 </div>
                 <div className="w-full px-3 sm:px-6">

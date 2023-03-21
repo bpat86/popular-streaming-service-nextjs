@@ -2,6 +2,7 @@ import { useState } from "react";
 import { shallow } from "zustand/shallow";
 
 import useProfileStore from "@/store/ProfileStore";
+import { IProfileAttributes } from "@/store/types";
 
 import ConfirmAvatar from "./confirm/ConfirmAvatar";
 
@@ -52,7 +53,7 @@ export default function SelectAvatar() {
   /**
    * Select and avatar and redirect to the confirmation screen
    */
-  function updateAvatar(avatar: string) {
+  function updateAvatar(avatar: IProfileAttributes["avatar"]) {
     // Update the new avatar state
     setNewAvatar(avatar);
     // Redirect to the confrimation screen

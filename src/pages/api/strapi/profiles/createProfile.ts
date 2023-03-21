@@ -2,7 +2,7 @@ import axios from "axios";
 
 import { API_URL } from "@/config/index";
 import { withSessionRoute } from "@/middleware/withSession";
-
+const delay = () => new Promise((res) => setTimeout(() => res(), 800));
 export default withSessionRoute(async (req, res) => {
   if (req.method === "POST") {
     try {

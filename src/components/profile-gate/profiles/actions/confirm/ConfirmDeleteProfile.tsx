@@ -19,6 +19,7 @@ export default function ConfirmDeleteProfile({
     promptConfirmDeleteProfile,
     deleteProfile,
     togglePromptConfirmDeleteProfile,
+    toggleAll,
   } = useProfileStore(
     (state) => ({
       profileAttributes: state.profileAttributes,
@@ -26,6 +27,7 @@ export default function ConfirmDeleteProfile({
       promptConfirmDeleteProfile: state.promptConfirmDeleteProfile,
       deleteProfile: state.deleteProfile,
       togglePromptConfirmDeleteProfile: state.togglePromptConfirmDeleteProfile,
+      toggleAll: state.toggleAll,
     }),
     shallow
   );
@@ -61,6 +63,8 @@ export default function ConfirmDeleteProfile({
       },
       revalidate: false,
     });
+    // Return to the who's watching screen
+    toggleAll();
   }
 
   return (
@@ -72,7 +76,7 @@ export default function ConfirmDeleteProfile({
           </h1>
           <div className="flex w-full items-center border-t border-b border-zinc-700 py-6 text-center">
             <div className="ml-auto flex items-center">
-              <div className="relative space-y-3 rounded-lg border border-zinc-700 p-4 pb-2.5">
+              <div className="relative space-y-3">
                 <div
                   className="profile-avatar xs:w-20 xs:h-20 mx-auto flex h-16 w-16 flex-col rounded-md bg-cover text-white md:h-36 md:w-36"
                   style={{
